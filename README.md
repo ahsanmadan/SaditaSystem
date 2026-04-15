@@ -1,271 +1,58 @@
-<div align="center">
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-# 🌸 SaditaSystem
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-### Sistem Informasi E-Commerce & Manajemen Dekorasi Berbasis Web
+## About Laravel
 
-[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
-[![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
-[![Groq API](https://img.shields.io/badge/Groq_API-LLM_Chatbot-F55036?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![SDGs](https://img.shields.io/badge/SDGs-Poin_8-E5243B?style=for-the-badge)](https://sdgs.un.org/goals/goal8)
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-<br/>
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-> **Mitra UMKM:** Sadita Decoration — Padang, Sumatera Barat 🏝️  
-> Platform digital terpadu untuk mengelola pemesanan, inventaris, dan layanan ketiga unit bisnis Sadita dalam satu dashboard.
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-<br/>
+## Learning Laravel
 
-![-----](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-</div>
+In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## 📌 Tentang Proyek
+You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
 
-**SaditaSystem** adalah aplikasi web yang dikembangkan sebagai solusi digitalisasi bagi UMKM **Sadita Decoration**, sebuah usaha jasa sewa dekorasi dan pernikahan yang berlokasi di Kota Padang, Sumatera Barat. Proyek ini merupakan bagian dari mata kuliah **Pemrograman Web Framework** dan terintegrasi lintas 7 mata kuliah sebagai Proyek Berbasis Pembelajaran (PBL).
+## Agentic Development
 
-Saat ini Sadita Decoration masih mengelola pemesanan secara manual melalui WhatsApp dan Instagram, yang rawan terjadi *double booking*, kehilangan data pesanan, dan kesulitan memantau stok. SaditaSystem hadir untuk menjawab tantangan tersebut.
-
-**Tema SDGs:** Poin 8 — *Decent Work and Economic Growth* (Target 8.3 & 8.10)
-
----
-
-## 🏢 Unit Bisnis Mitra
-
-| Unit | Instagram | Layanan |
-|------|-----------|---------|
-| Sadita Decor | [@sadita.decor](https://instagram.com/sadita.decor) | Birthday · Engagement · Grand Opening · Aqiqah |
-| Sadita Hantaran | [@sadita.hantaran](https://instagram.com/sadita.hantaran) | Seserahan · Mahar · Ring Box · Hampers · Souvenir |
-| Sadita Florist | [@sadita.florist](https://instagram.com/sadita.florist) | Floral Arrangement · Bouquet · Event Floristry |
-
----
-
-## ✨ Fitur Utama
-
-### 🌐 Base Web (Lead Programmer)
-- **Autentikasi** — Registrasi & login pelanggan dan admin
-- **Katalog Produk** — Tampilan produk & paket dari ketiga unit bisnis
-- **Sistem Booking Online** — Form pemesanan dengan kalender ketersediaan real-time
-- **Dashboard Admin** — Manajemen pesanan, stok inventaris, dan data pelanggan
-- **Laporan Keuangan** — Rekap pemasukan, DP, pelunasan per bulan
-- **Notifikasi** — Status pesanan via WhatsApp API & Email
-
-### 🤖 Fitur AI (AI Specialist)
-- **Rekomendasi Paket** — Content-Based Filtering berdasarkan preferensi & budget pelanggan
-- **Chatbot LLM** — Chatbot berbasis Groq API (Llama/Mixtral) untuk FAQ & panduan booking
-- **Prediksi Jadwal Sibuk** — Analisis historis pemesanan untuk antisipasi stok
-
-### 🧪 Quality Assurance
-- Black Box Testing seluruh modul
-- Pengujian performa simulasi 50+ pengguna
-- User Acceptance Testing (UAT) bersama mitra Sadita
-- Dokumentasi bug setiap milestone
-
----
-
-## 🛠️ Tech Stack
-
-| Kategori | Teknologi |
-|----------|-----------|
-| Backend | Laravel 12 (PHP 8.2+) |
-| Frontend | Blade Templates + JavaScript |
-| Database | MySQL |
-| AI / LLM | Groq API (Llama 3 / Mixtral) |
-| Notifikasi | WhatsApp API (Fonnte) + SMTP Email |
-| Version Control | Git + GitHub |
-| Project Management | Trello (Kanban) |
-| Hosting | VPS / Shared Hosting |
-
----
-
-## 🚀 Cara Setup Lokal
-
-### Prasyarat
-- PHP >= 8.2
-- Composer
-- MySQL
-- Node.js & NPM
-- Git
-
-### Instalasi
+Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/[username]/saditasystem.git
-cd saditasystem
+composer require laravel/boost --dev
 
-# 2. Install dependencies PHP
-composer install
-
-# 3. Install dependencies Node.js
-npm install
-
-# 4. Salin file environment
-cp .env.example .env
-
-# 5. Generate application key
-php artisan key:generate
-
-# 6. Konfigurasi .env (database, mail, Groq API key, dll)
-# Edit file .env sesuai konfigurasi lokal
-
-# 7. Jalankan migrasi database
-php artisan migrate --seed
-
-# 8. Build assets frontend
-npm run dev
-
-# 9. Jalankan server lokal
-php artisan serve
+php artisan boost:install
 ```
 
-Aplikasi akan berjalan di `http://localhost:8000`
+Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
 
----
+## Contributing
 
-## ⚙️ Konfigurasi Environment
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-Salin `.env.example` ke `.env` dan isi variabel berikut:
+## Code of Conduct
 
-```env
-APP_NAME=SaditaSystem
-APP_URL=http://localhost:8000
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=saditasystem
-DB_USERNAME=root
-DB_PASSWORD=
+## Security Vulnerabilities
 
-# Groq API (AI Chatbot & Rekomendasi)
-GROQ_API_KEY=your_groq_api_key_here
-GROQ_MODEL=llama3-8b-8192
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-# WhatsApp API (Fonnte)
-FONNTE_TOKEN=your_fonnte_token_here
+## License
 
-# Mail
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=your_email@gmail.com
-MAIL_PASSWORD=your_app_password
-```
-
-> ⚠️ **Jangan pernah commit file `.env` ke repository!** Pastikan sudah masuk di `.gitignore`.
-
----
-
-## 🌿 Git Workflow
-
-Kami menggunakan **Git Flow** dengan struktur branch sebagai berikut:
-
-```
-main          ← Production (stabil, dipakai saat demo milestone)
-│
-└── develop   ← Staging (integrasi semua fitur)
-    │
-    ├── feature/[nama-fitur]   ← Fitur baru
-    ├── fix/[nama-bug]         ← Perbaikan bug
-    ├── test/[nama-pengujian]  ← Testing & QA
-    └── docs/[nama-dokumen]    ← Dokumentasi
-```
-
-### Alur Kontribusi
-
-```bash
-# 1. Ambil update terbaru dari develop
-git checkout develop
-git pull origin develop
-
-# 2. Buat branch baru sesuai fitur
-git checkout -b feature/nama-fitur
-
-# 3. Kerjakan fitur, lalu commit
-git add .
-git commit -m "feat: deskripsi singkat perubahan"
-
-# 4. Push ke GitHub
-git push origin feature/nama-fitur
-
-# 5. Buat Pull Request → develop
-#    Assign ke Lead Programmer untuk review
-```
-
-### Format Commit Message
-
-```
-feat:     fitur baru
-fix:      perbaikan bug
-refactor: perubahan struktur kode
-test:     penambahan/perbaikan test
-docs:     perubahan dokumentasi
-style:    perubahan formatting (tanpa mengubah logika)
-chore:    update dependency, konfigurasi
-```
-
-### Aturan Penting
-- ❌ **Dilarang** push langsung ke `main`
-- ✅ Semua perubahan harus melalui **Pull Request**
-- ✅ Minimal **1 reviewer** (Lead Programmer) sebelum merge ke `develop`
-- ✅ Minimal **2 commit per minggu** pada fase aktif pengembangan
-- ✅ Hapus branch fitur setelah berhasil di-merge
-
----
-
-## 📋 Backlog & Manajemen Proyek
-
-Semua tugas dan progres sprint dikelola di **Trello Board**:  
-🔗 [PBL2026B_SaditaSystem — Trello](https://trello.com)
-
-Konvensi penamaan card:
-```
-[KODE_MATKUL]-[NO] Nama Aktivitas
-Contoh: PWF-04: Sistem Booking Online & Kalender Ketersediaan
-```
-
----
-
-## 📅 Milestone
-
-| Milestone | Deadline | Target |
-|-----------|----------|--------|
-| M1 — Inisiasi | Minggu 4 | Project Charter, WBS, SRS, Wawancara Mitra |
-| M2 — UTS | Minggu 8 | Prototype AI, Wireframe UI, ERD, Demo Chatbot |
-| M3 — Beta | Minggu 13 | Beta live on hosting, UAT, Fitur AI terintegrasi |
-| M4 — UAS | Minggu 16 | Demo Day, Laporan Akhir, Source Code Final |
-
----
-
-## 👥 Tim Pengembang
-
-**Kelompok 5 — PBL 2026B**
-
-| Nama | NIM | Peran |
-|------|-----|-------|
-| Bagastio Putra Joandri | 2411081005 | Project Manager |
-| Ahsan Ramadan | 2411081002 | System Analyst & Lead Programmer |
-| Jeli Mayora | 2411081012 | AI Specialist |
-| Aprila Maulida | 2411083002 | Quality Assurance |
-
-**Dosen Pengampu:**
-- Rayendra, S.T., M.Kom. — Pemrograman Web Framework
-- Eko Purnomo, S.Ds, M.Sn. — Komunikasi Bisnis
-- *(dan dosen mata kuliah lainnya)*
-
----
-
-## 📄 Lisensi
-
-Proyek ini dikembangkan untuk keperluan akademik.  
-© 2025 Sadita System — Kelompok 5, Universitas Bung Hatta / [nama universitas]
-
----
-
-<div align="center">
-
-*"Digitalisasi UMKM, Satu Langkah untuk Pertumbuhan Ekonomi Lokal"* 🌱
-
-</div>
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
