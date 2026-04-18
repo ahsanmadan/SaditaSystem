@@ -1,1 +1,0 @@
-{{-- Footer is included directly in index.blade.php for this single-page design --}}

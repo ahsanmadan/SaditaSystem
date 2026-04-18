@@ -17,10 +17,6 @@
         <div class="hero-content relative z-20 h-full flex items-center">
             <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 w-full">
                 <div class="max-w-xl">
-                    <span
-                        class="inline-block px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-white/90 text-xs sm:text-sm font-medium border border-white/20 reveal-on-scroll">
-                        ✦ Layanan Florist & Hadiah Premium
-                    </span>
                     <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] reveal-on-scroll"
                         style="font-family:'Playfair Display',serif">
                         Seni Memberi<br>yang <em class="italic text-[#E8C87A]">Bermakna</em>
@@ -337,19 +333,4 @@
             </div>
         </div>
     </section>
-
-    {{-- ═══════════════════════════════════════════ --}}
-    {{-- FOOTER --}}
-    {{-- ═══════════════════════════════════════════ --}}
-    <footer class="bg-[#2D1E1E] text-white py-10">
-        <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="text-center sm:text-left">
-                    <div class="text-xl font-bold" style="font-family:'Playfair Display',serif">Sadita</div>
-                    <p class="text-xs text-white/50 mt-1">Hadiah bermakna untuk setiap momen spesial.</p>
-                </div>
-                <div class="text-xs text-white/40">© {{ date('Y') }} Sadita. Seluruh hak cipta dilindungi.</div>
-            </div>
-        </div>
-    </footer>
 @endsection
