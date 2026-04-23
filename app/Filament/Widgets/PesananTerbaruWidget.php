@@ -28,7 +28,7 @@ class PesananTerbaruWidget extends BaseWidget
                     ->limit(5)
             )
             ->columns([
-                Tables\Columns\TextColumn::make('id_pesanan')
+                Tables\Columns\TextColumn::make('id')
                     ->label('ID Pesanan')
                     ->searchable()
                     ->fontFamily('mono'),
