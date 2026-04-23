@@ -37,6 +37,11 @@ class KategoriResource extends Resource
         return 'Master Data';
     }
 
+    public static function getSlug(?\Filament\Panel $panel = null): string
+    {
+        return 'kategori';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return KategoriForm::configure($schema);

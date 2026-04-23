@@ -37,6 +37,11 @@ class ProdukResource extends Resource
         return 'Master Data';
     }
 
+    public static function getSlug(?\Filament\Panel $panel = null): string
+    {
+        return 'produk';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ProdukForm::configure($schema);
