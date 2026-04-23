@@ -12,6 +12,12 @@ class Pelanggan extends Model
     protected $table = 'pelanggan';
     protected $guarded = ['id'];
 
+    // Accessor agar bisa dipanggil $pelanggan->nama (alias dari nama_lengkap)
+    public function getNamaAttribute(): ?string
+    {
+        return $this->nama_lengkap;
+    }
+
     public function riwayatPesanan()
     {
         return $this->hasMany(Pesanan::class, 'pelanggan_id', 'id');

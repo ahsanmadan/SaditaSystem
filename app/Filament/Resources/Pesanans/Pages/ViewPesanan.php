@@ -87,10 +87,9 @@ class ViewPesanan extends ViewRecord
                 Section::make('Data Pelanggan')
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('pelanggan.nama')->label('Nama'),
+                        TextEntry::make('pelanggan.nama_lengkap')->label('Nama'),
                         TextEntry::make('pelanggan.no_hp')->label('No. HP'),
                         TextEntry::make('pelanggan.email')->label('Email'),
-                        TextEntry::make('pelanggan.alamat')->label('Alamat')->columnSpanFull(),
                     ]),
 
                 Section::make('Item Pesanan')
@@ -98,9 +97,9 @@ class ViewPesanan extends ViewRecord
                         RepeatableEntry::make('detailItems')
                             ->label('')
                             ->schema([
-                                TextEntry::make('produk.nama')->label('Produk'),
-                                TextEntry::make('jumlah')->label('Jumlah'),
-                                TextEntry::make('harga_satuan')
+                                TextEntry::make('nama_produk_snapshot')->label('Produk'),
+                                TextEntry::make('kuantitas')->label('Jumlah'),
+                                TextEntry::make('harga_satuan_snapshot')
                                     ->label('Harga Satuan')
                                     ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.')),
                                 TextEntry::make('subtotal')
@@ -150,16 +149,16 @@ class ViewPesanan extends ViewRecord
                     ->collapsed()
                     ->columns(3)
                     ->schema([
-                        TextEntry::make('pengiriman.kurir')->label('Kurir')->default('-'),
-                        TextEntry::make('pengiriman.no_resi')
-                            ->label('No. Resi')
-                            ->fontFamily('mono')
-                            ->copyable()
-                            ->default('-'),
-                        TextEntry::make('pengiriman.status_pengiriman')
+                        TextEntry::make('pengiriman.nama_kurir')->label('Kurir')->default('-'),
+                        TextEntry::make('pengiriman.nama_penerima')->label('Penerima')->default('-'),
+                        TextEntry::make('pengiriman.status')
                             ->label('Status Pengiriman')
                             ->badge()
                             ->default('-'),
+                        TextEntry::make('pengiriman.alamat_lengkap')
+                            ->label('Alamat Pengiriman')
+                            ->default('-')
+                            ->columnSpanFull(),
                     ]),
             ]);
     }

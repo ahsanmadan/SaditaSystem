@@ -33,7 +33,7 @@ class PesananTerbaruWidget extends BaseWidget
                     ->searchable()
                     ->fontFamily('mono'),
 
-                Tables\Columns\TextColumn::make('pelanggan.nama')
+                Tables\Columns\TextColumn::make('pelanggan.nama_lengkap')
                     ->label('Pelanggan')
                     ->searchable(),
 

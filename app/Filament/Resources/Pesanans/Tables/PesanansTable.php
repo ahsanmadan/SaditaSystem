@@ -30,7 +30,7 @@ class PesanansTable
                     ->weight('semibold')
                     ->copyable(),
 
-                TextColumn::make('pelanggan.nama')
+                TextColumn::make('pelanggan.nama_lengkap')
                     ->label('Pelanggan')
                     ->searchable()
                     ->sortable(),

@@ -27,7 +27,7 @@ class PembayaransTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('pesanan.pelanggan.nama')
+                TextColumn::make('pesanan.pelanggan.nama_lengkap')
                     ->label('Pelanggan')
                     ->searchable(),
 
