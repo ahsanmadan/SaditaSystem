@@ -11,7 +11,9 @@
 
     {{-- Preload critical assets --}}
     <link rel="preload" href="/images/hero-1.png" as="image" fetchpriority="high">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" as="style">
+    <link rel="preload"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap"
+        as="style">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -28,7 +30,8 @@
 <body class="bg-[#FFFDFB] text-gray-900 overflow-x-hidden">
 
     {{-- Page preloader --}}
-    <div id="preloader" class="fixed inset-0 z-[100] bg-[#FFFDFB] flex items-center justify-center transition-opacity duration-500">
+    <div id="preloader"
+        class="fixed inset-0 z-[100] bg-[#FFFDFB] flex items-center justify-center transition-opacity duration-500">
         <div class="flex flex-col items-center gap-4">
             <div class="text-3xl font-bold text-[#7A1F2B]" style="font-family:'Playfair Display',serif">Sadita</div>
             <div class="preloader-spinner"></div>
@@ -62,7 +65,9 @@
             setTimeout(function() {
                 if (preloader) {
                     preloader.style.opacity = '0';
-                    setTimeout(function() { preloader.style.display = 'none'; }, 500);
+                    setTimeout(function() {
+                        preloader.style.display = 'none';
+                    }, 500);
                 }
             }, 3000);
 
@@ -81,7 +86,9 @@
                     navbar.classList.remove('navbar-scrolled');
                 }
             }
-            window.addEventListener('scroll', updateNavbar, { passive: true });
+            window.addEventListener('scroll', updateNavbar, {
+                passive: true
+            });
             updateNavbar();
 
             // ═══════════════════════════════════════════
@@ -179,7 +186,9 @@
                     });
                     ticking = true;
                 }
-            }, { passive: true });
+            }, {
+                passive: true
+            });
 
             // ═══════════════════════════════════════════
             // SCROLL REVEAL ANIMATIONS
@@ -192,7 +201,10 @@
                         revealObserver.unobserve(entry.target);
                     }
                 });
-            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
 
             revealElements.forEach(function(el) {
                 revealObserver.observe(el);
@@ -250,9 +262,13 @@
                         counterObserver.unobserve(entry.target);
                     }
                 });
-            }, { threshold: 0.5 });
+            }, {
+                threshold: 0.5
+            });
 
-            counters.forEach(function(c) { counterObserver.observe(c); });
+            counters.forEach(function(c) {
+                counterObserver.observe(c);
+            });
 
             // ═══════════════════════════════════════════
             // LAZY LOAD IMAGES (native + fallback)
@@ -271,7 +287,9 @@
                         }
                     });
                 });
-                lazyImages.forEach(function(img) { imgObserver.observe(img); });
+                lazyImages.forEach(function(img) {
+                    imgObserver.observe(img);
+                });
             }
         });
     </script>
