@@ -6,6 +6,7 @@ use App\Models\Pesanan;
 use App\Models\PengembalianPesanan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardReportService
 {
@@ -34,13 +35,14 @@ class DashboardReportService
 
     public function getTopPelangganByRevenue($limit = 10)
     {
-        // Agregasi di level database (SUM grand_total)
-        return Pesanan::select('pelanggan_id', DB::raw('SUM(grand_total) as total_revenue'))
-            ->where('status', 'selesai')
-            ->groupBy('pelanggan_id')
-            ->orderByDesc('total_revenue')
-            ->limit($limit)
-            ->with('pelanggan')
-            ->get();
+        return Cache::remember('kpi_top_pelanggan', 60 * 15, function () use ($limit) {
+            return Pesanan::select('pelanggan_id', DB::raw('SUM(grand_total) as total_revenue'))
+                ->where('status', 'selesai')
+                ->groupBy('pelanggan_id')
+                ->orderByDesc('total_revenue')
+                ->limit($limit)
+                ->with('pelanggan')
+                ->get();
+        });
     }
 }

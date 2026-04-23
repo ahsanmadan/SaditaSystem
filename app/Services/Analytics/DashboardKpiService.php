@@ -3,55 +3,55 @@
 namespace App\Services\Analytics;
 
 use App\Models\Pesanan;
-use App\Models\Pelanggan;
+use App\Models\Pembayaran;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardKpiService
 {
     /**
-     * Omzet Penjualan Hari Ini (Murni produk/jasa)
+     * Omzet Penjualan Hari Ini (Murni produk/jasa) - EVENT TIME
      */
-    public function getOmzetToday(): int
+    public function getOmzetTodayByCompletionDate(): int
     {
-        return (int) Pesanan::whereDate('created_at', Carbon::today())
-            ->where('status', 'selesai')
+        return (int) Pesanan::whereDate('waktu_selesai', Carbon::today())
             ->sum('total_harga');
     }
 
     /**
-     * Penerimaan Kas Bruto Hari Ini (Termasuk Ongkir)
+     * Penerimaan Kas Bruto Hari Ini (Termasuk Ongkir) - EVENT TIME
      */
-    public function getCashInToday(): int
+    public function getCashInTodayByPaymentDate(): int
     {
-        return (int) Pesanan::whereDate('created_at', Carbon::today())
-            ->whereIn('status', ['diproses', 'selesai'])
-            ->sum('grand_total');
+        return (int) Pembayaran::where('status', 'lunas')
+            ->whereDate('waktu_dibayar', Carbon::today())
+            ->sum('jumlah_dibayar');
     }
 
     /**
-     * Profit Kotor Bulan Ini (Total Harga - Pengeluaran Modal)
+     * Profit Kotor Bulan Ini (Total Harga - Pengeluaran Modal) - EVENT TIME
      */
-    public function getGrossProfitMonth(): int
+    public function getGrossProfitMonthByCompletionDate(): int
     {
-        $month = Carbon::now()->month;
-        $year = Carbon::now()->year;
+        return Cache::remember('kpi_gross_profit_month', 60 * 15, function () {
+            $month = Carbon::now()->month;
+            $year = Carbon::now()->year;
 
-        // Omzet murni bulan ini
-        $omzet = (int) Pesanan::whereMonth('created_at', $month)
-            ->whereYear('created_at', $year)
-            ->where('status', 'selesai')
-            ->sum('total_harga');
+            // Omzet murni bulan ini dari pesanan selesai
+            $omzet = (int) Pesanan::whereMonth('waktu_selesai', $month)
+                ->whereYear('waktu_selesai', $year)
+                ->sum('total_harga');
 
-        // Pengeluaran terkait pesanan yang selesai bulan ini
-        $pengeluaran = (int) DB::table('pengeluaran_pesanan')
-            ->join('pesanan', 'pengeluaran_pesanan.pesanan_id', '=', 'pesanan.id')
-            ->whereMonth('pesanan.created_at', $month)
-            ->whereYear('pesanan.created_at', $year)
-            ->where('pesanan.status', 'selesai')
-            ->sum('pengeluaran_pesanan.nominal');
+            // Pengeluaran terkait pesanan yang selesai bulan ini
+            $pengeluaran = (int) DB::table('pengeluaran_pesanan')
+                ->join('pesanan', 'pengeluaran_pesanan.pesanan_id', '=', 'pesanan.id')
+                ->whereMonth('pesanan.waktu_selesai', $month)
+                ->whereYear('pesanan.waktu_selesai', $year)
+                ->sum('pengeluaran_pesanan.nominal');
 
-        return $omzet - $pengeluaran;
+            return $omzet - $pengeluaran;
+        });
     }
 
     /**
@@ -59,6 +59,7 @@ class DashboardKpiService
      */
     public function getPendingOrdersCount(): int
     {
+        // Cache is not needed, simple index scan
         return Pesanan::where('status', 'menunggu_pembayaran')->count();
     }
 
@@ -67,11 +68,13 @@ class DashboardKpiService
      */
     public function getRepeatCustomerCount(): int
     {
-        return DB::table('pesanan')
-            ->select('pelanggan_id')
-            ->groupBy('pelanggan_id')
-            ->havingRaw('COUNT(id) > 1')
-            ->get()
-            ->count();
+        return Cache::remember('kpi_repeat_customers', 60 * 10, function () {
+            return DB::table('pesanan')
+                ->select('pelanggan_id')
+                ->groupBy('pelanggan_id')
+                ->havingRaw('COUNT(id) > 1')
+                ->get()
+                ->count();
+        });
     }
 }
