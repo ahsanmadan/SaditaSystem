@@ -10,6 +10,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use App\Models\Pembayaran;
+use App\Services\ActivityLogger;
 use Illuminate\Support\Facades\Auth;
 
 class PembayaransTable
@@ -105,13 +106,16 @@ class PembayaransTable
                     ->visible(fn (Pembayaran $record) => $record->status === 'menunggu')
                     ->action(function (Pembayaran $record) {
                         $record->update([
-                            'status'            => 'lunas',
-                            'diverifikasi_oleh' => Auth::id(),
+                            'status'             => 'lunas',
+                            'diverifikasi_oleh'  => Auth::id(),
                             'waktu_diverifikasi' => now(),
                         ]);
 
-                        // Update status pesanan
+                        // Update status pesanan ke diproses
                         $record->pesanan()->update(['status' => 'diproses']);
+
+                        // Audit trail
+                        ActivityLogger::verifikasiPembayaran($record, 'lunas');
                     }),
 
                 // Tolak Pembayaran
@@ -138,6 +142,9 @@ class PembayaransTable
                             'diverifikasi_oleh'  => Auth::id(),
                             'waktu_diverifikasi' => now(),
                         ]);
+
+                        // Audit trail
+                        ActivityLogger::verifikasiPembayaran($record, 'ditolak', $data['alasan_penolakan']);
                     }),
 
                 EditAction::make()->label('Edit')->color('gray')->icon('heroicon-o-pencil'),
