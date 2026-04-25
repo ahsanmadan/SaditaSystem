@@ -2,11 +2,11 @@
 
 namespace App\Services\Analytics;
 
-use App\Models\Pesanan;
 use App\Models\Pembayaran;
+use App\Models\Pesanan;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class DashboardKpiService
 {
@@ -15,8 +15,10 @@ class DashboardKpiService
      */
     public function getOmzetTodayByCompletionDate(): int
     {
-        return (int) Pesanan::whereDate('waktu_selesai', Carbon::today())
-            ->sum('total_harga');
+        return Cache::remember('kpi_omzet_today', 60 * 5, function () {
+            return (int) Pesanan::whereDate('waktu_selesai', Carbon::today())
+                ->sum('total_harga');
+        });
     }
 
     /**
@@ -24,9 +26,11 @@ class DashboardKpiService
      */
     public function getCashInTodayByPaymentDate(): int
     {
-        return (int) Pembayaran::where('status', 'lunas')
-            ->whereDate('waktu_dibayar', Carbon::today())
-            ->sum('jumlah_dibayar');
+        return Cache::remember('kpi_kas_masuk_today', 60 * 5, function () {
+            return (int) Pembayaran::where('status', Pembayaran::STATUS_LUNAS)
+                ->whereDate('waktu_dibayar', Carbon::today())
+                ->sum('jumlah_dibayar');
+        });
     }
 
     /**
@@ -59,8 +63,9 @@ class DashboardKpiService
      */
     public function getPendingOrdersCount(): int
     {
-        // Cache is not needed, simple index scan
-        return Pesanan::where('status', 'menunggu_pembayaran')->count();
+        return Cache::remember('kpi_pending_orders', 60 * 5, function () {
+            return Pesanan::where('status', Pesanan::STATUS_MENUNGGU)->count();
+        });
     }
 
     /**
