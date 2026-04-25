@@ -2,17 +2,17 @@
 
 namespace App\Filament\Resources\Pesanans\Tables;
 
-use App\Models\Pelanggan;
-use Filament\Actions\Action;
+use App\Models\Pembayaran;
+use App\Models\Pesanan;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Carbon\Carbon;
 
 class PesanansTable
 {
@@ -20,7 +20,7 @@ class PesanansTable
     {
         return $table
             ->query(
-                \App\Models\Pesanan::query()->with(['pelanggan', 'riwayatPembayaran'])
+                Pesanan::query()->with(['pelanggan', 'riwayatPesanan'])
             )
             ->columns([
                 TextColumn::make('kode_pesanan')
@@ -38,38 +38,38 @@ class PesanansTable
                 BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
-                        'warning' => 'menunggu_pembayaran',
-                        'info'    => 'diproses',
-                        'primary' => 'siap_kirim',
-                        'success' => 'selesai',
-                        'danger'  => 'dibatalkan',
+                        'warning' => Pesanan::STATUS_MENUNGGU,
+                        'info' => Pesanan::STATUS_DIPROSES,
+                        'primary' => Pesanan::STATUS_SIAPKIRIM,
+                        'success' => Pesanan::STATUS_SELESAI,
+                        'danger' => Pesanan::STATUS_DIBATALKAN,
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'menunggu_pembayaran' => 'Menunggu Bayar',
-                        'diproses'            => 'Diproses',
-                        'siap_kirim'          => 'Siap Kirim',
-                        'selesai'             => 'Selesai',
-                        'dibatalkan'          => 'Dibatalkan',
-                        default               => $state,
+                        Pesanan::STATUS_MENUNGGU => 'Menunggu Bayar',
+                        Pesanan::STATUS_DIPROSES => 'Diproses',
+                        Pesanan::STATUS_SIAPKIRIM => 'Siap Kirim',
+                        Pesanan::STATUS_SELESAI => 'Selesai',
+                        Pesanan::STATUS_DIBATALKAN => 'Dibatalkan',
+                        default => $state,
                     }),
 
                 TextColumn::make('grand_total')
                     ->label('Grand Total')
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.'))
                     ->sortable(),
 
-                BadgeColumn::make('riwayatPembayaran.status')
+                BadgeColumn::make('riwayatPesanan.status')
                     ->label('Status Bayar')
                     ->colors([
-                        'warning' => 'menunggu',
-                        'success' => 'lunas',
-                        'danger'  => 'ditolak',
+                        'warning' => Pembayaran::STATUS_MENUNGGU,
+                        'success' => Pembayaran::STATUS_LUNAS,
+                        'danger' => Pembayaran::STATUS_DITOLAK,
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'menunggu' => 'Menunggu',
-                        'lunas'    => 'Lunas',
-                        'ditolak'  => 'Ditolak',
-                        default    => '-',
+                        Pembayaran::STATUS_MENUNGGU => 'Menunggu',
+                        Pembayaran::STATUS_LUNAS => 'Lunas',
+                        Pembayaran::STATUS_DITOLAK => 'Ditolak',
+                        default => '-',
                     })
                     ->separator(','),
 
@@ -85,7 +85,7 @@ class PesanansTable
                     ->timezone('Asia/Jakarta')
                     ->sortable()
                     ->color(fn ($record) => $record?->batas_waktu_bayar?->isPast()
-                        && $record->status === 'menunggu_pembayaran' ? 'danger' : null)
+                        && $record->status === Pesanan::STATUS_MENUNGGU ? 'danger' : null)
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
@@ -93,26 +93,26 @@ class PesanansTable
                 SelectFilter::make('status')
                     ->label('Status Pesanan')
                     ->options([
-                        'menunggu_pembayaran' => 'Menunggu Pembayaran',
-                        'diproses'            => 'Diproses',
-                        'siap_kirim'          => 'Siap Kirim',
-                        'selesai'             => 'Selesai',
-                        'dibatalkan'          => 'Dibatalkan',
+                        Pesanan::STATUS_MENUNGGU => 'Menunggu Pesanan',
+                        Pesanan::STATUS_DIPROSES => 'Diproses',
+                        Pesanan::STATUS_SIAPKIRIM => 'Siap Kirim',
+                        Pesanan::STATUS_SELESAI => 'Selesai',
+                        Pesanan::STATUS_DIBATALKAN => 'Dibatalkan',
                     ]),
 
                 Filter::make('overdue')
-                    ->label('Overdue Pembayaran')
+                    ->label('Overdue Pesanan')
                     ->query(fn (Builder $q) => $q
-                        ->where('status', 'menunggu_pembayaran')
+                        ->where('status', Pesanan::STATUS_MENUNGGU)
                         ->where('batas_waktu_bayar', '<', now())),
 
                 Filter::make('tanggal')
                     ->label('Tanggal Order')
                     ->form([
-                        \Filament\Forms\Components\DatePicker::make('dari')
+                        DatePicker::make('dari')
                             ->label('Dari Tanggal')
                             ->native(false),
-                        \Filament\Forms\Components\DatePicker::make('sampai')
+                        DatePicker::make('sampai')
                             ->label('Sampai Tanggal')
                             ->native(false),
                     ])
