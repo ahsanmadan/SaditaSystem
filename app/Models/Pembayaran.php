@@ -2,14 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Pembayaran extends Model
 {
     use HasFactory;
 
+    // ─── Konstanta Status Pembayaran ─────────────────────────────────────────
+    const STATUS_MENUNGGU = 'menunggu';
+
+    const STATUS_LUNAS = 'lunas';
+
+    const STATUS_DITOLAK = 'ditolak';
+
     protected $table = 'pembayaran';
+
     protected $guarded = ['id'];
 
     protected $casts = [

@@ -2,15 +2,16 @@
 
 namespace App\Filament\Resources\Pembayarans\Tables;
 
+use App\Models\Pembayaran;
+use App\Services\ActivityLogger;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use App\Models\Pembayaran;
-use App\Services\ActivityLogger;
 use Illuminate\Support\Facades\Auth;
 
 class PembayaransTable
@@ -38,21 +39,21 @@ class PembayaransTable
 
                 TextColumn::make('jumlah_dibayar')
                     ->label('Jumlah')
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.'))
                     ->sortable(),
 
                 BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
-                        'warning' => 'menunggu',
-                        'success' => 'lunas',
-                        'danger'  => 'ditolak',
+                        'warning' => Pembayaran::STATUS_MENUNGGU,
+                        'success' => Pembayaran::STATUS_LUNAS,
+                        'danger' => Pembayaran::STATUS_DITOLAK,
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'menunggu' => 'Menunggu Verifikasi',
-                        'lunas'    => 'Lunas',
-                        'ditolak'  => 'Ditolak',
-                        default    => $state,
+                        Pembayaran::STATUS_MENUNGGU => 'Menunggu Verifikasi',
+                        Pembayaran::STATUS_LUNAS => 'Lunas',
+                        Pembayaran::STATUS_DITOLAK => 'Ditolak',
+                        default => $state,
                     }),
 
                 ImageColumn::make('bukti_transfer')
@@ -79,18 +80,18 @@ class PembayaransTable
                 SelectFilter::make('status')
                     ->label('Status')
                     ->options([
-                        'menunggu' => 'Menunggu Verifikasi',
-                        'lunas'    => 'Lunas',
-                        'ditolak'  => 'Ditolak',
+                        Pembayaran::STATUS_MENUNGGU => 'Menunggu Verifikasi',
+                        Pembayaran::STATUS_LUNAS => 'Lunas',
+                        Pembayaran::STATUS_DITOLAK => 'Ditolak',
                     ]),
 
                 SelectFilter::make('metode')
                     ->label('Metode Bayar')
                     ->options([
-                        'transfer_bank'   => 'Transfer Bank',
-                        'cash'            => 'Cash',
-                        'qris'            => 'QRIS',
-                        'cod'             => 'COD',
+                        'transfer_bank' => 'Transfer Bank',
+                        'cash' => 'Cash',
+                        'qris' => 'QRIS',
+                        'cod' => 'COD',
                     ]),
             ])
             ->recordActions([
@@ -103,11 +104,11 @@ class PembayaransTable
                     ->modalHeading('Konfirmasi Verifikasi Pembayaran')
                     ->modalDescription('Yakin pembayaran ini sudah lunas? Aksi ini akan mencatat timestamp dan admin yang memverifikasi.')
                     ->modalSubmitActionLabel('Ya, Verifikasi Lunas')
-                    ->visible(fn (Pembayaran $record) => $record->status === 'menunggu')
+                    ->visible(fn (Pembayaran $record) => $record->status === Pembayaran::STATUS_MENUNGGU)
                     ->action(function (Pembayaran $record) {
                         $record->update([
-                            'status'             => 'lunas',
-                            'diverifikasi_oleh'  => Auth::id(),
+                            'status' => Pembayaran::STATUS_LUNAS,
+                            'diverifikasi_oleh' => Auth::id(),
                             'waktu_diverifikasi' => now(),
                         ]);
 
@@ -115,7 +116,7 @@ class PembayaransTable
                         $record->pesanan()->update(['status' => 'diproses']);
 
                         // Audit trail
-                        ActivityLogger::verifikasiPembayaran($record, 'lunas');
+                        ActivityLogger::verifikasiPembayaran($record, Pembayaran::STATUS_LUNAS);
                     }),
 
                 // Tolak Pembayaran
@@ -127,7 +128,7 @@ class PembayaransTable
                     ->modalHeading('Tolak Pembayaran')
                     ->modalDescription('Isi alasan penolakan yang akan disampaikan ke pelanggan.')
                     ->form([
-                        \Filament\Forms\Components\Textarea::make('alasan_penolakan')
+                        Textarea::make('alasan_penolakan')
                             ->label('Alasan Penolakan')
                             ->required()
                             ->minLength(10)
@@ -137,9 +138,9 @@ class PembayaransTable
                     ->visible(fn (Pembayaran $record) => $record->status === 'menunggu')
                     ->action(function (Pembayaran $record, array $data) {
                         $record->update([
-                            'status'             => 'ditolak',
-                            'alasan_penolakan'   => $data['alasan_penolakan'],
-                            'diverifikasi_oleh'  => Auth::id(),
+                            'status' => Pembayaran::STATUS_DITOLAK,
+                            'alasan_penolakan' => $data['alasan_penolakan'],
+                            'diverifikasi_oleh' => Auth::id(),
                             'waktu_diverifikasi' => now(),
                         ]);
 

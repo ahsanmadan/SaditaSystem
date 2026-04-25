@@ -2,14 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Pesanan extends Model
 {
     use HasFactory;
 
+    const STATUS_MENUNGGU = 'menunggu_pembayaran';
+
+    const STATUS_DIPROSES = 'diproses';
+
+    const STATUS_SELESAI = 'selesai';
+
+    const STATUS_SIAPKIRIM = 'siap_kirim';
+
+    const STATUS_DIBATALKAN = 'dibatalkan';
+
     protected $table = 'pesanan';
+
     protected $guarded = ['id'];
 
     protected $casts = [
