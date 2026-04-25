@@ -8,6 +8,7 @@ use App\Filament\Resources\Pembayarans\Schemas\PembayaranForm;
 use App\Filament\Resources\Pembayarans\Tables\PembayaransTable;
 use App\Models\Pembayaran;
 use BackedEnum;
+use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -18,6 +19,11 @@ class PembayaranResource extends Resource
     protected static ?string $model = Pembayaran::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->canDoOperasional();
+    }
 
     protected static ?string $navigationLabel = 'Verifikasi Pembayaran';
 
@@ -32,7 +38,7 @@ class PembayaranResource extends Resource
         return 'Operasional';
     }
 
-    public static function getSlug(?\Filament\Panel $panel = null): string
+    public static function getSlug(?Panel $panel = null): string
     {
         return 'pembayaran';
     }
@@ -56,7 +62,7 @@ class PembayaranResource extends Resource
     {
         return [
             'index' => ListPembayarans::route('/'),
-            'edit'  => EditPembayaran::route('/{record}/edit'),
+            'edit' => EditPembayaran::route('/{record}/edit'),
         ];
     }
 }
