@@ -20,7 +20,7 @@ class PesanansTable
     {
         return $table
             ->query(
-                Pesanan::query()->with(['pelanggan', 'riwayatPesanan'])
+                Pesanan::query()->with(['pelanggan', 'riwayatPembayaran'])
             )
             ->columns([
                 TextColumn::make('kode_pesanan')
@@ -58,7 +58,7 @@ class PesanansTable
                     ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.'))
                     ->sortable(),
 
-                BadgeColumn::make('riwayatPesanan.status')
+                BadgeColumn::make('riwayatPembayaran.status')
                     ->label('Status Bayar')
                     ->colors([
                         'warning' => Pembayaran::STATUS_MENUNGGU,
