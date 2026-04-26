@@ -29,9 +29,14 @@
 
 <body class="bg-[#FFFDFB] text-gray-900 overflow-x-hidden">
 
+<<<<<<< HEAD
+    {{-- Preloader --}}
+    <div id="preloader" class="fixed inset-0 z-[100] bg-[#FFFDFB] flex items-center justify-center transition-opacity duration-500">
+=======
     {{-- Page preloader --}}
     <div id="preloader"
         class="fixed inset-0 z-[100] bg-[#FFFDFB] flex items-center justify-center transition-opacity duration-500">
+>>>>>>> b01f92449ad248e3848ed0c046cf3939c4bb0c73
         <div class="flex flex-col items-center gap-4">
             <div class="text-3xl font-bold text-[#7A1F2B]" style="font-family:'Playfair Display',serif">Sadita</div>
             <div class="preloader-spinner"></div>

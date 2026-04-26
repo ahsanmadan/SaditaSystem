@@ -1,19 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- ═══════════════════════════════════════════ --}}
-    {{-- HERO SECTION - Full screen with auto-sliding background --}}
-    {{-- ═══════════════════════════════════════════ --}}
     <section id="beranda" class="relative h-screen overflow-hidden">
-        {{-- Background Slides --}}
         <div class="hero-slide active" style="background-image:url('/images/hero-1.png')"></div>
         <div class="hero-slide" style="background-image:url('/images/hero-2.png')"></div>
         <div class="hero-slide" style="background-image:url('/images/hero-3.png')"></div>
 
-        {{-- Dark Overlay --}}
         <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60 z-10"></div>
 
-        {{-- Hero Content --}}
         <div class="hero-content relative z-20 h-full flex items-center">
             <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 w-full">
                 <div class="max-w-xl">
@@ -52,7 +46,6 @@
             </div>
         </div>
 
-        {{-- Scroll Indicator --}}
         <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 animate-bounce">
             <span class="text-white/50 text-xs tracking-widest uppercase">Scroll</span>
             <svg class="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,9 +54,7 @@
         </div>
     </section>
 
-    {{-- ═══════════════════════════════════════════ --}}
-    {{-- KATEGORI --}}
-    {{-- ═══════════════════════════════════════════ --}}
+
     <section id="kategori" class="py-16 sm:py-20 bg-[#FFFDFB]">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <div class="text-center reveal-on-scroll">
@@ -94,9 +85,7 @@
         </div>
     </section>
 
-    {{-- ═══════════════════════════════════════════ --}}
-    {{-- PRODUK PER KATEGORI --}}
-    {{-- ═══════════════════════════════════════════ --}}
+
     <?php
     $products = [
         'greeting-board' => [
@@ -136,7 +125,6 @@
                         Semua →</a>
                 </div>
 
-                {{-- Horizontally scrollable product cards (Shopee-style small cards) --}}
                 <div
                     class="product-scroll-container flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide reveal-on-scroll">
                     @foreach ($category['items'] as $j => [$name, $price, $img])
@@ -167,9 +155,6 @@
         </section>
     @endforeach
 
-    {{-- ═══════════════════════════════════════════ --}}
-    {{-- KENAPA SADITA --}}
-    {{-- ═══════════════════════════════════════════ --}}
     <section class="py-16 sm:py-20 bg-[#2D1E1E] text-white overflow-hidden">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <div class="text-center reveal-on-scroll">
@@ -190,9 +175,6 @@
         </div>
     </section>
 
-    {{-- ═══════════════════════════════════════════ --}}
-    {{-- GALERI MASONRY --}}
-    {{-- ═══════════════════════════════════════════ --}}
     <section id="galeri" class="py-16 sm:py-20 bg-[#FFFDFB]">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <div class="text-center reveal-on-scroll">
@@ -222,9 +204,6 @@
         </div>
     </section>
 
-    {{-- ═══════════════════════════════════════════ --}}
-    {{-- CARA PESAN --}}
-    {{-- ═══════════════════════════════════════════ --}}
     <section id="cara-pesan" class="py-16 sm:py-20 bg-white">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <div class="text-center reveal-on-scroll">
@@ -247,9 +226,6 @@
         </div>
     </section>
 
-    {{-- ═══════════════════════════════════════════ --}}
-    {{-- LACAK PESANAN --}}
-    {{-- ═══════════════════════════════════════════ --}}
     <section id="lacak" class="py-16 sm:py-20 bg-gradient-to-br from-[#7A1F2B] to-[#4a1119] text-white">
         <div class="max-w-2xl mx-auto px-5 text-center">
             <div class="reveal-on-scroll">
@@ -267,9 +243,6 @@
         </div>
     </section>
 
-    {{-- ═══════════════════════════════════════════ --}}
-    {{-- TENTANG & KONTAK --}}
-    {{-- ═══════════════════════════════════════════ --}}
     <section id="tentang" class="py-16 sm:py-20 bg-[#FAF5F0]">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-10">
             <div class="reveal-on-scroll">
