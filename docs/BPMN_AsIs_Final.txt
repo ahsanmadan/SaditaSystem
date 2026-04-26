@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0"
+             id="Def_AsIs_V8" targetNamespace="http://saditasystem.com/bpmn/asis/v8">
+
+  <collaboration id="Collab_V8">
+    <participant id="Pool_Sadita" name="Proses Bisnis Pemesanan Sadita Decoration" processRef="Process_Sadita"/>
+  </collaboration>
+
+  <process id="Process_Sadita" isExecutable="false">
+    <laneSet id="LaneSet_Sadita">
+      <lane id="Lane_Pelanggan" name="Pelanggan">
+        <flowNodeRef>ev_s</flowNodeRef>
+        <flowNodeRef>ts_k_p1</flowNodeRef>
+        <flowNodeRef>ts_k_p2</flowNodeRef>
+        <flowNodeRef>ts_k_p3</flowNodeRef>
+        <flowNodeRef>gw_k_kat</flowNodeRef>
+        <flowNodeRef>ts_pb_p1</flowNodeRef>
+        <flowNodeRef>ts_pb_p2</flowNodeRef>
+        <flowNodeRef>ts_pb_p3</flowNodeRef>
+        <flowNodeRef>ts_ht_p1</flowNodeRef>
+        <flowNodeRef>ts_ht_p2</flowNodeRef>
+        <flowNodeRef>ts_ht_p3</flowNodeRef>
+        <flowNodeRef>ts_dk_p1</flowNodeRef>
+        <flowNodeRef>ts_dk_p2</flowNodeRef>
+        <flowNodeRef>ts_dk_p3</flowNodeRef>
+        <flowNodeRef>gw_merge</flowNodeRef>
+        <flowNodeRef>gw_by_setuju</flowNodeRef>
+        <flowNodeRef>ev_by_batal</flowNodeRef>
+        <flowNodeRef>ts_by_p1</flowNodeRef>
+        <flowNodeRef>ts_by_p2</flowNodeRef>
+        <flowNodeRef>ts_by_p3</flowNodeRef>
+        <flowNodeRef>ts_by_p4</flowNodeRef>
+        <flowNodeRef>ts_pr_p1</flowNodeRef>
+        <flowNodeRef>ts_st_p1</flowNodeRef>
+        <flowNodeRef>ts_pg_p1</flowNodeRef>
+      </lane>
+      <lane id="Lane_Admin" name="Admin / Pemilik Sadita Decoration">
+        <flowNodeRef>ts_k_a1</flowNodeRef>
+        <flowNodeRef>ts_k_a2</flowNodeRef>
+        <flowNodeRef>gw_k_ada</flowNodeRef>
+        <flowNodeRef>ts_k_tolak</flowNodeRef>
+        <flowNodeRef>ev_k_fail</flowNodeRef>
+        <flowNodeRef>ts_k_balas</flowNodeRef>
+        <flowNodeRef>ts_pb_a1</flowNodeRef>
+        <flowNodeRef>ts_pb_a2</flowNodeRef>
+        <flowNodeRef>ts_pb_a3</flowNodeRef>
+        <flowNodeRef>ts_ht_a1</flowNodeRef>
+        <flowNodeRef>ts_ht_a2</flowNodeRef>
+        <flowNodeRef>ts_ht_a3</flowNodeRef>
+        <flowNodeRef>ts_dk_a1</flowNodeRef>
+        <flowNodeRef>ts_dk_a2</flowNodeRef>
+        <flowNodeRef>ts_dk_a3</flowNodeRef>
+        <flowNodeRef>ts_by_a1</flowNodeRef>
+        <flowNodeRef>gw_by_valid</flowNodeRef>
+        <flowNodeRef>ts_by_minta</flowNodeRef>
+        <flowNodeRef>ts_by_konfirm</flowNodeRef>
+        <flowNodeRef>gw_by_nota</flowNodeRef>
+        <flowNodeRef>ts_by_nota</flowNodeRef>
+        <flowNodeRef>ts_by_a2</flowNodeRef>
+        <flowNodeRef>ts_pr_a1</flowNodeRef>
+        <flowNodeRef>ts_pr_a2</flowNodeRef>
+        <flowNodeRef>ts_pr_a3</flowNodeRef>
+        <flowNodeRef>ts_pr_a4</flowNodeRef>
+        <flowNodeRef>ts_pr_a5</flowNodeRef>
+        <flowNodeRef>ts_st_a1</flowNodeRef>
+        <flowNodeRef>ts_st_a2</flowNodeRef>
+        <flowNodeRef>ts_pg_a1</flowNodeRef>
+        <flowNodeRef>ts_pg_a2</flowNodeRef>
+        <flowNodeRef>gw_pg_rusak</flowNodeRef>
+        <flowNodeRef>ts_pg_mediasi</flowNodeRef>
+        <flowNodeRef>ev_end_mediasi</flowNodeRef>
+        <flowNodeRef>ev_end_ok</flowNodeRef>
+      </lane>
+    </laneSet>
+
+    <!-- KONSULTASI -->
+    <startEvent id="ev_s" name="Pelanggan butuh jasa dekorasi / seserahan"><outgoing>f1</outgoing></startEvent>
+    <userTask id="ts_k_p1" name="Mencari informasi produk via Instagram / Rekomendasi"><incoming>f1</incoming><outgoing>f2</outgoing></userTask>
+    <sendTask id="ts_k_p2" name="Menghubungi Admin via WhatsApp untuk konsultasi"><incoming>f2</incoming><outgoing>f3</outgoing></sendTask>
+    <receiveTask id="ts_k_a1" name="Membaca dan memahami kebutuhan pelanggan"><incoming>f3</incoming><outgoing>f4</outgoing></receiveTask>
+    <userTask id="ts_k_a2" name="Mengecek ketersediaan stok bahan dan jadwal"><incoming>f4</incoming><outgoing>f5</outgoing></userTask>
+    <exclusiveGateway id="gw_k_ada" name="Stok &amp; Jadwal Ada?"><incoming>f5</incoming><outgoing>f_k_no</outgoing><outgoing>f_k_yes</outgoing></exclusiveGateway>
+    <sendTask id="ts_k_tolak" name="Membalas WA: stok habis / jadwal penuh"><incoming>f_k_no</incoming><outgoing>f_k_fail</outgoing></sendTask>
+    <endEvent id="ev_k_fail" name="Pesanan Dibatalkan"><incoming>f_k_fail</incoming></endEvent>
+    <sendTask id="ts_k_balas" name="Mengirim katalog 3 kategori &amp; estimasi harga"><incoming>f_k_yes</incoming><outgoing>f6</outgoing></sendTask>
+    <receiveTask id="ts_k_p3" name="Menerima dan mempelajari katalog dari Admin"><incoming>f6</incoming><outgoing>f7</outgoing></receiveTask>
+    <exclusiveGateway id="gw_k_kat" name="Pilih Kategori?"><incoming>f7</incoming><outgoing>f_kat_pb</outgoing><outgoing>f_kat_ht</outgoing><outgoing>f_kat_dk</outgoing></exclusiveGateway>
+
+    <!-- PAPAN BUNGA -->
+    <sendTask id="ts_pb_p1" name="Menyampaikan jenis rangkaian, warna, ucapan"><incoming>f_kat_pb</incoming><outgoing>f_pb1</outgoing></sendTask>
+    <userTask id="ts_pb_p2" name="Memilih ukuran: Besar, Sedang, Kecil"><incoming>f_pb1</incoming><outgoing>f_pb2</outgoing></userTask>
+    <manualTask id="ts_pb_a1" name="Mencatat detail &amp; cek stok bunga potong"><incoming>f_pb2</incoming><outgoing>f_pb3</outgoing></manualTask>
+    <userTask id="ts_pb_a2" name="Membuat sketsa rancangan papan bunga"><incoming>f_pb3</incoming><outgoing>f_pb4</outgoing></userTask>
+    <userTask id="ts_pb_a3" name="Menghitung estimasi harga total"><incoming>f_pb4</incoming><outgoing>f_pb5</outgoing></userTask>
+    <userTask id="ts_pb_p3" name="Menyetujui desain dan harga papan bunga"><incoming>f_pb5</incoming><outgoing>f_pb_merge</outgoing></userTask>
+
+    <!-- HANTARAN -->
+    <sendTask id="ts_ht_p1" name="Menyampaikan isi set seserahan &amp; tema"><incoming>f_kat_ht</incoming><outgoing>f_ht1</outgoing></sendTask>
+    <userTask id="ts_ht_p2" name="Memilih jenis wadah/packaging"><incoming>f_ht1</incoming><outgoing>f_ht2</outgoing></userTask>
+    <manualTask id="ts_ht_a1" name="Mencatat detail &amp; cek ketersediaan item"><incoming>f_ht2</incoming><outgoing>f_ht3</outgoing></manualTask>
+    <userTask id="ts_ht_a2" name="Membuat referensi foto susunan hantaran"><incoming>f_ht3</incoming><outgoing>f_ht4</outgoing></userTask>
+    <userTask id="ts_ht_a3" name="Menghitung biaya per set"><incoming>f_ht4</incoming><outgoing>f_ht5</outgoing></userTask>
+    <userTask id="ts_ht_p3" name="Menyetujui susunan dan harga per set"><incoming>f_ht5</incoming><outgoing>f_ht_merge</outgoing></userTask>
+
+    <!-- DEKORASI -->
+    <sendTask id="ts_dk_p1" name="Menyampaikan konsep &amp; tema dekorasi"><incoming>f_kat_dk</incoming><outgoing>f_dk1</outgoing></sendTask>
+    <sendTask id="ts_dk_p2" name="Menginformasikan ukuran venue &amp; tanggal"><incoming>f_dk1</incoming><outgoing>f_dk2</outgoing></sendTask>
+    <manualTask id="ts_dk_a1" name="Survei &amp; diskusi konsep layout"><incoming>f_dk2</incoming><outgoing>f_dk3</outgoing></manualTask>
+    <userTask id="ts_dk_a2" name="Mengecek jadwal tim dekorator"><incoming>f_dk3</incoming><outgoing>f_dk4</outgoing></userTask>
+    <userTask id="ts_dk_a3" name="Membuat proposal desain &amp; estimasi biaya"><incoming>f_dk4</incoming><outgoing>f_dk5</outgoing></userTask>
+    <userTask id="ts_dk_p3" name="Menyetujui proposal konsep dan biaya"><incoming>f_dk5</incoming><outgoing>f_dk_merge</outgoing></userTask>
+
+    <!-- MERGE & PEMBAYARAN -->
+    <exclusiveGateway id="gw_merge" name="Lanjut Pembayaran"><incoming>f_pb_merge</incoming><incoming>f_ht_merge</incoming><incoming>f_dk_merge</incoming><outgoing>f_merge_out</outgoing></exclusiveGateway>
+    <exclusiveGateway id="gw_by_setuju" name="Setuju Total Harga?"><incoming>f_merge_out</incoming><outgoing>f_by_no</outgoing><outgoing>f_by_yes</outgoing></exclusiveGateway>
+    <endEvent id="ev_by_batal" name="Transaksi Batal"><incoming>f_by_no</incoming></endEvent>
+    <userTask id="ts_by_p1" name="Melakukan transfer lunas ke rekening Sadita"><incoming>f_by_yes</incoming><incoming>f_valid_loop</incoming><outgoing>f_by1</outgoing></userTask>
+    <userTask id="ts_by_p2" name="Memfoto struk bukti transfer"><incoming>f_by1</incoming><outgoing>f_by2</outgoing></userTask>
+    <sendTask id="ts_by_p3" name="Mengirim bukti transfer ke Admin"><incoming>f_by2</incoming><outgoing>f_by3</outgoing></sendTask>
+    <userTask id="ts_by_a1" name="Mengecek mutasi rekening bank"><incoming>f_by3</incoming><outgoing>f_by4</outgoing></userTask>
+    <exclusiveGateway id="gw_by_valid" name="Transfer Valid?"><incoming>f_by4</incoming><outgoing>f_valid_no</outgoing><outgoing>f_valid_yes</outgoing></exclusiveGateway>
+    <sendTask id="ts_by_minta" name="Meminta kirim ulang transfer"><incoming>f_valid_no</incoming><outgoing>f_valid_loop</outgoing></sendTask>
+    <userTask id="ts_by_konfirm" name="Mengonfirmasi pesanan valid &amp; dikunci"><incoming>f_valid_yes</incoming><outgoing>f_by5</outgoing></userTask>
+    
+    <exclusiveGateway id="gw_by_nota" name="Pelanggan Minta Nota?"><incoming>f_by5</incoming><outgoing>f_nota_yes</outgoing><outgoing>f_nota_no</outgoing></exclusiveGateway>
+    <manualTask id="ts_by_nota" name="Membuat nota pesanan (opsional)"><incoming>f_nota_yes</incoming><outgoing>f_nota_catat</outgoing></manualTask>
+    <userTask id="ts_by_a2" name="Mencatat proyek, anggaran, dan modal di Catatan Digital"><incoming>f_nota_catat</incoming><incoming>f_nota_no</incoming><outgoing>f_by6</outgoing></userTask>
+    <receiveTask id="ts_by_p4" name="Menerima WA pesanan berhasil dikunci"><incoming>f_by6</incoming><outgoing>f_pr1</outgoing></receiveTask>
+
+    <!-- PRODUKSI -->
+    <manualTask id="ts_pr_a1" name="Menyiapkan bahan baku pesanan"><incoming>f_pr1</incoming><outgoing>f_pr2</outgoing></manualTask>
+    <manualTask id="ts_pr_a2" name="Merakit dan memproduksi pesanan"><incoming>f_pr2</incoming><outgoing>f_pr3</outgoing></manualTask>
+    <manualTask id="ts_pr_a3" name="Mengecek QC (kerapian &amp; kelengkapan)"><incoming>f_pr3</incoming><outgoing>f_pr4</outgoing></manualTask>
+    <manualTask id="ts_pr_a4" name="Mengemas produk dengan aman"><incoming>f_pr4</incoming><outgoing>f_pr5</outgoing></manualTask>
+    <sendTask id="ts_pr_a5" name="Mengabari Pelanggan WA produk siap &amp; jadwalkan antar"><incoming>f_pr5</incoming><outgoing>f_pr6</outgoing></sendTask>
+    <receiveTask id="ts_pr_p1" name="Menerima notifikasi &amp; konfirmasi jadwal antar"><incoming>f_pr6</incoming><outgoing>f_st1</outgoing></receiveTask>
+
+    <!-- PENGANTARAN & SETUP -->
+    <manualTask id="ts_st_a1" name="Mengantar pesanan ke lokasi pelanggan/venue (100% oleh Sadita)"><incoming>f_st1</incoming><outgoing>f_st2</outgoing></manualTask>
+    <manualTask id="ts_st_a2" name="Melakukan setup / penataan dekorasi / papan bunga"><incoming>f_st2</incoming><outgoing>f_st3</outgoing></manualTask>
+    <userTask id="ts_st_p1" name="Menerima dan memeriksa kesesuaian hasil setup"><incoming>f_st3</incoming><outgoing>f_pg1</outgoing></userTask>
+
+    <!-- PENGEMBALIAN & MEDIASI -->
+    <sendTask id="ts_pg_p1" name="Mengonfirmasi acara selesai, barang sewaan siap dijemput"><incoming>f_pg1</incoming><outgoing>f_pg2</outgoing></sendTask>
+    <manualTask id="ts_pg_a1" name="Menjemput dan membongkar barang sewaan di lokasi"><incoming>f_pg2</incoming><outgoing>f_pg3</outgoing></manualTask>
+    <manualTask id="ts_pg_a2" name="Memeriksa kondisi barang (Papan Bunga / Box Hantaran)"><incoming>f_pg3</incoming><outgoing>f_pg4</outgoing></manualTask>
+    <exclusiveGateway id="gw_pg_rusak" name="Ada Kerusakan?"><incoming>f_pg4</incoming><outgoing>f_pg_yes</outgoing><outgoing>f_pg_no</outgoing></exclusiveGateway>
+    <manualTask id="ts_pg_mediasi" name="Mediasi &amp; klaim ganti rugi kerusakan ke pelanggan"><incoming>f_pg_yes</incoming><outgoing>f_pg_med_end</outgoing></manualTask>
+    <endEvent id="ev_end_mediasi" name="Selesai dgn Ganti Rugi"><incoming>f_pg_med_end</incoming></endEvent>
+    <endEvent id="ev_end_ok" name="Proses Selesai Sempurna"><incoming>f_pg_no</incoming></endEvent>
+
+    <!-- SEQUENCE FLOWS -->
+    <sequenceFlow id="f1" sourceRef="ev_s" targetRef="ts_k_p1"/>
+    <sequenceFlow id="f2" sourceRef="ts_k_p1" targetRef="ts_k_p2"/>
+    <sequenceFlow id="f3" sourceRef="ts_k_p2" targetRef="ts_k_a1" name="Kirim WA"/>
+    <sequenceFlow id="f4" sourceRef="ts_k_a1" targetRef="ts_k_a2"/>
+    <sequenceFlow id="f5" sourceRef="ts_k_a2" targetRef="gw_k_ada"/>
+    <sequenceFlow id="f_k_no" sourceRef="gw_k_ada" targetRef="ts_k_tolak" name="TIDAK"/>
+    <sequenceFlow id="f_k_fail" sourceRef="ts_k_tolak" targetRef="ev_k_fail"/>
+    <sequenceFlow id="f_k_yes" sourceRef="gw_k_ada" targetRef="ts_k_balas" name="YA"/>
+    <sequenceFlow id="f6" sourceRef="ts_k_balas" targetRef="ts_k_p3" name="Katalog dikirim"/>
+    <sequenceFlow id="f7" sourceRef="ts_k_p3" targetRef="gw_k_kat"/>
+
+    <sequenceFlow id="f_kat_pb" sourceRef="gw_k_kat" targetRef="ts_pb_p1" name="Papan Bunga"/>
+    <sequenceFlow id="f_pb1" sourceRef="ts_pb_p1" targetRef="ts_pb_p2"/>
+    <sequenceFlow id="f_pb2" sourceRef="ts_pb_p2" targetRef="ts_pb_a1" name="Detail dikirim"/>
+    <sequenceFlow id="f_pb3" sourceRef="ts_pb_a1" targetRef="ts_pb_a2"/>
+    <sequenceFlow id="f_pb4" sourceRef="ts_pb_a2" targetRef="ts_pb_a3"/>
+    <sequenceFlow id="f_pb5" sourceRef="ts_pb_a3" targetRef="ts_pb_p3" name="Harga dikirim"/>
+    <sequenceFlow id="f_pb_merge" sourceRef="ts_pb_p3" targetRef="gw_merge"/>
+
+    <sequenceFlow id="f_kat_ht" sourceRef="gw_k_kat" targetRef="ts_ht_p1" name="Hantaran"/>
+    <sequenceFlow id="f_ht1" sourceRef="ts_ht_p1" targetRef="ts_ht_p2"/>
+    <sequenceFlow id="f_ht2" sourceRef="ts_ht_p2" targetRef="ts_ht_a1" name="Detail dikirim"/>
+    <sequenceFlow id="f_ht3" sourceRef="ts_ht_a1" targetRef="ts_ht_a2"/>
+    <sequenceFlow id="f_ht4" sourceRef="ts_ht_a2" targetRef="ts_ht_a3"/>
+    <sequenceFlow id="f_ht5" sourceRef="ts_ht_a3" targetRef="ts_ht_p3" name="Harga dikirim"/>
+    <sequenceFlow id="f_ht_merge" sourceRef="ts_ht_p3" targetRef="gw_merge"/>
+
+    <sequenceFlow id="f_kat_dk" sourceRef="gw_k_kat" targetRef="ts_dk_p1" name="Dekorasi"/>
+    <sequenceFlow id="f_dk1" sourceRef="ts_dk_p1" targetRef="ts_dk_p2"/>
+    <sequenceFlow id="f_dk2" sourceRef="ts_dk_p2" targetRef="ts_dk_a1" name="Detail dikirim"/>
+    <sequenceFlow id="f_dk3" sourceRef="ts_dk_a1" targetRef="ts_dk_a2"/>
+    <sequenceFlow id="f_dk4" sourceRef="ts_dk_a2" targetRef="ts_dk_a3"/>
+    <sequenceFlow id="f_dk5" sourceRef="ts_dk_a3" targetRef="ts_dk_p3" name="Proposal dikirim"/>
+    <sequenceFlow id="f_dk_merge" sourceRef="ts_dk_p3" targetRef="gw_merge"/>
+
+    <sequenceFlow id="f_merge_out" sourceRef="gw_merge" targetRef="gw_by_setuju"/>
+    <sequenceFlow id="f_by_no" sourceRef="gw_by_setuju" targetRef="ev_by_batal" name="TIDAK SETUJU"/>
+    <sequenceFlow id="f_by_yes" sourceRef="gw_by_setuju" targetRef="ts_by_p1" name="SETUJU"/>
+    <sequenceFlow id="f_by1" sourceRef="ts_by_p1" targetRef="ts_by_p2"/>
+    <sequenceFlow id="f_by2" sourceRef="ts_by_p2" targetRef="ts_by_p3"/>
+    <sequenceFlow id="f_by3" sourceRef="ts_by_p3" targetRef="ts_by_a1" name="Bukti terkirim"/>
+    <sequenceFlow id="f_by4" sourceRef="ts_by_a1" targetRef="gw_by_valid"/>
+    <sequenceFlow id="f_valid_no" sourceRef="gw_by_valid" targetRef="ts_by_minta" name="TIDAK VALID"/>
+    <sequenceFlow id="f_valid_loop" sourceRef="ts_by_minta" targetRef="ts_by_p1" name="Transfer ulang"/>
+    <sequenceFlow id="f_valid_yes" sourceRef="gw_by_valid" targetRef="ts_by_konfirm" name="VALID"/>
+    
+    <sequenceFlow id="f_by5" sourceRef="ts_by_konfirm" targetRef="gw_by_nota"/>
+    <sequenceFlow id="f_nota_yes" sourceRef="gw_by_nota" targetRef="ts_by_nota" name="YA"/>
+    <sequenceFlow id="f_nota_no" sourceRef="gw_by_nota" targetRef="ts_by_a2" name="TIDAK"/>
+    <sequenceFlow id="f_nota_catat" sourceRef="ts_by_nota" targetRef="ts_by_a2"/>
+    
+    <sequenceFlow id="f_by6" sourceRef="ts_by_a2" targetRef="ts_by_p4" name="WA dikirim"/>
+
+    <sequenceFlow id="f_pr1" sourceRef="ts_by_p4" targetRef="ts_pr_a1"/>
+    <sequenceFlow id="f_pr2" sourceRef="ts_pr_a1" targetRef="ts_pr_a2"/>
+    <sequenceFlow id="f_pr3" sourceRef="ts_pr_a2" targetRef="ts_pr_a3"/>
+    <sequenceFlow id="f_pr4" sourceRef="ts_pr_a3" targetRef="ts_pr_a4"/>
+    <sequenceFlow id="f_pr5" sourceRef="ts_pr_a4" targetRef="ts_pr_a5"/>
+    <sequenceFlow id="f_pr6" sourceRef="ts_pr_a5" targetRef="ts_pr_p1" name="Notif WA &amp; Jadwal"/>
+
+    <sequenceFlow id="f_st1" sourceRef="ts_pr_p1" targetRef="ts_st_a1" name="Sadita Antar"/>
+    <sequenceFlow id="f_st2" sourceRef="ts_st_a1" targetRef="ts_st_a2"/>
+    <sequenceFlow id="f_st3" sourceRef="ts_st_a2" targetRef="ts_st_p1" name="Barang disetup"/>
+
+    <sequenceFlow id="f_pg1" sourceRef="ts_st_p1" targetRef="ts_pg_p1" name="Acara Selesai"/>
+    <sequenceFlow id="f_pg2" sourceRef="ts_pg_p1" targetRef="ts_pg_a1" name="Konfirmasi Jemput"/>
+    <sequenceFlow id="f_pg3" sourceRef="ts_pg_a1" targetRef="ts_pg_a2"/>
+    <sequenceFlow id="f_pg4" sourceRef="ts_pg_a2" targetRef="gw_pg_rusak"/>
+    
+    <sequenceFlow id="f_pg_yes" sourceRef="gw_pg_rusak" targetRef="ts_pg_mediasi" name="YA (Rusak)"/>
+    <sequenceFlow id="f_pg_med_end" sourceRef="ts_pg_mediasi" targetRef="ev_end_mediasi"/>
+    <sequenceFlow id="f_pg_no" sourceRef="gw_pg_rusak" targetRef="ev_end_ok" name="TIDAK (Aman)"/>
+  </process>
+
+  <!-- DIAGRAM INTERCHANGE -->
+  <bpmndi:BPMNDiagram id="Diag_V8">
+    <bpmndi:BPMNPlane id="Plane_V8" bpmnElement="Collab_V8">
+
+      <!-- Pool & Lanes (No Color) -->
+      <bpmndi:BPMNShape id="di_Pool" bpmnElement="Pool_Sadita" isHorizontal="true"><dc:Bounds x="10" y="50" width="5550" height="800"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_LaneP" bpmnElement="Lane_Pelanggan" isHorizontal="true"><dc:Bounds x="40" y="50" width="5520" height="400"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_LaneA" bpmnElement="Lane_Admin" isHorizontal="true"><dc:Bounds x="40" y="450" width="5520" height="400"/></bpmndi:BPMNShape>
+
+      <!-- Konsultasi (BLUE) -->
+      <bpmndi:BPMNShape id="di_ev_s" bpmnElement="ev_s" bioc:stroke="#1565C0" bioc:fill="#BBDEFB"><dc:Bounds x="60" y="232" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_k_p1" bpmnElement="ts_k_p1" bioc:stroke="#1565C0" bioc:fill="#BBDEFB"><dc:Bounds x="140" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_k_p2" bpmnElement="ts_k_p2" bioc:stroke="#1565C0" bioc:fill="#BBDEFB"><dc:Bounds x="340" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_k_a1" bpmnElement="ts_k_a1" bioc:stroke="#1565C0" bioc:fill="#BBDEFB"><dc:Bounds x="340" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_k_a2" bpmnElement="ts_k_a2" bioc:stroke="#1565C0" bioc:fill="#BBDEFB"><dc:Bounds x="540" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_gw_ada" bpmnElement="gw_k_ada" bioc:stroke="#616161" bioc:fill="#F5F5F5"><dc:Bounds x="740" y="625" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_k_tolak" bpmnElement="ts_k_tolak" bioc:stroke="#B71C1C" bioc:fill="#FFCDD2"><dc:Bounds x="740" y="720" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_ev_fail" bpmnElement="ev_k_fail" bioc:stroke="#B71C1C" bioc:fill="#FFCDD2"><dc:Bounds x="940" y="732" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_k_balas" bpmnElement="ts_k_balas" bioc:stroke="#1565C0" bioc:fill="#BBDEFB"><dc:Bounds x="840" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_k_p3" bpmnElement="ts_k_p3" bioc:stroke="#1565C0" bioc:fill="#BBDEFB"><dc:Bounds x="840" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_gw_kat" bpmnElement="gw_k_kat" bioc:stroke="#616161" bioc:fill="#F5F5F5"><dc:Bounds x="1040" y="225" width="50" height="50"/></bpmndi:BPMNShape>
+
+      <!-- Papan Bunga (PINK) -->
+      <bpmndi:BPMNShape id="di_pb_p1" bpmnElement="ts_pb_p1" bioc:stroke="#880E4F" bioc:fill="#F8BBD0"><dc:Bounds x="1160" y="100" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pb_p2" bpmnElement="ts_pb_p2" bioc:stroke="#880E4F" bioc:fill="#F8BBD0"><dc:Bounds x="1360" y="100" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pb_a1" bpmnElement="ts_pb_a1" bioc:stroke="#880E4F" bioc:fill="#F8BBD0"><dc:Bounds x="1360" y="500" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pb_a2" bpmnElement="ts_pb_a2" bioc:stroke="#880E4F" bioc:fill="#F8BBD0"><dc:Bounds x="1560" y="500" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pb_a3" bpmnElement="ts_pb_a3" bioc:stroke="#880E4F" bioc:fill="#F8BBD0"><dc:Bounds x="1760" y="500" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pb_p3" bpmnElement="ts_pb_p3" bioc:stroke="#880E4F" bioc:fill="#F8BBD0"><dc:Bounds x="1760" y="100" width="160" height="60"/></bpmndi:BPMNShape>
+
+      <!-- Hantaran (PURPLE) -->
+      <bpmndi:BPMNShape id="di_ht_p1" bpmnElement="ts_ht_p1" bioc:stroke="#4A148C" bioc:fill="#E1BEE7"><dc:Bounds x="1160" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_ht_p2" bpmnElement="ts_ht_p2" bioc:stroke="#4A148C" bioc:fill="#E1BEE7"><dc:Bounds x="1360" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_ht_a1" bpmnElement="ts_ht_a1" bioc:stroke="#4A148C" bioc:fill="#E1BEE7"><dc:Bounds x="1360" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_ht_a2" bpmnElement="ts_ht_a2" bioc:stroke="#4A148C" bioc:fill="#E1BEE7"><dc:Bounds x="1560" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_ht_a3" bpmnElement="ts_ht_a3" bioc:stroke="#4A148C" bioc:fill="#E1BEE7"><dc:Bounds x="1760" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_ht_p3" bpmnElement="ts_ht_p3" bioc:stroke="#4A148C" bioc:fill="#E1BEE7"><dc:Bounds x="1760" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+
+      <!-- Dekorasi (ORANGE) -->
+      <bpmndi:BPMNShape id="di_dk_p1" bpmnElement="ts_dk_p1" bioc:stroke="#BF360C" bioc:fill="#FFCCBC"><dc:Bounds x="1160" y="340" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_dk_p2" bpmnElement="ts_dk_p2" bioc:stroke="#BF360C" bioc:fill="#FFCCBC"><dc:Bounds x="1360" y="340" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_dk_a1" bpmnElement="ts_dk_a1" bioc:stroke="#BF360C" bioc:fill="#FFCCBC"><dc:Bounds x="1360" y="740" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_dk_a2" bpmnElement="ts_dk_a2" bioc:stroke="#BF360C" bioc:fill="#FFCCBC"><dc:Bounds x="1560" y="740" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_dk_a3" bpmnElement="ts_dk_a3" bioc:stroke="#BF360C" bioc:fill="#FFCCBC"><dc:Bounds x="1760" y="740" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_dk_p3" bpmnElement="ts_dk_p3" bioc:stroke="#BF360C" bioc:fill="#FFCCBC"><dc:Bounds x="1760" y="340" width="160" height="60"/></bpmndi:BPMNShape>
+
+      <!-- Merge & Pembayaran (GREEN) -->
+      <bpmndi:BPMNShape id="di_gw_merge" bpmnElement="gw_merge" bioc:stroke="#616161" bioc:fill="#F5F5F5"><dc:Bounds x="1960" y="225" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_gw_by_setuju" bpmnElement="gw_by_setuju" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="2060" y="225" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_ev_by_batal" bpmnElement="ev_by_batal" bioc:stroke="#B71C1C" bioc:fill="#FFCDD2"><dc:Bounds x="2066" y="120" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_by_p1" bpmnElement="ts_by_p1" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="2160" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_by_p2" bpmnElement="ts_by_p2" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="2360" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_by_p3" bpmnElement="ts_by_p3" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="2560" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_by_a1" bpmnElement="ts_by_a1" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="2560" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_gw_valid" bpmnElement="gw_by_valid" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="2760" y="625" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_by_minta" bpmnElement="ts_by_minta" bioc:stroke="#B71C1C" bioc:fill="#FFCDD2"><dc:Bounds x="2705" y="720" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_by_konf" bpmnElement="ts_by_konfirm" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="2860" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_gw_nota" bpmnElement="gw_by_nota" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="3060" y="625" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_by_nota" bpmnElement="ts_by_nota" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="3005" y="720" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_by_a2" bpmnElement="ts_by_a2" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="3260" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_by_p4" bpmnElement="ts_by_p4" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="3260" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+
+      <!-- Produksi (YELLOW) -->
+      <bpmndi:BPMNShape id="di_pr_a1" bpmnElement="ts_pr_a1" bioc:stroke="#F57F17" bioc:fill="#FFF9C4"><dc:Bounds x="3460" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pr_a2" bpmnElement="ts_pr_a2" bioc:stroke="#F57F17" bioc:fill="#FFF9C4"><dc:Bounds x="3660" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pr_a3" bpmnElement="ts_pr_a3" bioc:stroke="#F57F17" bioc:fill="#FFF9C4"><dc:Bounds x="3860" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pr_a4" bpmnElement="ts_pr_a4" bioc:stroke="#F57F17" bioc:fill="#FFF9C4"><dc:Bounds x="4060" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pr_a5" bpmnElement="ts_pr_a5" bioc:stroke="#F57F17" bioc:fill="#FFF9C4"><dc:Bounds x="4260" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pr_p1" bpmnElement="ts_pr_p1" bioc:stroke="#F57F17" bioc:fill="#FFF9C4"><dc:Bounds x="4260" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+
+      <!-- Pengantaran & Setup (TEAL) -->
+      <bpmndi:BPMNShape id="di_st_a1" bpmnElement="ts_st_a1" bioc:stroke="#004D40" bioc:fill="#B2DFDB"><dc:Bounds x="4460" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_st_a2" bpmnElement="ts_st_a2" bioc:stroke="#004D40" bioc:fill="#B2DFDB"><dc:Bounds x="4660" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_st_p1" bpmnElement="ts_st_p1" bioc:stroke="#004D40" bioc:fill="#B2DFDB"><dc:Bounds x="4660" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+
+      <!-- Pengembalian & Mediasi (BROWN) -->
+      <bpmndi:BPMNShape id="di_pg_p1" bpmnElement="ts_pg_p1" bioc:stroke="#5D4037" bioc:fill="#D7CCC8"><dc:Bounds x="4860" y="220" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pg_a1" bpmnElement="ts_pg_a1" bioc:stroke="#5D4037" bioc:fill="#D7CCC8"><dc:Bounds x="4860" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pg_a2" bpmnElement="ts_pg_a2" bioc:stroke="#5D4037" bioc:fill="#D7CCC8"><dc:Bounds x="5060" y="620" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_gw_rusak" bpmnElement="gw_pg_rusak" bioc:stroke="#5D4037" bioc:fill="#D7CCC8"><dc:Bounds x="5260" y="625" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_pg_mediasi" bpmnElement="ts_pg_mediasi" bioc:stroke="#B71C1C" bioc:fill="#FFCDD2"><dc:Bounds x="5205" y="720" width="160" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_ev_end_med" bpmnElement="ev_end_mediasi" bioc:stroke="#B71C1C" bioc:fill="#FFCDD2"><dc:Bounds x="5460" y="732" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="di_ev_end_ok" bpmnElement="ev_end_ok" bioc:stroke="#1B5E20" bioc:fill="#C8E6C9"><dc:Bounds x="5460" y="632" width="36" height="36"/></bpmndi:BPMNShape>
+
+
+      <!-- EDGES KONSULTASI -->
+      <bpmndi:BPMNEdge id="di_f1" bpmnElement="f1"><di:waypoint x="96" y="250"/><di:waypoint x="140" y="250"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f2" bpmnElement="f2"><di:waypoint x="300" y="250"/><di:waypoint x="340" y="250"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f3" bpmnElement="f3"><di:waypoint x="420" y="280"/><di:waypoint x="420" y="620"/><bpmndi:BPMNLabel><dc:Bounds x="425" y="440" width="50" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f4" bpmnElement="f4"><di:waypoint x="500" y="650"/><di:waypoint x="540" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f5" bpmnElement="f5"><di:waypoint x="700" y="650"/><di:waypoint x="740" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fkno" bpmnElement="f_k_no"><di:waypoint x="765" y="675"/><di:waypoint x="765" y="720"/><bpmndi:BPMNLabel><dc:Bounds x="770" y="690" width="34" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fkfail" bpmnElement="f_k_fail"><di:waypoint x="900" y="750"/><di:waypoint x="940" y="750"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fkyes" bpmnElement="f_k_yes"><di:waypoint x="790" y="650"/><di:waypoint x="840" y="650"/><bpmndi:BPMNLabel><dc:Bounds x="800" y="630" width="16" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f6" bpmnElement="f6"><di:waypoint x="920" y="620"/><di:waypoint x="920" y="280"/><bpmndi:BPMNLabel><dc:Bounds x="925" y="440" width="80" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f7" bpmnElement="f7"><di:waypoint x="1000" y="250"/><di:waypoint x="1040" y="250"/></bpmndi:BPMNEdge>
+
+      <!-- Edges PB -->
+      <bpmndi:BPMNEdge id="di_fkatpb" bpmnElement="f_kat_pb"><di:waypoint x="1065" y="225"/><di:waypoint x="1065" y="130"/><di:waypoint x="1160" y="130"/><bpmndi:BPMNLabel><dc:Bounds x="1075" y="110" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fpb1" bpmnElement="f_pb1"><di:waypoint x="1320" y="130"/><di:waypoint x="1360" y="130"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fpb2" bpmnElement="f_pb2"><di:waypoint x="1440" y="160"/><di:waypoint x="1440" y="500"/><bpmndi:BPMNLabel><dc:Bounds x="1445" y="320" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fpb3" bpmnElement="f_pb3"><di:waypoint x="1520" y="530"/><di:waypoint x="1560" y="530"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fpb4" bpmnElement="f_pb4"><di:waypoint x="1720" y="530"/><di:waypoint x="1760" y="530"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fpb5" bpmnElement="f_pb5"><di:waypoint x="1840" y="500"/><di:waypoint x="1840" y="160"/><bpmndi:BPMNLabel><dc:Bounds x="1845" y="320" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fpbm" bpmnElement="f_pb_merge"><di:waypoint x="1920" y="130"/><di:waypoint x="1985" y="130"/><di:waypoint x="1985" y="225"/></bpmndi:BPMNEdge>
+
+      <!-- Edges HT -->
+      <bpmndi:BPMNEdge id="di_fkatht" bpmnElement="f_kat_ht"><di:waypoint x="1090" y="250"/><di:waypoint x="1160" y="250"/><bpmndi:BPMNLabel><dc:Bounds x="1100" y="230" width="50" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fht1" bpmnElement="f_ht1"><di:waypoint x="1320" y="250"/><di:waypoint x="1360" y="250"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fht2" bpmnElement="f_ht2"><di:waypoint x="1440" y="280"/><di:waypoint x="1440" y="620"/><bpmndi:BPMNLabel><dc:Bounds x="1445" y="440" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fht3" bpmnElement="f_ht3"><di:waypoint x="1520" y="650"/><di:waypoint x="1560" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fht4" bpmnElement="f_ht4"><di:waypoint x="1720" y="650"/><di:waypoint x="1760" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fht5" bpmnElement="f_ht5"><di:waypoint x="1840" y="620"/><di:waypoint x="1840" y="280"/><bpmndi:BPMNLabel><dc:Bounds x="1845" y="440" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fhtm" bpmnElement="f_ht_merge"><di:waypoint x="1920" y="250"/><di:waypoint x="1960" y="250"/></bpmndi:BPMNEdge>
+
+      <!-- Edges DK -->
+      <bpmndi:BPMNEdge id="di_fkatdk" bpmnElement="f_kat_dk"><di:waypoint x="1065" y="275"/><di:waypoint x="1065" y="370"/><di:waypoint x="1160" y="370"/><bpmndi:BPMNLabel><dc:Bounds x="1075" y="350" width="50" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fdk1" bpmnElement="f_dk1"><di:waypoint x="1320" y="370"/><di:waypoint x="1360" y="370"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fdk2" bpmnElement="f_dk2"><di:waypoint x="1440" y="400"/><di:waypoint x="1440" y="740"/><bpmndi:BPMNLabel><dc:Bounds x="1445" y="560" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fdk3" bpmnElement="f_dk3"><di:waypoint x="1520" y="770"/><di:waypoint x="1560" y="770"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fdk4" bpmnElement="f_dk4"><di:waypoint x="1720" y="770"/><di:waypoint x="1760" y="770"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fdk5" bpmnElement="f_dk5"><di:waypoint x="1840" y="740"/><di:waypoint x="1840" y="400"/><bpmndi:BPMNLabel><dc:Bounds x="1845" y="560" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_fdkm" bpmnElement="f_dk_merge"><di:waypoint x="1920" y="370"/><di:waypoint x="1985" y="370"/><di:waypoint x="1985" y="275"/></bpmndi:BPMNEdge>
+
+      <!-- Pembayaran Edges -->
+      <bpmndi:BPMNEdge id="di_f_merge_out" bpmnElement="f_merge_out"><di:waypoint x="2010" y="250"/><di:waypoint x="2060" y="250"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_by_no" bpmnElement="f_by_no"><di:waypoint x="2085" y="225"/><di:waypoint x="2085" y="156"/><bpmndi:BPMNLabel><dc:Bounds x="2090" y="180" width="85" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_by_yes" bpmnElement="f_by_yes"><di:waypoint x="2110" y="250"/><di:waypoint x="2160" y="250"/><bpmndi:BPMNLabel><dc:Bounds x="2115" y="230" width="45" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_by1" bpmnElement="f_by1"><di:waypoint x="2320" y="250"/><di:waypoint x="2360" y="250"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_by2" bpmnElement="f_by2"><di:waypoint x="2520" y="250"/><di:waypoint x="2560" y="250"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_by3" bpmnElement="f_by3"><di:waypoint x="2640" y="280"/><di:waypoint x="2640" y="620"/><bpmndi:BPMNLabel><dc:Bounds x="2645" y="440" width="75" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_by4" bpmnElement="f_by4"><di:waypoint x="2720" y="650"/><di:waypoint x="2760" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_vno" bpmnElement="f_valid_no"><di:waypoint x="2785" y="675"/><di:waypoint x="2785" y="720"/><bpmndi:BPMNLabel><dc:Bounds x="2790" y="690" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_vloop" bpmnElement="f_valid_loop"><di:waypoint x="2785" y="780"/><di:waypoint x="2785" y="820"/><di:waypoint x="2240" y="820"/><di:waypoint x="2240" y="280"/><bpmndi:BPMNLabel><dc:Bounds x="2490" y="800" width="75" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_vyes" bpmnElement="f_valid_yes"><di:waypoint x="2810" y="650"/><di:waypoint x="2860" y="650"/><bpmndi:BPMNLabel><dc:Bounds x="2815" y="630" width="35" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      
+      <!-- Nota Edges -->
+      <bpmndi:BPMNEdge id="di_f_by5" bpmnElement="f_by5"><di:waypoint x="3020" y="650"/><di:waypoint x="3060" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_nota_yes" bpmnElement="f_nota_yes"><di:waypoint x="3085" y="675"/><di:waypoint x="3085" y="720"/><bpmndi:BPMNLabel><dc:Bounds x="3090" y="690" width="20" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_nota_no" bpmnElement="f_nota_no"><di:waypoint x="3110" y="650"/><di:waypoint x="3260" y="650"/><bpmndi:BPMNLabel><dc:Bounds x="3180" y="630" width="35" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_nota_catat" bpmnElement="f_nota_catat"><di:waypoint x="3165" y="750"/><di:waypoint x="3200" y="750"/><di:waypoint x="3200" y="650"/><di:waypoint x="3260" y="650"/></bpmndi:BPMNEdge>
+      
+      <bpmndi:BPMNEdge id="di_f_by6" bpmnElement="f_by6"><di:waypoint x="3340" y="620"/><di:waypoint x="3340" y="280"/><bpmndi:BPMNLabel><dc:Bounds x="3345" y="440" width="60" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+
+      <!-- Produksi Edges -->
+      <bpmndi:BPMNEdge id="di_f_pr1" bpmnElement="f_pr1"><di:waypoint x="3420" y="250"/><di:waypoint x="3440" y="250"/><di:waypoint x="3440" y="650"/><di:waypoint x="3460" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_pr2" bpmnElement="f_pr2"><di:waypoint x="3620" y="650"/><di:waypoint x="3660" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_pr3" bpmnElement="f_pr3"><di:waypoint x="3820" y="650"/><di:waypoint x="3860" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_pr4" bpmnElement="f_pr4"><di:waypoint x="4020" y="650"/><di:waypoint x="4060" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_pr5" bpmnElement="f_pr5"><di:waypoint x="4220" y="650"/><di:waypoint x="4260" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_pr6" bpmnElement="f_pr6"><di:waypoint x="4340" y="620"/><di:waypoint x="4340" y="280"/><bpmndi:BPMNLabel><dc:Bounds x="4345" y="440" width="95" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+
+      <!-- Pengantaran & Setup Edges -->
+      <bpmndi:BPMNEdge id="di_f_st1" bpmnElement="f_st1"><di:waypoint x="4420" y="250"/><di:waypoint x="4440" y="250"/><di:waypoint x="4440" y="650"/><di:waypoint x="4460" y="650"/><bpmndi:BPMNLabel><dc:Bounds x="4445" y="440" width="65" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_st2" bpmnElement="f_st2"><di:waypoint x="4620" y="650"/><di:waypoint x="4660" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_st3" bpmnElement="f_st3"><di:waypoint x="4740" y="620"/><di:waypoint x="4740" y="280"/><bpmndi:BPMNLabel><dc:Bounds x="4745" y="440" width="75" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+
+      <!-- Pengembalian & Mediasi Edges -->
+      <bpmndi:BPMNEdge id="di_f_pg1" bpmnElement="f_pg1"><di:waypoint x="4820" y="250"/><di:waypoint x="4860" y="250"/><bpmndi:BPMNLabel><dc:Bounds x="4825" y="230" width="70" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_pg2" bpmnElement="f_pg2"><di:waypoint x="4940" y="280"/><di:waypoint x="4940" y="620"/><bpmndi:BPMNLabel><dc:Bounds x="4945" y="440" width="95" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_pg3" bpmnElement="f_pg3"><di:waypoint x="5020" y="650"/><di:waypoint x="5060" y="650"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_pg4" bpmnElement="f_pg4"><di:waypoint x="5220" y="650"/><di:waypoint x="5260" y="650"/></bpmndi:BPMNEdge>
+      
+      <bpmndi:BPMNEdge id="di_f_pg_yes" bpmnElement="f_pg_yes"><di:waypoint x="5285" y="675"/><di:waypoint x="5285" y="720"/><bpmndi:BPMNLabel><dc:Bounds x="5290" y="690" width="60" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_pg_med_end" bpmnElement="f_pg_med_end"><di:waypoint x="5365" y="750"/><di:waypoint x="5460" y="750"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="di_f_pg_no" bpmnElement="f_pg_no"><di:waypoint x="5310" y="650"/><di:waypoint x="5460" y="650"/><bpmndi:BPMNLabel><dc:Bounds x="5360" y="630" width="75" height="14"/></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
