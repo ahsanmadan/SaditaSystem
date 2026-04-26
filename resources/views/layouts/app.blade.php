@@ -27,7 +27,7 @@
 
 <body class="bg-[#FFFDFB] text-gray-900 overflow-x-hidden">
 
-    {{-- Page preloader --}}
+    {{-- Preloader --}}
     <div id="preloader" class="fixed inset-0 z-[100] bg-[#FFFDFB] flex items-center justify-center transition-opacity duration-500">
         <div class="flex flex-col items-center gap-4">
             <div class="text-3xl font-bold text-[#7A1F2B]" style="font-family:'Playfair Display',serif">Sadita</div>

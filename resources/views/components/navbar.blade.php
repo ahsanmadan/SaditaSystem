@@ -18,15 +18,19 @@
         <!-- Desktop CTA -->
         <a href="#kategori"
             class="hidden md:inline-flex px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 nav-cta-btn">
-            Pesan Sekarang
+            Admin
         </a>
 
         <!-- Mobile Hamburger Button -->
-        <button id="hamburger-btn" class="md:hidden relative w-10 h-10 flex items-center justify-center z-[60]" aria-label="Toggle menu">
+        <button id="hamburger-btn" class="md:hidden relative w-10 h-10 flex items-center justify-center z-[60]"
+            aria-label="Toggle menu">
             <div class="hamburger-box w-6 h-5 relative flex flex-col justify-between">
-                <span class="hamburger-line block w-full h-[2px] rounded-full transition-all duration-300 ease-in-out"></span>
-                <span class="hamburger-line block w-full h-[2px] rounded-full transition-all duration-300 ease-in-out"></span>
-                <span class="hamburger-line block w-4 h-[2px] rounded-full transition-all duration-300 ease-in-out ml-auto"></span>
+                <span
+                    class="hamburger-line block w-full h-[2px] rounded-full transition-all duration-300 ease-in-out"></span>
+                <span
+                    class="hamburger-line block w-full h-[2px] rounded-full transition-all duration-300 ease-in-out"></span>
+                <span
+                    class="hamburger-line block w-4 h-[2px] rounded-full transition-all duration-300 ease-in-out ml-auto"></span>
             </div>
         </button>
     </div>
