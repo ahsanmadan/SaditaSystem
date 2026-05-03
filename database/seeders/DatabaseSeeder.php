@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\Hash;
 class DatabaseSeeder extends Seeder {
     public function run(): void {
         User::create([
-            'name' => 'Admin Sadita',
-            'email' => 'admin@sadita.com',
-            'password' => Hash::make('Sadita@Admin2026!'),
+            'name' => 'Admin Sadita (Demo)',
+            'email' => 'admin',
+            'password' => Hash::make('admin'),
+            'role' => User::ROLE_OWNER,
+            'is_admin' => true,
         ]);
 
         $this->call([
