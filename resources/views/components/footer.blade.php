@@ -18,7 +18,7 @@
             <div
                 class="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/50">
                 <div>&copy; {{ date('Y') }} Sadita – Padang. Seluruh hak cipta dilindungi.</div>
-                <div>SaditaSystem by Kelompok 5</div>
+                <div>SaditaSystem by TwoLines-Dev</div>
             </div>
         </div>
     </footer>
