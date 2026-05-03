@@ -58,10 +58,10 @@
                 <form method="POST" action="" class="mt-10 space-y-6">
                     @csrf
                     
-                    <!-- Email Input -->
+                    <!-- Email/Username Input -->
                     <div>
-                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2 tracking-wide">Email</label>
-                        <input type="email" id="email" name="email" required placeholder="admin@sadita.com" value="admin@sadita.com"
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2 tracking-wide">Username / Email</label>
+                        <input type="text" id="email" name="email" required placeholder="admin" value="admin"
                             class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-4 focus:ring-[#6B1B2A]/10 focus:border-[#6B1B2A] transition-all shadow-sm placeholder:text-gray-400">
                     </div>
 
@@ -72,7 +72,7 @@
                             <a href="#" class="text-xs font-bold text-[#6B1B2A] hover:text-[#5a1623] hover:underline transition-colors">Lupa Password?</a>
                         </div>
                         <div class="relative">
-                            <input type="password" id="password" name="password" required placeholder="••••••••" value="sadita123"
+                            <input type="password" id="password" name="password" required placeholder="••••••••" value="admin"
                                 class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-4 focus:ring-[#6B1B2A]/10 focus:border-[#6B1B2A] transition-all shadow-sm placeholder:text-gray-400 pr-12">
                             <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400 hover:text-[#6B1B2A] transition-colors" title="Tampilkan/Sembunyikan password">
                                 <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
