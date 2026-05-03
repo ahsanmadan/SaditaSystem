@@ -267,31 +267,43 @@
         </section>
     @endforeach
 
-    <section class="py-16 sm:py-20 bg-[#2D1E1E] text-white overflow-hidden">
+    <section class="py-16 sm:py-20 bg-[#FFFDFB] overflow-hidden">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <div class="text-center reveal-on-scroll">
-                <span class="text-xs uppercase tracking-[0.2em] text-[#E8C87A] font-semibold">Mengapa Kami</span>
-                <h2 class="mt-3 text-3xl sm:text-4xl font-bold">Kenapa Pilih Sadita?</h2>
+                <span class="text-xs uppercase tracking-[0.2em] text-[#7A1F2B] font-semibold">Mengapa Kami</span>
+                <h2 class="mt-3 text-3xl sm:text-4xl font-bold text-[#2D1E1E]">Kenapa Pilih Sadita?</h2>
             </div>
-            <div class="mt-16 sm:mt-24 flex flex-col gap-16 sm:gap-24">
+            <div class="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
                 @foreach([
-                    ['Kualitas Premium', 'Bahan material terbaik dengan detail pengerjaan yang teliti untuk hasil yang elegan dan memukau.', '/images/why-premium.jpeg'],
-                    ['Proses Cepat', 'Pengerjaan profesional yang responsif dan tepat waktu untuk momen berharga Anda.', '/images/why-fast.jpeg'],
-                    ['Gratis Ongkir', 'Layanan pengiriman aman dan gratis untuk seluruh wilayah Padang dan sekitarnya.', '/images/why-delivery.jpeg'],
-                    ['Custom Request', 'Kebebasan berekspresi. Desain dapat disesuaikan sepenuhnya dengan keinginan dan tema acara Anda.', '/images/why-custom.jpeg'],
+                    [
+                        '01', 'Kualitas Premium', 
+                        'Bahan material terbaik dengan detail pengerjaan yang teliti untuk hasil yang elegan dan memukau.', 
+                        '/images/why-premium.png'
+                    ],
+                    [
+                        '02', 'Proses Cepat', 
+                        'Pengerjaan profesional yang responsif dan tepat waktu untuk momen berharga Anda.', 
+                        '/images/why-fast.png'
+                    ],
+                    [
+                        '03', 'Gratis Ongkir', 
+                        'Layanan pengiriman aman dan gratis untuk seluruh wilayah Padang dan sekitarnya.', 
+                        '/images/why-delivery.png'
+                    ],
+                    [
+                        '04', 'Custom Request', 
+                        'Kebebasan berekspresi. Desain dapat disesuaikan sepenuhnya dengan keinginan Anda.', 
+                        '/images/why-custom.png'
+                    ]
                 ] as $index => $feature)
-                <div class="flex flex-col md:flex-row items-center gap-8 sm:gap-16 reveal-on-scroll {{ $index % 2 !== 0 ? 'md:flex-row-reverse' : '' }}">
-                    <div class="w-full md:w-1/2">
-                        <div class="relative w-full aspect-square sm:aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-                            <img src="{{ $feature[2] }}" alt="{{ $feature[0] }}" class="w-full h-full object-cover bg-white/5">
-                            <div class="absolute inset-0 border border-[#E8C87A]/20 rounded-2xl pointer-events-none"></div>
-                        </div>
-                    </div>
-                    <div class="w-full md:w-1/2 text-center md:text-left">
-                        <div class="text-[#E8C87A] font-playfair text-5xl sm:text-7xl opacity-20 font-bold mb-4">0{{ $index + 1 }}</div>
-                        <h3 class="text-2xl sm:text-3xl font-bold mb-4">{{ $feature[0] }}</h3>
-                        <p class="text-white/70 text-sm sm:text-base leading-relaxed">{{ $feature[1] }}</p>
-                        <div class="w-12 h-1 bg-[#E8C87A] mx-auto md:mx-0 mt-8"></div>
+                <div class="group relative bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 hover:shadow-[0_12px_30px_rgba(122,31,43,0.08)] transition-all duration-300 reveal-on-scroll flex flex-col h-full min-h-[280px]">
+                    <div class="absolute top-4 right-6 text-6xl font-playfair font-black text-gray-200 group-hover:text-[#F3E8D6] transition-colors duration-300 pointer-events-none">{{ $feature[0] }}</div>
+                    
+                    <img src="{{ $feature[3] }}" alt="{{ $feature[1] }}" class="w-[120px] h-[120px] object-contain block mb-6 relative z-10 group-hover:scale-110 transition-transform duration-300 drop-shadow-sm flex-shrink-0" loading="lazy">
+                    
+                    <div class="flex flex-col flex-1 relative z-10">
+                        <h3 class="text-lg sm:text-xl font-bold text-[#2D1E1E] mb-3">{{ $feature[1] }}</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed">{{ $feature[2] }}</p>
                     </div>
                 </div>
                 @endforeach
