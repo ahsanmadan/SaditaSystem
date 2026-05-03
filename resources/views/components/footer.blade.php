@@ -18,7 +18,8 @@
             <div
                 class="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/50">
                 <div>&copy; {{ date('Y') }} Sadita – Padang. Seluruh hak cipta dilindungi.</div>
-                <div>SaditaSystem by TwoLines-Dev</div>
+                <div>SaditaSystem by <a href="https://github.com/Twolines-Dev"
+                        class="hover:text-[#E8C87A] transition-colors">TwoLines-Dev</a></div>
             </div>
         </div>
     </footer>

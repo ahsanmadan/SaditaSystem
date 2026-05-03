@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SaditaSystem</title>
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+    <link rel="shortcut icon" href="/favicon.png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -56,7 +61,7 @@
                     <!-- Email Input -->
                     <div>
                         <label for="email" class="block text-sm font-semibold text-gray-700 mb-2 tracking-wide">Email</label>
-                        <input type="email" id="email" name="email" required placeholder="admin@sadita.com"
+                        <input type="email" id="email" name="email" required placeholder="admin@sadita.com" value="admin@sadita.com"
                             class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-4 focus:ring-[#6B1B2A]/10 focus:border-[#6B1B2A] transition-all shadow-sm placeholder:text-gray-400">
                     </div>
 
@@ -67,7 +72,7 @@
                             <a href="#" class="text-xs font-bold text-[#6B1B2A] hover:text-[#5a1623] hover:underline transition-colors">Lupa Password?</a>
                         </div>
                         <div class="relative">
-                            <input type="password" id="password" name="password" required placeholder="••••••••"
+                            <input type="password" id="password" name="password" required placeholder="••••••••" value="sadita123"
                                 class="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-4 focus:ring-[#6B1B2A]/10 focus:border-[#6B1B2A] transition-all shadow-sm placeholder:text-gray-400 pr-12">
                             <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400 hover:text-[#6B1B2A] transition-colors" title="Tampilkan/Sembunyikan password">
                                 <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,6 +81,18 @@
                                 </svg>
                             </button>
                         </div>
+                    </div>
+
+                    <!-- Verify Bot -->
+                    <div class="flex items-center gap-3 p-3 mt-4 border border-gray-200 rounded-xl bg-gray-50/50">
+                        <input type="checkbox" id="verify_bot" name="verify_bot" required
+                            class="w-5 h-5 text-[#6B1B2A] bg-white border-gray-300 rounded focus:ring-[#6B1B2A] focus:ring-2 cursor-pointer transition-colors">
+                        <label for="verify_bot" class="text-sm font-medium text-gray-700 cursor-pointer select-none">
+                            Saya bukan robot
+                        </label>
+                        <svg class="w-6 h-6 text-green-500 ml-auto hidden transition-opacity" id="checkIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
                     </div>
 
                     <!-- Submit Button -->
@@ -113,6 +130,19 @@
                 eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
             }
         });
+
+        // Verify Bot Checkbox Toggle
+        const verifyBot = document.getElementById('verify_bot');
+        const checkIcon = document.getElementById('checkIcon');
+        if(verifyBot && checkIcon) {
+            verifyBot.addEventListener('change', function() {
+                if (this.checked) {
+                    checkIcon.classList.remove('hidden');
+                } else {
+                    checkIcon.classList.add('hidden');
+                }
+            });
+        }
     </script>
 </body>
 </html>
