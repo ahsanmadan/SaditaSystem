@@ -1,12 +1,57 @@
 @extends('layouts.app')
 
 @section('content')
-    <section id="beranda" class="relative h-screen overflow-hidden">
-        <div class="hero-slide active" style="background-image:url('/images/hero-1.jpg')"></div>
-        <div class="hero-slide" style="background-image:url('/images/hero-2.jpg')"></div>
-        <div class="hero-slide" style="background-image:url('/images/hero-3.jpg')"></div>
+    <section id="beranda" class="relative h-screen overflow-hidden bg-[#18181b]">
+        <!-- Polaroid Parallax Background -->
+        <div class="absolute inset-0 z-0 overflow-hidden opacity-30 pointer-events-none">
+            <!-- Polaroid 1 -->
+            <div class="parallax-wrapper absolute top-[-5%] left-[5%]" data-speed="0.15">
+                <div class="w-48 sm:w-64 p-2 sm:p-3 bg-white shadow-2xl -rotate-6 transition-transform">
+                    <div class="relative w-full aspect-[3/4]">
+                        <img src="/images/hero-1.jpg" class="w-full h-full object-cover" alt="Polaroid 1">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Polaroid 2 -->
+            <div class="parallax-wrapper absolute top-[15%] right-[5%]" data-speed="0.35">
+                <div class="w-52 sm:w-72 p-2 sm:p-3 bg-white shadow-2xl rotate-12 transition-transform">
+                    <div class="relative w-full aspect-[4/5]">
+                        <img src="/images/hero-2.jpg" class="w-full h-full object-cover" alt="Polaroid 2">
+                    </div>
+                </div>
+            </div>
 
-        <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60 z-10"></div>
+            <!-- Polaroid 3 -->
+            <div class="parallax-wrapper absolute top-[40%] left-[20%]" data-speed="0.25">
+                <div class="w-56 sm:w-80 p-2 sm:p-3 bg-white shadow-2xl rotate-3 transition-transform">
+                    <div class="relative w-full aspect-square">
+                        <img src="/images/gallery-1.jpg" class="w-full h-full object-cover" alt="Polaroid 3">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Polaroid 4 -->
+            <div class="parallax-wrapper absolute top-[55%] right-[25%]" data-speed="0.45">
+                <div class="w-48 sm:w-60 p-2 sm:p-3 bg-white shadow-2xl -rotate-12 transition-transform">
+                    <div class="relative w-full aspect-[3/4]">
+                        <img src="/images/hero-3.jpg" class="w-full h-full object-cover" alt="Polaroid 4">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Polaroid 5 -->
+            <div class="parallax-wrapper absolute bottom-[-10%] left-[45%]" data-speed="0.2">
+                <div class="w-60 sm:w-80 p-2 sm:p-3 bg-white shadow-2xl -rotate-3 transition-transform">
+                    <div class="relative w-full aspect-[4/5]">
+                        <img src="/images/gallery-3.jpg" class="w-full h-full object-cover" alt="Polaroid 5">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dimmed Gradient Overlay to ensure text pops -->
+        <div class="absolute inset-0 bg-gradient-to-b from-[#18181b]/10 via-[#18181b]/60 to-[#18181b] z-10 pointer-events-none"></div>
 
         <div class="hero-content relative z-20 h-full flex items-center">
             <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 w-full">
@@ -370,4 +415,24 @@
             </div>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const parallaxWrappers = document.querySelectorAll('.parallax-wrapper');
+            
+            // Simple Vanilla JS Parallax on scroll
+            window.addEventListener('scroll', () => {
+                const scrolled = window.scrollY;
+                
+                // Only animate if we are in the hero section (performance optimization)
+                if (scrolled < window.innerHeight + 200) {
+                    parallaxWrappers.forEach(wrapper => {
+                        const speed = parseFloat(wrapper.getAttribute('data-speed')) || 0.2;
+                        // Move the elements on the Y axis
+                        wrapper.style.transform = `translate3d(0, ${scrolled * speed}px, 0)`;
+                    });
+                }
+            }, { passive: true });
+        });
+    </script>
 @endsection
