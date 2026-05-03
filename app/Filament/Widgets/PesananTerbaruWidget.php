@@ -14,6 +14,8 @@ class PesananTerbaruWidget extends BaseWidget
 {
     protected static ?int $sort = 4;
 
+    protected static ?string $pollingInterval = null;
+
     protected static ?string $heading = 'Pesanan Terbaru';
 
     protected int | string | array $columnSpan = 'full';

@@ -11,6 +11,8 @@ class OmzetChartWidget extends ChartWidget
 {
     protected ?string $heading = 'Omzet Penjualan (30 Hari Terakhir)';
 
+    protected static ?string $pollingInterval = null;
+
     protected static ?int $sort = 2;
 
     protected function getData(): array

@@ -10,6 +10,8 @@ class StatsOverviewWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
 
+    protected static ?string $pollingInterval = null;
+
     protected ?string $heading = 'Ringkasan Bisnis Sadita';
 
     protected function getStats(): array
