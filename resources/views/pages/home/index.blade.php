@@ -64,7 +64,7 @@
                     dalam hidup Anda</p>
             </div>
 
-            <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10 max-w-5xl mx-auto">
                 @php($categories = [['Papan Ucapan', 'Standing board & mirror elegan untuk setiap momen', '/images/cat-papan-ucapan.jpg', '#greeting-board'], ['Hantaran', 'Seserahan & gift box cantik penuh detail', '/images/cat-hantaran.jpg', '#hantaran'], ['Dekorasi', 'Dekorasi event custom sesuai konsep Anda', '/images/cat-dekorasi.jpg', '#dekorasi']])
                 @foreach ($categories as $i => [$title, $desc, $img, $link])
                     <a href="{{ $link }}" class="category-card group reveal-on-scroll"
