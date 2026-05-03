@@ -16,9 +16,9 @@
         </nav>
 
         <!-- Desktop CTA -->
-        <a href="/admin"
+        <a href="/login"
             class="hidden md:inline-flex px-5 py-2 rounded-full text-[13px] font-semibold tracking-wide transition-all duration-300 nav-cta-btn border border-[#E8C87A]/40 hover:border-[#E8C87A]">
-            Admin
+            Login
         </a>
 
         <!-- Mobile Hamburger Button -->

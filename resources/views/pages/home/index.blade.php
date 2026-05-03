@@ -4,7 +4,7 @@
     <section id="beranda" class="relative w-full h-[100svh] overflow-hidden bg-[#18181b]">
         <!-- Infinite Horizontal Carousel Background -->
         <!-- Infinite Horizontal Carousel Background -->
-        <div class="absolute inset-0 z-0 flex items-center overflow-hidden pointer-events-none opacity-35 mix-blend-luminosity">
+        <div class="absolute inset-0 z-0 flex items-center overflow-hidden pointer-events-none opacity-40">
             <div class="flex flex-row items-center gap-3 sm:gap-5 animate-scroll-horizontal">
                 <!-- Set A (8 Curated Best Photos) -->
                 <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
@@ -60,7 +60,7 @@
         </div>
 
         <!-- Dimmed Gradient Overlay - stronger on mobile for readability -->
-        <div class="absolute inset-0 bg-gradient-to-b from-[#18181b]/40 via-[#18181b]/75 to-[#18181b] sm:from-[#18181b]/20 sm:via-[#18181b]/70 z-10 pointer-events-none"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-[#18181b]/10 via-[#18181b]/50 to-[#18181b]/95 sm:from-transparent sm:via-[#18181b]/40 sm:to-[#18181b]/80 z-10 pointer-events-none"></div>
 
         <div class="hero-content relative z-20 h-full flex items-center justify-center pt-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -103,7 +103,7 @@
             </div>
         </div>
 
-        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 animate-bounce">
+        <div class="absolute bottom-8 sm:bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 animate-bounce">
             <span class="text-white/40 text-[10px] tracking-[0.3em] uppercase">Scroll</span>
             <svg class="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -117,109 +117,151 @@
             <div class="text-center reveal-on-scroll">
                 <span class="text-xs uppercase tracking-[0.2em] text-[#7A1F2B] font-semibold">Koleksi Kami</span>
                 <h2 class="mt-3 text-3xl sm:text-4xl font-bold text-[#2D1E1E]">Kategori Produk</h2>
-                <p class="mt-3 text-sm text-gray-500 max-w-md mx-auto">Temukan hadiah sempurna untuk setiap momen berharga
-                    dalam hidup Anda</p>
+                <p class="mt-3 text-sm text-gray-500 max-w-md mx-auto">Berikan kesan tak terlupakan di setiap momen bahagia Anda</p>
             </div>
 
-            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                @php($categories = [['Papan Ucapan', 'Standing board & mirror elegan untuk setiap momen', '/images/cat-papan-ucapan.jpg', '#greeting-board'], ['Hantaran', 'Seserahan & gift box cantik penuh detail', '/images/cat-hantaran.jpg', '#hantaran'], ['Dekorasi', 'Dekorasi event custom sesuai konsep Anda', '/images/cat-dekorasi.jpg', '#dekorasi']])
-                @foreach ($categories as $i => [$title, $desc, $img, $link])
-                    <a href="{{ $link }}" class="category-card group reveal-on-scroll"
-                        style="animation-delay: {{ $i * 100 }}ms">
-                        <div class="relative overflow-hidden rounded-2xl aspect-[4/5] shadow-md border border-gray-100">
-                            <img src="{{ $img }}" alt="{{ $title }}"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-6 text-center md:text-left">
-                                <h3 class="text-xl sm:text-2xl font-serif font-bold text-white tracking-wide">{{ $title }}</h3>
-                                <p class="text-xs sm:text-sm text-white/80 mt-1.5 leading-relaxed">{{ $desc }}</p>
+            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto px-4">
+                @php($categories = [
+                    ['Papan Ucapan', 'Mulai Rp 85rb', 'Standing board & mirror elegan untuk momen berharga', '/images/cat-papan-ucapan.jpg', '#greeting-board'], 
+                    ['Hantaran', 'Mulai Rp 30rb', 'Seserahan & gift box premium dengan detail cantik', '/images/cat-hantaran.jpg', '#hantaran'], 
+                    ['Dekorasi', 'Mulai Rp 500rb', 'Wujudkan dekorasi impian untuk hari bahagia Anda', '/images/cat-dekorasi.jpg', '#dekorasi']
+                ])
+                @foreach ($categories as $i => [$title, $price, $desc, $img, $link])
+                    <div class="reveal-on-scroll {{ $i === 1 ? 'md:-translate-y-8' : '' }}" style="animation-delay: {{ $i * 150 }}ms">
+                        <a href="{{ $link }}" class="category-card group relative block h-full">
+                            <div class="relative overflow-hidden rounded-[2rem] aspect-[3/4] shadow-xl border border-gray-100 transition-all duration-500 group-hover:shadow-2xl group-hover:border-[#E8C87A]/50 bg-gray-100">
+                                <!-- Image -->
+                                <img src="{{ $img }}" alt="{{ $title }}"
+                                    class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                    loading="lazy">
+                                <!-- Gradient overlay with maroon hover -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-colors duration-500 group-hover:from-[#7A1F2B]/95 group-hover:via-[#7A1F2B]/60"></div>
+                                
+                                <!-- Content -->
+                                <div class="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
+                                    <div class="transform transition-transform duration-500 group-hover:-translate-y-2">
+                                        <div class="flex items-start justify-between">
+                                            <div>
+                                                <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-wide" style="font-family:'Playfair Display',serif">{{ $title }}</h3>
+                                                <span class="inline-block mt-2 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-semibold tracking-wider">{{ $price }}</span>
+                                            </div>
+                                            <div class="w-10 h-10 rounded-full bg-[#E8C87A] flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
+                                                <svg class="w-5 h-5 text-[#2D1E1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm sm:text-base text-white/80 mt-4 leading-relaxed">{{ $desc }}</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 @endforeach
             </div>
         </div>
     </section>
 
+    <!-- Why Choose Us Mini Bar -->
+    <div class="w-full bg-[#7A1F2B] text-[#E8C87A] py-3 sm:py-4 overflow-hidden border-y border-[#E8C87A]/30">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between sm:justify-center sm:gap-12 items-center text-[10px] sm:text-xs font-semibold tracking-wider uppercase whitespace-nowrap overflow-x-auto scrollbar-hide">
+            <span class="flex items-center gap-1.5"><span class="text-white">✦</span> Custom Design</span>
+            <span class="flex items-center gap-1.5"><span class="text-white">✦</span> Harga Terjangkau</span>
+            <span class="flex items-center gap-1.5"><span class="text-white">✦</span> Pengiriman Padang</span>
+            <span class="flex items-center gap-1.5"><span class="text-white">✦</span> 500+ Pelanggan</span>
+        </div>
+    </div>
 
     <?php
     $products = [
         'greeting-board' => [
             'title' => 'Papan Ucapan',
             'subtitle' => 'Greeting Board',
+            'desc' => 'Hadirkan kesan pertama yang tak terlupakan',
             'items' => [
-                ['Papan Standing Mirror Premium', 'Hubungi Kami', '/images/papan-1.jpg'],
-                ['Papan Congratulations Eksklusif', 'Hubungi Kami', '/images/papan-2.jpg'],
-                ['Papan Rustic Custom', 'Hubungi Kami', '/images/papan-3.jpg'],
-                ['Papan Ucapan Selamatan', 'Hubungi Kami', '/images/papan-4.jpg'],
-                ['Standing Mirror Besar', 'Hubungi Kami', '/images/papan-5.jpg'],
+                ['Papan Standing Mirror Premium', 'Rp 150.000', '/images/papan-1.jpg', 'Custom'],
+                ['Papan Congratulations Eksklusif', 'Rp 120.000', '/images/papan-2.jpg', 'Terlaris'],
+                ['Papan Rustic Custom', 'Rp 100.000', '/images/papan-3.jpg', 'Custom'],
+                ['Papan Ucapan Selamatan', 'Rp 85.000', '/images/papan-4.jpg', 'Ready Stock'],
+                ['Standing Mirror Besar', 'Rp 200.000', '/images/papan-5.jpg', 'Premium'],
             ],
         ],
         'hantaran' => [
             'title' => 'Hantaran',
             'subtitle' => 'Seserahan & Gift',
+            'desc' => 'Persembahan terbaik untuk hari paling bahagia',
             'items' => [
-                ['Bridesmaid Gift Box', 'Hubungi Kami', '/images/hantaran-1.jpg'],
-                ['Set Hantaran Nikah', 'Hubungi Kami', '/images/hantaran-2.jpg'],
-                ['Hantaran Premium Wedding', 'Hubungi Kami', '/images/hantaran-3.jpg'],
-                ['Seserahan Adat Minang', 'Hubungi Kami', '/images/hantaran-4.jpg'],
-                ['Hantaran Gold Edition', 'Hubungi Kami', '/images/hantaran-5.jpg'],
+                ['Bridesmaid Gift Box', 'Rp 45.000', '/images/hantaran-1.jpg', 'Custom'],
+                ['Set Hantaran Nikah', 'Rp 65.000', '/images/hantaran-2.jpg', 'Terlaris'],
+                ['Hantaran Premium Wedding', 'Rp 85.000', '/images/hantaran-3.jpg', 'Premium'],
+                ['Seserahan Adat Minang', 'Rp 75.000', '/images/hantaran-4.jpg', 'Custom'],
+                ['Hantaran Gold Edition', 'Rp 100.000', '/images/hantaran-5.jpg', 'Premium'],
             ],
         ],
         'dekorasi' => [
             'title' => 'Dekorasi',
             'subtitle' => 'Event Decoration',
+            'desc' => 'Ubah ruangan biasa menjadi momen luar biasa',
             'items' => [
-                ['Dekorasi Lamaran', 'Hubungi Kami', '/images/dekorasi-1.jpg'],
-                ['Dekorasi Tunangan', 'Hubungi Kami', '/images/dekorasi-2.jpg'],
-                ['Table Setting Premium', 'Hubungi Kami', '/images/dekorasi-3.jpg'],
-                ['Dekorasi Grand Opening', 'Hubungi Kami', '/images/dekorasi-4.jpg'],
-                ['Dekorasi Akad Nikah', 'Hubungi Kami', '/images/dekorasi-5.jpg'],
+                ['Dekorasi Lamaran', 'Rp 400.000', '/images/dekorasi-1.jpg', 'Custom'],
+                ['Dekorasi Tunangan', 'Rp 500.000', '/images/dekorasi-2.jpg', 'Terlaris'],
+                ['Table Setting Premium', 'Rp 350.000', '/images/dekorasi-3.jpg', 'Custom'],
+                ['Dekorasi Grand Opening', 'Rp 850.000', '/images/dekorasi-4.jpg', 'Premium'],
+                ['Dekorasi Akad Nikah', 'Rp 1.500.000', '/images/dekorasi-5.jpg', 'Premium'],
             ],
         ],
     ];
     ?>
 
     @foreach ($products as $key => $category)
-        <section id="{{ $key }}" class="py-12 sm:py-16 {{ $loop->even ? 'bg-[#FAF5F0]' : 'bg-white' }}">
+        <section id="{{ $key }}" class="pt-10 pb-4 sm:pt-14 sm:pb-8 {{ $loop->odd ? 'bg-[#FAF5F0]' : 'bg-white' }}">
+            @if(!$loop->first)
+                <div style="width:80px; height:2px; background:#C9A84C; margin: 0 auto 40px; opacity: 0.5;"></div>
+            @endif
             <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
                 <div class="flex items-end justify-between mb-6 reveal-on-scroll">
                     <div>
-                        <span
-                            class="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#7A1F2B]/70 font-semibold">{{ $category['subtitle'] }}</span>
+                        <span class="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#7A1F2B]/70 font-semibold">{{ $category['subtitle'] }}</span>
                         <h2 class="text-2xl sm:text-3xl font-bold text-[#2D1E1E]">{{ $category['title'] }}</h2>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-1">{{ $category['desc'] }}</p>
                     </div>
-                    <a href="#"
-                        class="text-xs sm:text-sm text-[#7A1F2B] font-semibold hover:underline whitespace-nowrap">Lihat
-                        Semua →</a>
+                    <a href="#" class="text-xs sm:text-sm text-[#7A1F2B] font-semibold hover:underline whitespace-nowrap">Lihat Semua →</a>
                 </div>
 
-                <div
-                    class="product-scroll-container flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide reveal-on-scroll">
-                    @foreach ($category['items'] as $j => [$name, $price, $img])
-                        <div
-                            class="product-card min-w-[140px] sm:min-w-[160px] max-w-[160px] sm:max-w-[180px] flex-shrink-0 snap-start rounded-xl overflow-hidden bg-white shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 flex flex-col">
-                            <div class="relative aspect-square overflow-hidden flex-shrink-0">
-                                <img src="{{ $img }}" alt="{{ $name }}"
-                                    class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                                    loading="lazy">
-                                @if ($j === 0)
-                                    <span
-                                        class="absolute top-2 left-2 px-2 py-0.5 bg-[#7A1F2B] text-white text-[9px] sm:text-[10px] font-semibold rounded-full">Terlaris</span>
+                <div class="product-scroll-container flex gap-4 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-hide reveal-on-scroll">
+                    @foreach ($category['items'] as $j => [$name, $price, $img, $tag])
+                        <div class="group product-card min-w-[150px] sm:min-w-[180px] max-w-[150px] sm:max-w-[180px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-white border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(122,31,43,0.15)] flex flex-col">
+                            <div class="relative h-40 sm:h-48 w-full overflow-hidden flex-shrink-0">
+                                <img src="{{ $img }}" alt="{{ $name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+                                @if($tag)
+                                    <span class="absolute top-2 left-2 px-2.5 py-0.5 bg-white/95 backdrop-blur-sm text-[#7A1F2B] text-[9px] sm:text-[10px] font-bold rounded-full shadow-sm">{{ $tag }}</span>
                                 @endif
                             </div>
-                            <div class="p-2.5 sm:p-3 flex flex-col flex-1">
-                                <h4 class="text-xs sm:text-sm font-medium text-[#2D1E1E] line-clamp-2 leading-tight flex-1">
-                                    {{ $name }}</h4>
+                            <div class="p-3 sm:p-4 flex flex-col flex-1 bg-white relative z-10">
+                                <div class="flex text-[#C9A84C] text-[10px] mb-1 tracking-widest">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                                <h4 class="text-xs sm:text-sm font-semibold text-[#2D1E1E] line-clamp-2 leading-tight flex-1" style="min-height: 2.5rem;">{{ $name }}</h4>
+                                <div class="mt-2 text-[10px] sm:text-[11px] text-gray-500">Mulai <span class="font-extrabold text-[#7A1F2B] text-xs sm:text-sm">{{ $price }}</span></div>
                                 <a href="https://wa.me/6289653090248?text=Halo+Sadita%2C+saya+tertarik+dengan+{{ urlencode($name) }}"
                                     target="_blank"
-                                    class="mt-3 w-full py-1.5 sm:py-2 rounded-lg bg-[#7A1F2B] text-white text-[10px] sm:text-xs font-semibold text-center block hover:bg-[#5C1520] transition-colors">
+                                    class="mt-3 w-full py-1.5 sm:py-2 rounded-lg border border-[#7A1F2B] text-[#7A1F2B] text-[10px] sm:text-xs font-semibold text-center block transition-colors duration-300 group-hover:bg-[#7A1F2B] group-hover:text-white">
                                     Hubungi Kami
                                 </a>
                             </div>
                         </div>
                     @endforeach
+                    
+                    <!-- 6th Card CTA (WhatsApp) -->
+                    <div class="group min-w-[150px] sm:min-w-[180px] max-w-[150px] sm:max-w-[180px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-[#7A1F2B] text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(122,31,43,0.3)] flex flex-col justify-center items-center text-center p-4 sm:p-5 cursor-pointer relative" onclick="window.open('https://wa.me/6289653090248?text=Halo+Sadita%2C+saya+ingin+konsultasi+mengenai+pesanan+saya', '_blank')">
+                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-6 h-6 sm:w-7 sm:h-7 text-[#E8C87A]" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-bold tracking-wide leading-snug">Bingung Pilih<br>Produk?</h4>
+                        <p class="text-[9px] sm:text-[10px] text-white/80 mt-2 mb-3 leading-relaxed">Konsultasi gratis via WhatsApp</p>
+                        <span class="text-[9px] sm:text-[10px] font-bold text-[#7A1F2B] bg-[#E8C87A] px-3 py-1.5 rounded-full w-full block group-hover:bg-white transition-colors">Chat Sekarang</span>
+                    </div>
                 </div>
             </div>
         </section>

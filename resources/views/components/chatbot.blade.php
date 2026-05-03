@@ -2,14 +2,18 @@
 <div id="chatbot-wrapper">
     <!-- Floating Button -->
     <button id="chatbot-toggle"
-        class="fixed bottom-6 right-5 z-[70] w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-2xl active:scale-95 group"
+        class="fixed bottom-6 right-5 z-[70] h-14 px-5 rounded-full shadow-lg flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95 group overflow-hidden"
         style="background: linear-gradient(135deg, #7A1F2B, #5e1721);" aria-label="Buka AI Asisten">
-        <img id="chatbot-icon-open" src="/images/chatbot-fab-icon.png" alt="Chat"
-            class="w-8 h-8 object-contain transition-transform duration-300">
-        <svg id="chatbot-icon-close" class="w-6 h-6 text-white hidden transition-transform duration-300" fill="none"
-            stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <div class="relative flex items-center justify-center w-7 h-7 flex-shrink-0">
+            <svg id="chatbot-icon-open" class="absolute w-6 h-6 text-white transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+            </svg>
+            <svg id="chatbot-icon-close" class="absolute w-6 h-6 text-white hidden transition-transform duration-300" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </div>
+        <span id="chatbot-label" class="text-white font-medium text-[14px] tracking-wide whitespace-nowrap transition-all duration-300" style="font-family:'Playfair Display',serif">Chat dengan kami</span>
         {{-- Pulse ring --}}
         <span class="absolute inset-0 rounded-full animate-ping pointer-events-none opacity-30"
             style="background: #7A1F2B;" id="chatbot-ping"></span>
@@ -160,6 +164,7 @@ Kamu adalah KONSULTAN, bukan mesin penjual. Tugasmu:
 
         function toggleChat() {
             chatOpen = !chatOpen;
+            const label = document.getElementById('chatbot-label');
             if (chatOpen) {
                 modal.classList.remove('scale-0', 'opacity-0', 'pointer-events-none');
                 modal.classList.add('scale-100', 'opacity-100', 'pointer-events-auto');
@@ -167,11 +172,19 @@ Kamu adalah KONSULTAN, bukan mesin penjual. Tugasmu:
                 iconClose.classList.remove('hidden');
                 ping.style.display = 'none';
                 input.focus();
+                
+                if(label) label.classList.add('hidden');
+                toggle.classList.remove('px-5', 'gap-2.5');
+                toggle.classList.add('w-14');
             } else {
                 modal.classList.add('scale-0', 'opacity-0', 'pointer-events-none');
                 modal.classList.remove('scale-100', 'opacity-100', 'pointer-events-auto');
                 iconOpen.classList.remove('hidden');
                 iconClose.classList.add('hidden');
+                
+                if(label) label.classList.remove('hidden');
+                toggle.classList.remove('w-14');
+                toggle.classList.add('px-5', 'gap-2.5');
             }
         }
 
