@@ -10,7 +10,7 @@ class StatusPesananChartWidget extends ChartWidget
 {
     protected ?string $heading = 'Distribusi Status Pesanan';
 
-    protected static ?string $pollingInterval = null;
+    protected ?string $pollingInterval = null;
 
     protected static ?int $sort = 3;
 
