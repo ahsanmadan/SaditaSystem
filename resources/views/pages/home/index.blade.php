@@ -1,116 +1,102 @@
 @extends('layouts.app')
 
 @section('content')
-    <section id="beranda" class="relative w-full h-screen overflow-hidden bg-[#18181b]">
-        <!-- Polaroid Parallax Background (10 Photos Dense Collage - Small Sizes) -->
-        <div class="absolute inset-0 z-0 overflow-hidden opacity-20 pointer-events-none">
-            
-            <!-- Zone 1: Top Left -->
-            <div class="parallax-wrapper absolute top-[5%] left-[5%]" data-speed="0.15">
-                <div class="w-32 p-2 bg-white shadow-xl -rotate-6 transition-transform">
-                    <div class="relative w-full aspect-[3/4]"><img src="/images/hero-1.jpg" class="w-full h-full object-cover" alt="Zone 1"></div>
+    <section id="beranda" class="relative w-full h-[100svh] overflow-hidden bg-[#18181b]">
+        <!-- Infinite Horizontal Carousel Background -->
+        <!-- Infinite Horizontal Carousel Background -->
+        <div class="absolute inset-0 z-0 flex items-center overflow-hidden pointer-events-none opacity-35 mix-blend-luminosity">
+            <div class="flex flex-row items-center gap-3 sm:gap-5 animate-scroll-horizontal">
+                <!-- Set A (8 Curated Best Photos) -->
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
+                    <img src="/images/hantaran-1.jpg" alt="" class="w-full h-full object-cover">
                 </div>
-            </div>
-            
-            <!-- Zone 2: Top Center -->
-            <div class="parallax-wrapper absolute top-[2%] left-[40%]" data-speed="0.3">
-                <div class="w-40 p-2 bg-white shadow-xl rotate-3 transition-transform">
-                    <div class="relative w-full aspect-square"><img src="/images/gallery-1.jpg" class="w-full h-full object-cover" alt="Zone 2"></div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
+                    <img src="/images/dekorasi-2.jpg" alt="" class="w-full h-full object-cover">
                 </div>
-            </div>
-
-            <!-- Zone 3: Top Right -->
-            <div class="parallax-wrapper absolute top-[10%] right-[10%]" data-speed="0.2">
-                <div class="w-24 p-1.5 bg-white shadow-xl rotate-12 transition-transform">
-                    <div class="relative w-full aspect-[4/5]"><img src="/images/hero-2.jpg" class="w-full h-full object-cover" alt="Zone 3"></div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-6">
+                    <img src="/images/hantaran-2.jpg" alt="" class="w-full h-full object-cover">
                 </div>
-            </div>
-
-            <!-- Zone 4: Mid-High Left -->
-            <div class="parallax-wrapper absolute top-[25%] left-[20%]" data-speed="0.4">
-                <div class="w-48 p-2.5 bg-white shadow-xl rotate-6 transition-transform">
-                    <div class="relative w-full aspect-[3/4]"><img src="/images/hantaran-2.jpg" class="w-full h-full object-cover" alt="Zone 4"></div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-3">
+                    <img src="/images/hero-2.jpg" alt="" class="w-full h-full object-cover">
                 </div>
-            </div>
-
-            <!-- Zone 5: Mid-High Right -->
-            <div class="parallax-wrapper absolute top-[30%] right-[25%]" data-speed="0.1">
-                <div class="w-32 p-2 bg-white shadow-xl -rotate-12 transition-transform">
-                    <div class="relative w-full aspect-[4/5]"><img src="/images/dekorasi-3.jpg" class="w-full h-full object-cover" alt="Zone 5"></div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-2">
+                    <img src="/images/hantaran-3.jpg" alt="" class="w-full h-full object-cover">
                 </div>
-            </div>
-
-            <!-- Zone 6: Mid-Low Left -->
-            <div class="parallax-wrapper absolute top-[60%] left-[10%]" data-speed="0.25">
-                <div class="w-24 p-1.5 bg-white shadow-xl -rotate-6 transition-transform">
-                    <div class="relative w-full aspect-square"><img src="/images/gallery-4.jpg" class="w-full h-full object-cover" alt="Zone 6"></div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-6">
+                    <img src="/images/dekorasi-1.jpg" alt="" class="w-full h-full object-cover">
                 </div>
-            </div>
-
-            <!-- Zone 7: Mid-Low Right -->
-            <div class="parallax-wrapper absolute top-[55%] right-[15%]" data-speed="0.45">
-                <div class="w-48 p-2.5 bg-white shadow-xl rotate-12 transition-transform">
-                    <div class="relative w-full aspect-[3/4]"><img src="/images/hero-3.jpg" class="w-full h-full object-cover" alt="Zone 7"></div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
+                    <img src="/images/hantaran-4.jpg" alt="" class="w-full h-full object-cover">
                 </div>
-            </div>
-
-            <!-- Zone 8: Bottom Left -->
-            <div class="parallax-wrapper absolute bottom-[5%] left-[25%]" data-speed="0.35">
-                <div class="w-40 p-2 bg-white shadow-xl rotate-3 transition-transform">
-                    <div class="relative w-full aspect-[4/5]"><img src="/images/papan-1.jpg" class="w-full h-full object-cover" alt="Zone 8"></div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
+                    <img src="/images/papan-2.jpg" alt="" class="w-full h-full object-cover">
                 </div>
-            </div>
-
-            <!-- Zone 9: Bottom Center -->
-            <div class="parallax-wrapper absolute bottom-[2%] left-[50%]" data-speed="0.15">
-                <div class="w-24 p-1.5 bg-white shadow-xl -rotate-12 transition-transform">
-                    <div class="relative w-full aspect-[3/4]"><img src="/images/gallery-6.jpg" class="w-full h-full object-cover" alt="Zone 9"></div>
+                <!-- Set B (Duplicate for seamless infinite loop) -->
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
+                    <img src="/images/hantaran-1.jpg" alt="" class="w-full h-full object-cover">
                 </div>
-            </div>
-
-            <!-- Zone 10: Bottom Right -->
-            <div class="parallax-wrapper absolute bottom-[10%] right-[5%]" data-speed="0.25">
-                <div class="w-32 p-2 bg-white shadow-xl -rotate-6 transition-transform">
-                    <div class="relative w-full aspect-square"><img src="/images/gallery-2.jpg" class="w-full h-full object-cover" alt="Zone 10"></div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
+                    <img src="/images/dekorasi-2.jpg" alt="" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-6">
+                    <img src="/images/hantaran-2.jpg" alt="" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-3">
+                    <img src="/images/hero-2.jpg" alt="" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-2">
+                    <img src="/images/hantaran-3.jpg" alt="" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-6">
+                    <img src="/images/dekorasi-1.jpg" alt="" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
+                    <img src="/images/hantaran-4.jpg" alt="" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
+                    <img src="/images/papan-2.jpg" alt="" class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
 
-        <!-- Dimmed Gradient Overlay to ensure text pops -->
-        <div class="absolute inset-0 bg-gradient-to-b from-[#18181b]/10 via-[#18181b]/60 to-[#18181b] z-10 pointer-events-none"></div>
+        <!-- Dimmed Gradient Overlay - stronger on mobile for readability -->
+        <div class="absolute inset-0 bg-gradient-to-b from-[#18181b]/40 via-[#18181b]/75 to-[#18181b] sm:from-[#18181b]/20 sm:via-[#18181b]/70 z-10 pointer-events-none"></div>
 
-        <div class="hero-content relative z-20 h-full flex items-center">
-            <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 w-full">
-                <div class="max-w-xl">
-                    <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] reveal-on-scroll"
-                        style="font-family:'Playfair Display',serif">
-                        Seni Memberi<br>yang <em class="italic text-[#E8C87A]">Bermakna</em>
+        <div class="hero-content relative z-20 h-full flex items-center justify-center pt-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                <div class="max-w-2xl mx-auto text-center">
+                    <span class="inline-block text-[10px] sm:text-sm uppercase tracking-[0.25em] sm:tracking-[0.3em] text-[#E8C87A] font-medium mb-3 sm:mb-4 reveal-on-scroll">Florist & Gift · Padang</span>
+                    <h1 class="text-3xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold text-white leading-[1.1] sm:leading-[1.05] reveal-on-scroll"
+                        style="font-family:'Playfair Display',serif; text-shadow: 0 2px 20px rgba(0,0,0,0.6);">
+                        Papan Bunga,<br>Hantaran &amp; <em class="italic text-[#E8C87A]">Dekorasi</em>
                     </h1>
-                    <p class="mt-4 text-base sm:text-lg text-white/80 leading-relaxed max-w-md reveal-on-scroll">
-                        Bunga segar, papan ucapan, hantaran, dan dekorasi elegan untuk setiap momen spesial Anda.
+                    <p class="mt-3 sm:mt-5 text-sm sm:text-base lg:text-lg text-white/70 leading-relaxed max-w-sm sm:max-w-lg mx-auto reveal-on-scroll" style="text-shadow: 0 1px 8px rgba(0,0,0,0.5);">
+                        Sadita menyediakan papan bunga, hantaran, dan dekorasi untuk berbagai acara di Padang.
                     </p>
-                    <div class="mt-7 flex flex-wrap gap-3 reveal-on-scroll">
+                    <div class="mt-6 sm:mt-8 flex flex-wrap justify-center gap-3 sm:gap-4 reveal-on-scroll">
                         <a href="#kategori"
-                            class="btn-primary px-6 py-3 rounded-full bg-[#7A1F2B] text-white text-sm font-semibold">
+                            class="btn-primary px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-[#7A1F2B] text-white text-sm font-semibold tracking-wide">
                             Pesan Sekarang
                         </a>
                         <a href="#galeri"
-                            class="btn-outline px-6 py-3 rounded-full border border-white/40 text-white text-sm font-semibold backdrop-blur-sm">
+                            class="btn-outline px-6 sm:px-8 py-3 sm:py-3.5 rounded-full border border-white/30 text-white text-sm font-semibold backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                             Lihat Koleksi
                         </a>
                     </div>
-                    <div class="mt-8 flex gap-6 sm:gap-8 reveal-on-scroll">
+                    <div class="mt-6 sm:mt-10 inline-flex items-center gap-4 sm:gap-8 px-5 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 reveal-on-scroll">
                         <div class="text-center">
-                            <div class="counter-number text-2xl sm:text-3xl font-bold text-white" data-target="500">0+</div>
-                            <div class="text-xs text-white/60 mt-1">Pesanan</div>
+                            <div class="counter-number text-xl sm:text-2xl lg:text-3xl font-bold text-white" data-target="500">0+</div>
+                            <div class="text-[9px] sm:text-[10px] text-white/50 mt-0.5 uppercase tracking-wider">Pesanan</div>
                         </div>
+                        <div class="w-px h-6 sm:h-8 bg-white/15"></div>
                         <div class="text-center">
-                            <div class="counter-number text-2xl sm:text-3xl font-bold text-white" data-target="200">0+</div>
-                            <div class="text-xs text-white/60 mt-1">Klien Puas</div>
+                            <div class="counter-number text-xl sm:text-2xl lg:text-3xl font-bold text-white" data-target="200">0+</div>
+                            <div class="text-[9px] sm:text-[10px] text-white/50 mt-0.5 uppercase tracking-wider">Klien Puas</div>
                         </div>
+                        <div class="w-px h-6 sm:h-8 bg-white/15"></div>
                         <div class="text-center">
-                            <div class="text-2xl sm:text-3xl font-bold text-[#E8C87A]">4.9★</div>
-                            <div class="text-xs text-white/60 mt-1">Rating</div>
+                            <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-[#E8C87A]">4.9★</div>
+                            <div class="text-[9px] sm:text-[10px] text-white/50 mt-0.5 uppercase tracking-wider">Rating</div>
                         </div>
                     </div>
                 </div>
@@ -118,8 +104,8 @@
         </div>
 
         <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 animate-bounce">
-            <span class="text-white/50 text-xs tracking-widest uppercase">Scroll</span>
-            <svg class="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span class="text-white/40 text-[10px] tracking-[0.3em] uppercase">Scroll</span>
+            <svg class="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
         </div>
@@ -442,23 +428,14 @@
         </div>
     </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const parallaxWrappers = document.querySelectorAll('.parallax-wrapper');
-            
-            // Simple Vanilla JS Parallax on scroll
-            window.addEventListener('scroll', () => {
-                const scrolled = window.scrollY;
-                
-                // Only animate if we are in the hero section (performance optimization)
-                if (scrolled < window.innerHeight + 200) {
-                    parallaxWrappers.forEach(wrapper => {
-                        const speed = parseFloat(wrapper.getAttribute('data-speed')) || 0.2;
-                        // Move the elements on the Y axis
-                        wrapper.style.transform = `translate3d(0, ${scrolled * speed}px, 0)`;
-                    });
-                }
-            }, { passive: true });
-        });
-    </script>
+    <style>
+        @keyframes scroll-horizontal {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-scroll-horizontal {
+            animation: scroll-horizontal 35s linear infinite;
+            will-change: transform;
+        }
+    </style>
 @endsection

@@ -5,12 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Sadita - Layanan florist & hadiah premium di Padang. Bunga, papan ucapan, hantaran, dan dekorasi elegan untuk setiap momen spesial Anda.">
+        content="Sadita - Florist, hantaran, dan dekorasi di Padang. Papan bunga, seserahan cantik, dan dekorasi acara untuk momen spesial Anda.">
 
-    <title>Sadita – Seni Memberi yang Bermakna</title>
+    <title>Sadita – Papan Bunga, Hantaran & Dekorasi di Padang</title>
+
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+    <link rel="shortcut icon" href="/favicon.png">
 
     {{-- Preload critical assets --}}
-    <link rel="preload" href="/images/hero-1.png" as="image" fetchpriority="high">
+    <link rel="preload" href="/images/hantaran-1.jpg" as="image" fetchpriority="high">
     <link rel="preload"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap"
         as="style">

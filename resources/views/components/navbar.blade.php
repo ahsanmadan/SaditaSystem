@@ -1,12 +1,12 @@
 <header id="main-navbar" class="fixed top-0 inset-x-0 z-50 transition-all duration-500">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-4">
         <!-- Logo -->
-        <a href="#beranda" class="navbar-logo text-2xl font-bold tracking-tight transition-colors duration-300">
+        <a href="#beranda" class="navbar-logo transition-colors duration-300 hover:opacity-90 italic" style="font-family:'Playfair Display',serif">
             Sadita
         </a>
 
         <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <nav class="hidden md:flex items-center gap-8 text-[13px] font-medium tracking-wide uppercase">
             <a href="#beranda" class="nav-link">Beranda</a>
             <a href="#kategori" class="nav-link">Kategori</a>
             <a href="#galeri" class="nav-link">Galeri</a>
@@ -16,8 +16,8 @@
         </nav>
 
         <!-- Desktop CTA -->
-        <a href="#kategori"
-            class="hidden md:inline-flex px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 nav-cta-btn">
+        <a href="/admin"
+            class="hidden md:inline-flex px-5 py-2 rounded-full text-[13px] font-semibold tracking-wide transition-all duration-300 nav-cta-btn border border-[#E8C87A]/40 hover:border-[#E8C87A]">
             Admin
         </a>
 
