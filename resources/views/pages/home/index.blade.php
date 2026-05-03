@@ -401,44 +401,146 @@
         });
     </script>
 
-    <section id="cara-pesan" class="py-16 sm:py-20 bg-white">
+    <section id="cara-pesan" class="pt-16 pb-10 sm:pt-20 sm:pb-12 bg-white overflow-hidden">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <div class="text-center reveal-on-scroll">
                 <span class="text-xs uppercase tracking-[0.2em] text-[#7A1F2B] font-semibold">Mudah & Cepat</span>
                 <h2 class="mt-3 text-3xl sm:text-4xl font-bold text-[#2D1E1E]">Cara Pesan</h2>
             </div>
-            <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
-                @php($steps = [['01', 'Pilih Produk', 'Jelajahi koleksi dan pilih yang sesuai'], ['02', 'Isi Detail', 'Lengkapi detail pesanan & alamat'], ['03', 'Bayar', 'Lakukan pembayaran yang aman'], ['04', 'Lacak Pesanan', 'Pantau status pesanan Anda']])
-                @foreach ($steps as $i => [$num, $stepTitle, $stepDesc])
-                    <div class="step-card text-center p-4 sm:p-6 rounded-2xl bg-[#FAF5F0] reveal-on-scroll hover:shadow-lg transition-all duration-300"
-                        style="animation-delay:{{ $i * 100 }}ms">
-                        <div
-                            class="w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-full bg-[#7A1F2B] text-white grid place-items-center font-bold text-sm sm:text-base">
-                            {{ $num }}</div>
-                        <h3 class="mt-3 text-sm sm:text-base font-bold text-[#2D1E1E]">{{ $stepTitle }}</h3>
-                        <p class="mt-2 text-[10px] sm:text-xs text-gray-500 leading-relaxed">{{ $stepDesc }}</p>
+            <div class="mt-10 flex flex-col md:flex-row gap-6 sm:gap-4 justify-between relative">
+                @php($steps = [
+                    ['01', 'Pilih Produk', 'Jelajahi koleksi dan pilih yang sesuai', '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>'],
+                    ['02', 'Isi Detail', 'Lengkapi detail pesanan & alamat', '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>'],
+                    ['03', 'Bayar', 'Lakukan pembayaran yang aman', '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>'],
+                    ['04', 'Lacak', 'Pantau status pesanan Anda', '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>']
+                ])
+                @foreach ($steps as $i => [$num, $stepTitle, $stepDesc, $icon])
+                    <div class="step-card relative text-center p-5 sm:p-6 rounded-2xl bg-[#FAF5F0] reveal-on-scroll hover:shadow-lg transition-all duration-300 flex-1 border border-gray-100" style="animation-delay:{{ $i * 100 }}ms">
+                        <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-[#E8C87A] text-[#7A1F2B] font-bold flex items-center justify-center text-sm shadow-sm">{{ $num }}</div>
+                        <div class="w-14 h-14 mx-auto rounded-full bg-[#7A1F2B] text-white flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                            {!! $icon !!}
+                        </div>
+                        <h3 class="text-sm sm:text-base font-bold text-[#2D1E1E]">{{ $stepTitle }}</h3>
+                        <p class="mt-2 text-xs sm:text-sm text-gray-500 leading-relaxed">{{ $stepDesc }}</p>
                     </div>
+                    @if($i < count($steps) - 1)
+                        <div class="hidden md:flex items-center justify-center text-gray-300">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                        </div>
+                    @endif
                 @endforeach
             </div>
         </div>
     </section>
 
-    <section id="lacak" class="py-16 sm:py-20 bg-gradient-to-br from-[#7A1F2B] to-[#4a1119] text-white">
-        <div class="max-w-2xl mx-auto px-5 text-center">
+    <section id="lacak" class="py-20 sm:py-28 bg-gradient-to-br from-[#7A1F2B] to-[#4a1119] text-white relative overflow-hidden">
+        <!-- Decorative background elements -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-white opacity-5 blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-[#E8C87A] opacity-10 blur-3xl pointer-events-none"></div>
+        
+        <div class="max-w-2xl mx-auto px-5 text-center relative z-10">
             <div class="reveal-on-scroll">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/10 mb-4 border border-white/20">
+                    <svg class="w-6 h-6 text-[#E8C87A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                </div>
                 <h2 class="text-3xl sm:text-4xl font-bold">Lacak Pesanan</h2>
-                <p class="mt-3 text-sm text-white/70">Masukkan kode pesanan untuk melihat status terkini.</p>
-                <div class="mt-8 flex flex-col sm:flex-row gap-3">
-                    <input
-                        class="flex-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-5 py-3 text-white placeholder-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8C87A]"
-                        placeholder="SDT-20260411-001">
-                    <button class="btn-track px-6 py-3 rounded-full bg-[#E8C87A] text-[#2D1E1E] font-semibold text-sm">
-                        Lacak Sekarang
+                <p class="mt-3 text-sm sm:text-base text-white/70 max-w-lg mx-auto">Masukkan kode pesanan Anda di bawah ini untuk melihat status terkini dari pesanan Anda.</p>
+                <div class="mt-8 flex flex-col sm:flex-row gap-3 max-w-lg mx-auto relative">
+                    <input id="trackingInput"
+                        class="flex-1 rounded-full border border-white/40 bg-white/15 backdrop-blur-sm px-6 py-3.5 text-white placeholder-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-[#E8C87A] focus:bg-white/20 transition-all shadow-inner"
+                        placeholder="Contoh: SDT-20260411-001" autocomplete="off">
+                    <button id="trackingBtn" onclick="trackOrder()" class="btn-track px-8 py-3.5 rounded-full bg-[#E8C87A] hover:bg-white text-[#2D1E1E] font-bold text-sm transition-colors duration-300 shadow-lg flex items-center justify-center gap-2 whitespace-nowrap">
+                        <span id="trackingBtnText">Lacak</span>
+                        <svg id="trackingSpinner" class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#2D1E1E] hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
                     </button>
+                </div>
+                
+                <!-- Tracking Result State Container -->
+                <div id="trackingResult" class="hidden mt-8 text-left max-w-lg mx-auto bg-white rounded-2xl p-6 shadow-2xl transform transition-all translate-y-4 opacity-0">
+                    <!-- Dynamic content will be injected here -->
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Tracking Logic JS -->
+    <script>
+        function trackOrder() {
+            const input = document.getElementById('trackingInput');
+            const btnText = document.getElementById('trackingBtnText');
+            const spinner = document.getElementById('trackingSpinner');
+            const resultBox = document.getElementById('trackingResult');
+            
+            const code = input.value.trim().toUpperCase();
+            
+            if(!code) {
+                input.focus();
+                input.classList.add('ring-2', 'ring-red-400');
+                setTimeout(() => input.classList.remove('ring-2', 'ring-red-400'), 1000);
+                return;
+            }
+
+            // Loading state
+            btnText.textContent = "Mencari...";
+            spinner.classList.remove('hidden');
+            resultBox.classList.add('hidden');
+            resultBox.classList.remove('translate-y-0', 'opacity-100');
+            
+            // Simulate API call
+            setTimeout(() => {
+                btnText.textContent = "Lacak";
+                spinner.classList.add('hidden');
+                
+                resultBox.classList.remove('hidden');
+                
+                // Demo logic: If starts with SDT, assume success, else not found
+                if(code.startsWith('SDT')) {
+                    resultBox.innerHTML = `
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-[#2D1E1E] font-bold text-lg">Pesanan Ditemukan</h4>
+                                <p class="text-xs text-gray-500 font-mono">${code}</p>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-100 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm text-gray-500">Status</span>
+                                <span class="text-xs font-bold text-[#7A1F2B] bg-[#FAF5F0] px-3 py-1 rounded-full">Dalam Proses Pengerjaan</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500">Estimasi Selesai</span>
+                                <span class="text-sm font-semibold text-[#2D1E1E]">Besok, 14:00 WIB</span>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-center text-gray-400 mt-4">Hubungi admin jika terdapat kesalahan data.</p>
+                    `;
+                } else {
+                    resultBox.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-4 text-center">
+                            <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 mb-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </div>
+                            <h4 class="text-[#2D1E1E] font-bold">Kode Tidak Ditemukan</h4>
+                            <p class="text-sm text-gray-500 mt-1">Pastikan Anda memasukkan kode pesanan yang benar (Contoh: SDT-...).</p>
+                        </div>
+                    `;
+                }
+
+                // Animate in
+                setTimeout(() => {
+                    resultBox.classList.add('translate-y-0', 'opacity-100');
+                    resultBox.classList.remove('translate-y-4', 'opacity-0');
+                }, 50);
+
+            }, 1200);
+        }
+    </script>
 
     <section id="tentang" class="py-16 sm:py-20 bg-[#FAF5F0]">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-10">
