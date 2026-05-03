@@ -2,9 +2,9 @@
 
 @section('content')
     <section id="beranda" class="relative h-screen overflow-hidden">
-        <div class="hero-slide active" style="background-image:url('/images/hero-1.png')"></div>
-        <div class="hero-slide" style="background-image:url('/images/hero-2.png')"></div>
-        <div class="hero-slide" style="background-image:url('/images/hero-3.png')"></div>
+        <div class="hero-slide active" style="background-image:url('/images/hero-1.jpg')"></div>
+        <div class="hero-slide" style="background-image:url('/images/hero-2.jpg')"></div>
+        <div class="hero-slide" style="background-image:url('/images/hero-3.jpg')"></div>
 
         <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60 z-10"></div>
 
@@ -64,19 +64,19 @@
                     dalam hidup Anda</p>
             </div>
 
-            <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
-                @php($categories = [['Papan Ucapan', 'Ucapan elegan untuk momen penting', '/images/product-greeting.png', '#greeting-board'], ['Bucket Bunga', 'Rangkaian bunga segar penuh makna', '/images/product-bouquet.png', '#florist-bucket'], ['Hantaran', 'Hantaran cantik penuh detail', '/images/product-hantaran.png', '#hantaran'], ['Dekorasi', 'Dekorasi custom sesuai konsep Anda', '/images/product-decoration.png', '#dekorasi']])
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                @php($categories = [['Papan Ucapan', 'Standing board & mirror elegan untuk setiap momen', '/images/cat-papan-ucapan.jpg', '#greeting-board'], ['Hantaran', 'Seserahan & gift box cantik penuh detail', '/images/cat-hantaran.jpg', '#hantaran'], ['Dekorasi', 'Dekorasi event custom sesuai konsep Anda', '/images/cat-dekorasi.jpg', '#dekorasi']])
                 @foreach ($categories as $i => [$title, $desc, $img, $link])
                     <a href="{{ $link }}" class="category-card group reveal-on-scroll"
                         style="animation-delay: {{ $i * 100 }}ms">
-                        <div class="relative overflow-hidden rounded-2xl aspect-[3/4] sm:aspect-square">
+                        <div class="relative overflow-hidden rounded-2xl aspect-[4/5] shadow-md border border-gray-100">
                             <img src="{{ $img }}" alt="{{ $title }}"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-5">
-                                <h3 class="text-sm sm:text-lg font-bold text-white">{{ $title }}</h3>
-                                <p class="text-[10px] sm:text-xs text-white/70 mt-1 line-clamp-2">{{ $desc }}</p>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-6 text-center md:text-left">
+                                <h3 class="text-xl sm:text-2xl font-serif font-bold text-white tracking-wide">{{ $title }}</h3>
+                                <p class="text-xs sm:text-sm text-white/80 mt-1.5 leading-relaxed">{{ $desc }}</p>
                             </div>
                         </div>
                     </a>
@@ -91,22 +91,35 @@
         'greeting-board' => [
             'title' => 'Papan Ucapan',
             'subtitle' => 'Greeting Board',
-            'items' => [['Papan Congratulations', 'Rp 350.000', '/images/product-greeting.png'], ['Papan Happy Wedding', 'Rp 400.000', '/images/product-greeting.png'], ['Papan Duka Cita', 'Rp 300.000', '/images/product-greeting.png'], ['Papan Peresmian', 'Rp 450.000', '/images/product-greeting.png'], ['Papan Ucapan Custom', 'Rp 500.000', '/images/product-greeting.png']],
-        ],
-        'florist-bucket' => [
-            'title' => 'Bucket Bunga',
-            'subtitle' => 'Florist Bucket',
-            'items' => [['Bucket Mawar Merah', 'Rp 150.000', '/images/product-bouquet.png'], ['Bucket Lily Putih', 'Rp 200.000', '/images/product-bouquet.png'], ['Bucket Matahari', 'Rp 175.000', '/images/product-bouquet.png'], ['Bucket Mixed Premium', 'Rp 250.000', '/images/product-bouquet.png'], ['Bucket Tulip Import', 'Rp 350.000', '/images/product-bouquet.png']],
+            'items' => [
+                ['Papan Standing Mirror Premium', 'Hubungi Kami', '/images/papan-1.jpg'],
+                ['Papan Congratulations Eksklusif', 'Hubungi Kami', '/images/papan-2.jpg'],
+                ['Papan Rustic Custom', 'Hubungi Kami', '/images/papan-3.jpg'],
+                ['Papan Ucapan Selamatan', 'Hubungi Kami', '/images/papan-4.jpg'],
+                ['Standing Mirror Besar', 'Hubungi Kami', '/images/papan-5.jpg'],
+            ],
         ],
         'hantaran' => [
             'title' => 'Hantaran',
-            'subtitle' => 'Seserahan',
-            'items' => [['Set Hantaran 5 Item', 'Rp 800.000', '/images/product-hantaran.png'], ['Set Hantaran 7 Item', 'Rp 1.200.000', '/images/product-hantaran.png'], ['Set Hantaran 9 Item', 'Rp 1.500.000', '/images/product-hantaran.png'], ['Hantaran Adat Minang', 'Rp 2.000.000', '/images/product-hantaran.png'], ['Hantaran Premium Gold', 'Rp 2.500.000', '/images/product-hantaran.png']],
+            'subtitle' => 'Seserahan & Gift',
+            'items' => [
+                ['Bridesmaid Gift Box', 'Hubungi Kami', '/images/hantaran-1.jpg'],
+                ['Set Hantaran Nikah', 'Hubungi Kami', '/images/hantaran-2.jpg'],
+                ['Hantaran Premium Wedding', 'Hubungi Kami', '/images/hantaran-3.jpg'],
+                ['Seserahan Adat Minang', 'Hubungi Kami', '/images/hantaran-4.jpg'],
+                ['Hantaran Gold Edition', 'Hubungi Kami', '/images/hantaran-5.jpg'],
+            ],
         ],
         'dekorasi' => [
             'title' => 'Dekorasi',
-            'subtitle' => 'Decoration',
-            'items' => [['Dekorasi Lamaran', 'Mulai Rp 1.500.000', '/images/product-decoration.png'], ['Dekorasi Akad Nikah', 'Mulai Rp 3.000.000', '/images/product-decoration.png'], ['Dekorasi Resepsi', 'Mulai Rp 5.000.000', '/images/product-decoration.png'], ['Dekorasi Tunangan', 'Mulai Rp 1.000.000', '/images/product-decoration.png'], ['Paket Dekorasi Full', 'Mulai Rp 8.000.000', '/images/product-decoration.png']],
+            'subtitle' => 'Event Decoration',
+            'items' => [
+                ['Dekorasi Lamaran', 'Hubungi Kami', '/images/dekorasi-1.jpg'],
+                ['Dekorasi Tunangan', 'Hubungi Kami', '/images/dekorasi-2.jpg'],
+                ['Table Setting Premium', 'Hubungi Kami', '/images/dekorasi-3.jpg'],
+                ['Dekorasi Grand Opening', 'Hubungi Kami', '/images/dekorasi-4.jpg'],
+                ['Dekorasi Akad Nikah', 'Hubungi Kami', '/images/dekorasi-5.jpg'],
+            ],
         ],
     ];
     ?>
@@ -129,8 +142,8 @@
                     class="product-scroll-container flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide reveal-on-scroll">
                     @foreach ($category['items'] as $j => [$name, $price, $img])
                         <div
-                            class="product-card min-w-[140px] sm:min-w-[160px] max-w-[160px] sm:max-w-[180px] flex-shrink-0 snap-start rounded-xl overflow-hidden bg-white shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300">
-                            <div class="relative aspect-square overflow-hidden">
+                            class="product-card min-w-[140px] sm:min-w-[160px] max-w-[160px] sm:max-w-[180px] flex-shrink-0 snap-start rounded-xl overflow-hidden bg-white shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 flex flex-col">
+                            <div class="relative aspect-square overflow-hidden flex-shrink-0">
                                 <img src="{{ $img }}" alt="{{ $name }}"
                                     class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                                     loading="lazy">
@@ -139,14 +152,14 @@
                                         class="absolute top-2 left-2 px-2 py-0.5 bg-[#7A1F2B] text-white text-[9px] sm:text-[10px] font-semibold rounded-full">Terlaris</span>
                                 @endif
                             </div>
-                            <div class="p-2.5 sm:p-3">
-                                <h4 class="text-xs sm:text-sm font-medium text-[#2D1E1E] line-clamp-2 leading-tight">
+                            <div class="p-2.5 sm:p-3 flex flex-col flex-1">
+                                <h4 class="text-xs sm:text-sm font-medium text-[#2D1E1E] line-clamp-2 leading-tight flex-1">
                                     {{ $name }}</h4>
-                                <p class="text-xs sm:text-sm font-bold text-[#7A1F2B] mt-1.5">{{ $price }}</p>
-                                <button
-                                    class="btn-order mt-2 w-full py-1.5 sm:py-2 rounded-lg bg-[#7A1F2B] text-white text-[10px] sm:text-xs font-semibold">
-                                    Pesan
-                                </button>
+                                <a href="https://wa.me/6289653090248?text=Halo+Sadita%2C+saya+tertarik+dengan+{{ urlencode($name) }}"
+                                    target="_blank"
+                                    class="mt-3 w-full py-1.5 sm:py-2 rounded-lg bg-[#7A1F2B] text-white text-[10px] sm:text-xs font-semibold text-center block hover:bg-[#5C1520] transition-colors">
+                                    Hubungi Kami
+                                </a>
                             </div>
                         </div>
                     @endforeach
@@ -162,15 +175,48 @@
                 <h2 class="mt-3 text-3xl sm:text-4xl font-bold">Kenapa Pilih Sadita?</h2>
             </div>
             <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
-                @php($reasons = [['🌸', 'Kualitas Premium', 'Material terbaik & bunga segar pilihan'], ['⚡', 'Proses Cepat', 'Pengerjaan profesional tepat waktu'], ['🚚', 'Gratis Ongkir', 'Free delivery area Padang & sekitarnya'], ['✨', 'Custom Request', 'Desain sesuai keinginan Anda']])
-                @foreach ($reasons as $i => [$icon, $reasonTitle, $reasonDesc])
-                    <div class="reason-card rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-4 sm:p-6 text-center reveal-on-scroll hover:bg-white/10 transition-all duration-300"
-                        style="animation-delay:{{ $i * 100 }}ms">
-                        <div class="text-2xl sm:text-3xl">{{ $icon }}</div>
-                        <h3 class="mt-3 text-sm sm:text-base font-bold">{{ $reasonTitle }}</h3>
-                        <p class="mt-2 text-[10px] sm:text-xs text-white/60 leading-relaxed">{{ $reasonDesc }}</p>
+
+                <div class="reason-card rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-4 sm:p-6 text-center reveal-on-scroll hover:bg-white/10 transition-all duration-300" style="animation-delay:0ms">
+                    <div class="flex justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[#E8C87A]" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+                        </svg>
                     </div>
-                @endforeach
+                    <h3 class="mt-4 text-sm sm:text-base font-bold">Kualitas Premium</h3>
+                    <p class="mt-2 text-[10px] sm:text-xs text-white/60 leading-relaxed">Material terbaik &amp; bunga segar pilihan</p>
+                </div>
+
+                <div class="reason-card rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-4 sm:p-6 text-center reveal-on-scroll hover:bg-white/10 transition-all duration-300" style="animation-delay:100ms">
+                    <div class="flex justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[#E8C87A]" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                        </svg>
+                    </div>
+                    <h3 class="mt-4 text-sm sm:text-base font-bold">Proses Cepat</h3>
+                    <p class="mt-2 text-[10px] sm:text-xs text-white/60 leading-relaxed">Pengerjaan profesional tepat waktu</p>
+                </div>
+
+                <div class="reason-card rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-4 sm:p-6 text-center reveal-on-scroll hover:bg-white/10 transition-all duration-300" style="animation-delay:200ms">
+                    <div class="flex justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[#E8C87A]" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                        </svg>
+                    </div>
+                    <h3 class="mt-4 text-sm sm:text-base font-bold">Gratis Ongkir</h3>
+                    <p class="mt-2 text-[10px] sm:text-xs text-white/60 leading-relaxed">Free delivery area Padang &amp; sekitarnya</p>
+                </div>
+
+                <div class="reason-card rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-4 sm:p-6 text-center reveal-on-scroll hover:bg-white/10 transition-all duration-300" style="animation-delay:300ms">
+                    <div class="flex justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[#E8C87A]" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.43l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </div>
+                    <h3 class="mt-4 text-sm sm:text-base font-bold">Custom Request</h3>
+                    <p class="mt-2 text-[10px] sm:text-xs text-white/60 leading-relaxed">Desain sesuai keinginan Anda</p>
+                </div>
+
             </div>
         </div>
     </section>
@@ -183,7 +229,31 @@
             </div>
 
             <div class="masonry-grid mt-10">
-                @php($galleryImages = [['gallery-1.png', 'tall'], ['gallery-2.png', 'wide'], ['gallery-3.png', 'normal'], ['gallery-4.png', 'normal'], ['gallery-5.png', 'tall'], ['gallery-6.png', 'wide'], ['product-bouquet.png', 'normal'], ['product-decoration.png', 'normal']])
+                @php($galleryImages = [
+                    ['papan-1.jpg',    'tall'],
+                    ['hantaran-1.jpg', 'normal'],
+                    ['dekorasi-1.jpg', 'normal'],
+                    ['papan-2.jpg',    'wide'],
+                    ['gallery-1.jpg',  'tall'],
+                    ['hantaran-2.jpg', 'normal'],
+                    ['dekorasi-2.jpg', 'normal'],
+                    ['papan-3.jpg',    'normal'],
+                    ['gallery-2.jpg',  'wide'],
+                    ['hantaran-3.jpg', 'tall'],
+                    ['dekorasi-3.jpg', 'normal'],
+                    ['gallery-3.jpg',  'normal'],
+                    ['papan-4.jpg',    'wide'],
+                    ['hantaran-4.jpg', 'normal'],
+                    ['dekorasi-4.jpg', 'tall'],
+                    ['gallery-4.jpg',  'normal'],
+                    ['papan-5.jpg',    'normal'],
+                    ['hantaran-5.jpg', 'wide'],
+                    ['dekorasi-5.jpg', 'normal'],
+                    ['gallery-5.jpg',  'tall'],
+                    ['gallery-6.jpg',  'normal'],
+                    ['gallery-7.jpg',  'normal'],
+                    ['gallery-8.jpg',  'wide'],
+                ])
                 @foreach ($galleryImages as $i => [$gImg, $gSize])
                     <div class="masonry-item masonry-{{ $gSize }} reveal-on-scroll"
                         style="animation-delay:{{ $i * 80 }}ms">
@@ -272,31 +342,25 @@
                 <span class="text-xs uppercase tracking-[0.2em] text-[#7A1F2B] font-semibold">Hubungi Kami</span>
                 <h2 class="mt-3 text-3xl sm:text-4xl font-bold text-[#2D1E1E]">Kontak</h2>
                 <div class="mt-6 space-y-3">
-                    <a href="#"
+                    <a href="https://wa.me/6289653090248" target="_blank"
                         class="contact-card flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#25D366]/30 transition-all duration-300">
-                        <div
-                            class="w-10 h-10 rounded-full bg-[#25D366]/10 flex items-center justify-center text-[#25D366] text-lg">
-                            💬</div>
+                        <div class="w-10 h-10 rounded-full bg-[#25D366]/10 flex items-center justify-center text-[#25D366] text-lg">💬</div>
                         <div>
                             <div class="font-semibold text-sm text-[#2D1E1E]">WhatsApp</div>
-                            <div class="text-xs text-gray-500">Chat langsung dengan kami</div>
+                            <div class="text-xs text-gray-500">0896-5309-0248 · Chat langsung</div>
                         </div>
                     </a>
-                    <a href="#"
+                    <a href="https://instagram.com/sadita.florist" target="_blank"
                         class="contact-card flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#E4405F]/30 transition-all duration-300">
-                        <div
-                            class="w-10 h-10 rounded-full bg-[#E4405F]/10 flex items-center justify-center text-[#E4405F] text-lg">
-                            📸</div>
+                        <div class="w-10 h-10 rounded-full bg-[#E4405F]/10 flex items-center justify-center text-[#E4405F] text-lg">📸</div>
                         <div>
                             <div class="font-semibold text-sm text-[#2D1E1E]">Instagram</div>
-                            <div class="text-xs text-gray-500">@sadita.florist</div>
+                            <div class="text-xs text-gray-500">@sadita.florist · @sadita.hantaran · @sadita.decor</div>
                         </div>
                     </a>
-                    <a href="#"
+                    <a href="https://maps.google.com/?q=Padang+Sumatera+Barat" target="_blank"
                         class="contact-card flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#7A1F2B]/30 transition-all duration-300">
-                        <div
-                            class="w-10 h-10 rounded-full bg-[#7A1F2B]/10 flex items-center justify-center text-[#7A1F2B] text-lg">
-                            📍</div>
+                        <div class="w-10 h-10 rounded-full bg-[#7A1F2B]/10 flex items-center justify-center text-[#7A1F2B] text-lg">📍</div>
                         <div>
                             <div class="font-semibold text-sm text-[#2D1E1E]">Lokasi</div>
                             <div class="text-xs text-gray-500">Padang, Sumatera Barat</div>
