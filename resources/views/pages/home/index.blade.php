@@ -415,16 +415,18 @@
                     ['04', 'Lacak', 'Pantau status pesanan Anda', '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>']
                 ])
                 @foreach ($steps as $i => [$num, $stepTitle, $stepDesc, $icon])
-                    <div class="step-card relative text-center p-5 sm:p-6 rounded-2xl bg-[#FAF5F0] reveal-on-scroll hover:shadow-lg transition-all duration-300 flex-1 border border-gray-100" style="animation-delay:{{ $i * 100 }}ms">
-                        <div class="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-[#E8C87A] text-[#7A1F2B] font-bold flex items-center justify-center text-sm shadow-sm">{{ $num }}</div>
-                        <div class="w-14 h-14 mx-auto rounded-full bg-[#7A1F2B] text-white flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                    <div class="step-card relative text-center p-5 sm:p-6 pt-8 sm:pt-10 rounded-2xl bg-[#FAF5F0] reveal-on-scroll hover:shadow-lg transition-all duration-300 flex flex-col flex-1 h-full border border-gray-100 overflow-hidden" style="animation-delay:{{ $i * 100 }}ms">
+                        <div class="absolute top-0 left-0 w-10 h-10 rounded-br-2xl bg-[#E8C87A] text-[#7A1F2B] font-bold flex items-center justify-center text-sm shadow-sm">{{ $num }}</div>
+                        <div class="w-14 h-14 mx-auto rounded-full bg-[#7A1F2B] text-white flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform flex-shrink-0">
                             {!! $icon !!}
                         </div>
-                        <h3 class="text-sm sm:text-base font-bold text-[#2D1E1E]">{{ $stepTitle }}</h3>
-                        <p class="mt-2 text-xs sm:text-sm text-gray-500 leading-relaxed">{{ $stepDesc }}</p>
+                        <div class="flex flex-col flex-1">
+                            <h3 class="text-sm sm:text-base font-bold text-[#2D1E1E]">{{ $stepTitle }}</h3>
+                            <p class="mt-2 text-xs sm:text-sm text-gray-500 leading-relaxed">{{ $stepDesc }}</p>
+                        </div>
                     </div>
                     @if($i < count($steps) - 1)
-                        <div class="hidden md:flex items-center justify-center text-gray-300">
+                        <div class="hidden md:flex items-center justify-center text-gray-300 self-center">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                         </div>
                     @endif
@@ -433,7 +435,7 @@
         </div>
     </section>
 
-    <section id="lacak" class="py-20 sm:py-28 bg-gradient-to-br from-[#7A1F2B] to-[#4a1119] text-white relative overflow-hidden">
+    <section id="lacak" class="pt-16 pb-12 sm:pt-20 sm:pb-16 bg-gradient-to-br from-[#7A1F2B] to-[#4a1119] text-white relative overflow-hidden">
         <!-- Decorative background elements -->
         <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-white opacity-5 blur-3xl pointer-events-none"></div>
         <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-[#E8C87A] opacity-10 blur-3xl pointer-events-none"></div>
