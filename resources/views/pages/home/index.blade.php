@@ -64,19 +64,19 @@
                     dalam hidup Anda</p>
             </div>
 
-            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10 max-w-5xl mx-auto">
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                 @php($categories = [['Papan Ucapan', 'Standing board & mirror elegan untuk setiap momen', '/images/cat-papan-ucapan.jpg', '#greeting-board'], ['Hantaran', 'Seserahan & gift box cantik penuh detail', '/images/cat-hantaran.jpg', '#hantaran'], ['Dekorasi', 'Dekorasi event custom sesuai konsep Anda', '/images/cat-dekorasi.jpg', '#dekorasi']])
                 @foreach ($categories as $i => [$title, $desc, $img, $link])
                     <a href="{{ $link }}" class="category-card group reveal-on-scroll"
                         style="animation-delay: {{ $i * 100 }}ms">
-                        <div class="relative overflow-hidden rounded-2xl aspect-[3/4] sm:aspect-square">
+                        <div class="relative overflow-hidden rounded-2xl aspect-[4/5] shadow-md border border-gray-100">
                             <img src="{{ $img }}" alt="{{ $title }}"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-5">
-                                <h3 class="text-sm sm:text-lg font-bold text-white">{{ $title }}</h3>
-                                <p class="text-[10px] sm:text-xs text-white/70 mt-1 line-clamp-2">{{ $desc }}</p>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-6 text-center md:text-left">
+                                <h3 class="text-xl sm:text-2xl font-serif font-bold text-white tracking-wide">{{ $title }}</h3>
+                                <p class="text-xs sm:text-sm text-white/80 mt-1.5 leading-relaxed">{{ $desc }}</p>
                             </div>
                         </div>
                     </a>
