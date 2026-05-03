@@ -27,7 +27,7 @@
     <link rel="dns-prefetch" href="https://api.groq.com">
 </head>
 
-<body class="bg-[#FFFDFB] text-gray-900 overflow-x-hidden">
+<body class="w-full bg-[#FFFDFB] text-gray-900 overflow-x-hidden">
     {{-- Preloader --}}
     <div id="preloader" class="fixed inset-0 z-[100] bg-[#FFFDFB] flex items-center justify-center transition-opacity duration-500">
         <div class="flex flex-col items-center gap-4">
@@ -38,7 +38,7 @@
 
     @include('components.navbar')
 
-    <main>
+    <main class="w-full">
         @yield('content')
     </main>
 
