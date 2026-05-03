@@ -318,51 +318,88 @@
                 <h2 class="mt-3 text-3xl sm:text-4xl font-bold text-[#2D1E1E]">Galeri Karya Kami</h2>
             </div>
 
-            <div class="masonry-grid mt-10">
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap justify-center gap-3 mt-8 reveal-on-scroll">
+                <button class="filter-btn active px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-colors duration-300 bg-[#7A1F2B] text-white" data-filter="all">Semua</button>
+                <button class="filter-btn px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-colors duration-300 bg-white text-gray-500 border border-gray-200 hover:bg-gray-50" data-filter="dekorasi">Dekorasi</button>
+                <button class="filter-btn px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-colors duration-300 bg-white text-gray-500 border border-gray-200 hover:bg-gray-50" data-filter="hantaran">Hantaran</button>
+                <button class="filter-btn px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-colors duration-300 bg-white text-gray-500 border border-gray-200 hover:bg-gray-50" data-filter="papan">Papan Ucapan</button>
+            </div>
+
+            <div class="masonry-grid mt-10" id="gallery-container">
                 @php($galleryImages = [
-                    ['papan-1.jpg',    'tall'],
-                    ['hantaran-1.jpg', 'normal'],
-                    ['dekorasi-1.jpg', 'normal'],
-                    ['papan-2.jpg',    'wide'],
-                    ['gallery-1.jpg',  'tall'],
-                    ['hantaran-2.jpg', 'normal'],
-                    ['dekorasi-2.jpg', 'normal'],
-                    ['papan-3.jpg',    'normal'],
-                    ['gallery-2.jpg',  'wide'],
-                    ['hantaran-3.jpg', 'tall'],
-                    ['dekorasi-3.jpg', 'normal'],
-                    ['gallery-3.jpg',  'normal'],
-                    ['papan-4.jpg',    'wide'],
-                    ['hantaran-4.jpg', 'normal'],
-                    ['dekorasi-4.jpg', 'tall'],
-                    ['gallery-4.jpg',  'normal'],
-                    ['papan-5.jpg',    'normal'],
-                    ['hantaran-5.jpg', 'wide'],
-                    ['dekorasi-5.jpg', 'normal'],
-                    ['gallery-5.jpg',  'tall'],
-                    ['gallery-6.jpg',  'normal'],
-                    ['gallery-7.jpg',  'normal'],
-                    ['gallery-8.jpg',  'wide'],
+                    ['papan-1.jpg',    'tall',   'papan',    '🌸 Papan Ucapan Premium'],
+                    ['hantaran-1.jpg', 'normal', 'hantaran', '🎁 Hantaran Seserahan'],
+                    ['dekorasi-1.jpg', 'normal', 'dekorasi', '✨ Dekorasi Pernikahan'],
+                    ['papan-2.jpg',    'wide',   'papan',    '🌸 Papan Bunga Rustic'],
+                    ['hantaran-3.jpg', 'tall',   'hantaran', '🎁 Hantaran Eksklusif'],
+                    ['dekorasi-3.jpg', 'normal', 'dekorasi', '✨ Dekorasi Lamaran'],
+                    ['papan-3.jpg',    'normal', 'papan',    '🌸 Papan Congratulations'],
+                    ['hantaran-4.jpg', 'normal', 'hantaran', '🎁 Hantaran Adat'],
+                    ['dekorasi-4.jpg', 'tall',   'dekorasi', '✨ Dekorasi Premium'],
+                    ['papan-4.jpg',    'wide',   'papan',    '🌸 Standing Mirror'],
+                    ['hantaran-5.jpg', 'wide',   'hantaran', '🎁 Hantaran Gold'],
+                    ['dekorasi-5.jpg', 'normal', 'dekorasi', '✨ Grand Opening'],
+                    ['papan-5.jpg',    'normal', 'papan',    '🌸 Ucapan Custom'],
                 ])
-                @foreach ($galleryImages as $i => [$gImg, $gSize])
-                    <div class="masonry-item masonry-{{ $gSize }} reveal-on-scroll"
-                        style="animation-delay:{{ $i * 80 }}ms">
-                        <div class="gallery-card group">
-                            <img src="/images/{{ $gImg }}" alt="Galeri Sadita {{ $i + 1 }}"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                loading="lazy">
-                            <div
-                                class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 flex items-center justify-center">
-                                <span
-                                    class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-medium">Lihat
-                                    Detail</span>
+                @foreach ($galleryImages as $i => [$gImg, $gSize, $gCat, $gLabel])
+                    <div class="masonry-item masonry-{{ $gSize }} reveal-on-scroll" data-category="{{ $gCat }}" style="animation-delay:{{ $i * 50 }}ms">
+                        <div class="gallery-card group relative overflow-hidden rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 cursor-pointer w-full h-full">
+                            <img src="/images/{{ $gImg }}" alt="{{ $gLabel }}"
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-500 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                                <span class="text-[#E8C87A] text-[10px] sm:text-xs font-bold tracking-widest uppercase transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{{ $gLabel }}</span>
+                                <span class="text-white text-xs sm:text-sm font-medium border-b border-white/50 pb-0.5 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">Lihat Detail</span>
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
+
+            <!-- CTA Lihat Semua -->
+            <div class="mt-12 sm:mt-16 text-center reveal-on-scroll">
+                <a href="https://instagram.com/sadita.decor" target="_blank" class="inline-flex items-center gap-2 px-8 py-3 sm:py-4 rounded-full border border-[#7A1F2B] text-[#7A1F2B] text-sm font-bold hover:bg-[#7A1F2B] hover:text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                    Follow @sadita.decor untuk lebih banyak karya
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </a>
+            </div>
         </div>
     </section>
+
+    <!-- Vanilla JS for Gallery Filter -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const masonryItems = document.querySelectorAll('.masonry-item');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Reset all buttons
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-[#7A1F2B]', 'text-white', 'active');
+                        b.classList.add('bg-white', 'text-gray-500', 'border', 'border-gray-200', 'hover:bg-gray-50');
+                    });
+                    
+                    // Activate clicked button
+                    btn.classList.add('bg-[#7A1F2B]', 'text-white', 'active');
+                    btn.classList.remove('bg-white', 'text-gray-500', 'border', 'border-gray-200', 'hover:bg-gray-50');
+
+                    const filterValue = btn.getAttribute('data-filter');
+
+                    masonryItems.forEach(item => {
+                        if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                            item.style.display = 'block';
+                            // Quick hack to re-trigger masonry layout if needed, though pure CSS column masonry handles display:none beautifully
+                            setTimeout(() => { item.style.opacity = '1'; }, 50);
+                        } else {
+                            item.style.opacity = '0';
+                            setTimeout(() => { item.style.display = 'none'; }, 300);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 
     <section id="cara-pesan" class="py-16 sm:py-20 bg-white">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
