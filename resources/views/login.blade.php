@@ -55,7 +55,18 @@
                     <p class="mt-2 text-sm text-gray-500 leading-relaxed">Silakan masukkan kredensial Anda untuk mengakses sistem Sadita.</p>
                 </div>
 
-                <form method="POST" action="" class="mt-10 space-y-6">
+                <!-- Info Demo -->
+                <div class="mt-6 bg-[#6B1B2A]/10 border border-[#6B1B2A]/20 rounded-xl p-4 flex items-start gap-3">
+                    <svg class="w-5 h-5 text-[#6B1B2A] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <h3 class="text-sm font-semibold text-[#6B1B2A]">Info Demo Pameran</h3>
+                        <p class="text-xs text-gray-600 mt-1">Gunakan <strong>Username: admin</strong> dan <strong>Password: admin</strong> untuk mencoba login.</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="" class="mt-8 space-y-6">
                     @csrf
                     
                     <!-- Email/Username Input -->
