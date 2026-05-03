@@ -1,51 +1,77 @@
 @extends('layouts.app')
 
 @section('content')
-    <section id="beranda" class="relative h-screen overflow-hidden bg-[#18181b]">
-        <!-- Polaroid Parallax Background -->
-        <div class="absolute inset-0 z-0 overflow-hidden opacity-30 pointer-events-none">
-            <!-- Polaroid 1 -->
-            <div class="parallax-wrapper absolute top-[-5%] left-[5%]" data-speed="0.15">
-                <div class="w-48 sm:w-64 p-2 sm:p-3 bg-white shadow-2xl -rotate-6 transition-transform">
-                    <div class="relative w-full aspect-[3/4]">
-                        <img src="/images/hero-1.jpg" class="w-full h-full object-cover" alt="Polaroid 1">
-                    </div>
+    <section id="beranda" class="relative w-full h-screen overflow-hidden bg-[#18181b]">
+        <!-- Polaroid Parallax Background (10 Photos Dense Collage - Small Sizes) -->
+        <div class="absolute inset-0 z-0 overflow-hidden opacity-20 pointer-events-none">
+            
+            <!-- Zone 1: Top Left -->
+            <div class="parallax-wrapper absolute top-[5%] left-[5%]" data-speed="0.15">
+                <div class="w-32 p-2 bg-white shadow-xl -rotate-6 transition-transform">
+                    <div class="relative w-full aspect-[3/4]"><img src="/images/hero-1.jpg" class="w-full h-full object-cover" alt="Zone 1"></div>
                 </div>
             </div>
             
-            <!-- Polaroid 2 -->
-            <div class="parallax-wrapper absolute top-[15%] right-[5%]" data-speed="0.35">
-                <div class="w-52 sm:w-72 p-2 sm:p-3 bg-white shadow-2xl rotate-12 transition-transform">
-                    <div class="relative w-full aspect-[4/5]">
-                        <img src="/images/hero-2.jpg" class="w-full h-full object-cover" alt="Polaroid 2">
-                    </div>
+            <!-- Zone 2: Top Center -->
+            <div class="parallax-wrapper absolute top-[2%] left-[40%]" data-speed="0.3">
+                <div class="w-40 p-2 bg-white shadow-xl rotate-3 transition-transform">
+                    <div class="relative w-full aspect-square"><img src="/images/gallery-1.jpg" class="w-full h-full object-cover" alt="Zone 2"></div>
                 </div>
             </div>
 
-            <!-- Polaroid 3 -->
-            <div class="parallax-wrapper absolute top-[40%] left-[20%]" data-speed="0.25">
-                <div class="w-56 sm:w-80 p-2 sm:p-3 bg-white shadow-2xl rotate-3 transition-transform">
-                    <div class="relative w-full aspect-square">
-                        <img src="/images/gallery-1.jpg" class="w-full h-full object-cover" alt="Polaroid 3">
-                    </div>
+            <!-- Zone 3: Top Right -->
+            <div class="parallax-wrapper absolute top-[10%] right-[10%]" data-speed="0.2">
+                <div class="w-24 p-1.5 bg-white shadow-xl rotate-12 transition-transform">
+                    <div class="relative w-full aspect-[4/5]"><img src="/images/hero-2.jpg" class="w-full h-full object-cover" alt="Zone 3"></div>
                 </div>
             </div>
 
-            <!-- Polaroid 4 -->
-            <div class="parallax-wrapper absolute top-[55%] right-[25%]" data-speed="0.45">
-                <div class="w-48 sm:w-60 p-2 sm:p-3 bg-white shadow-2xl -rotate-12 transition-transform">
-                    <div class="relative w-full aspect-[3/4]">
-                        <img src="/images/hero-3.jpg" class="w-full h-full object-cover" alt="Polaroid 4">
-                    </div>
+            <!-- Zone 4: Mid-High Left -->
+            <div class="parallax-wrapper absolute top-[25%] left-[20%]" data-speed="0.4">
+                <div class="w-48 p-2.5 bg-white shadow-xl rotate-6 transition-transform">
+                    <div class="relative w-full aspect-[3/4]"><img src="/images/hantaran-2.jpg" class="w-full h-full object-cover" alt="Zone 4"></div>
                 </div>
             </div>
 
-            <!-- Polaroid 5 -->
-            <div class="parallax-wrapper absolute bottom-[-10%] left-[45%]" data-speed="0.2">
-                <div class="w-60 sm:w-80 p-2 sm:p-3 bg-white shadow-2xl -rotate-3 transition-transform">
-                    <div class="relative w-full aspect-[4/5]">
-                        <img src="/images/gallery-3.jpg" class="w-full h-full object-cover" alt="Polaroid 5">
-                    </div>
+            <!-- Zone 5: Mid-High Right -->
+            <div class="parallax-wrapper absolute top-[30%] right-[25%]" data-speed="0.1">
+                <div class="w-32 p-2 bg-white shadow-xl -rotate-12 transition-transform">
+                    <div class="relative w-full aspect-[4/5]"><img src="/images/dekorasi-3.jpg" class="w-full h-full object-cover" alt="Zone 5"></div>
+                </div>
+            </div>
+
+            <!-- Zone 6: Mid-Low Left -->
+            <div class="parallax-wrapper absolute top-[60%] left-[10%]" data-speed="0.25">
+                <div class="w-24 p-1.5 bg-white shadow-xl -rotate-6 transition-transform">
+                    <div class="relative w-full aspect-square"><img src="/images/gallery-4.jpg" class="w-full h-full object-cover" alt="Zone 6"></div>
+                </div>
+            </div>
+
+            <!-- Zone 7: Mid-Low Right -->
+            <div class="parallax-wrapper absolute top-[55%] right-[15%]" data-speed="0.45">
+                <div class="w-48 p-2.5 bg-white shadow-xl rotate-12 transition-transform">
+                    <div class="relative w-full aspect-[3/4]"><img src="/images/hero-3.jpg" class="w-full h-full object-cover" alt="Zone 7"></div>
+                </div>
+            </div>
+
+            <!-- Zone 8: Bottom Left -->
+            <div class="parallax-wrapper absolute bottom-[5%] left-[25%]" data-speed="0.35">
+                <div class="w-40 p-2 bg-white shadow-xl rotate-3 transition-transform">
+                    <div class="relative w-full aspect-[4/5]"><img src="/images/papan-1.jpg" class="w-full h-full object-cover" alt="Zone 8"></div>
+                </div>
+            </div>
+
+            <!-- Zone 9: Bottom Center -->
+            <div class="parallax-wrapper absolute bottom-[2%] left-[50%]" data-speed="0.15">
+                <div class="w-24 p-1.5 bg-white shadow-xl -rotate-12 transition-transform">
+                    <div class="relative w-full aspect-[3/4]"><img src="/images/gallery-6.jpg" class="w-full h-full object-cover" alt="Zone 9"></div>
+                </div>
+            </div>
+
+            <!-- Zone 10: Bottom Right -->
+            <div class="parallax-wrapper absolute bottom-[10%] right-[5%]" data-speed="0.25">
+                <div class="w-32 p-2 bg-white shadow-xl -rotate-6 transition-transform">
+                    <div class="relative w-full aspect-square"><img src="/images/gallery-2.jpg" class="w-full h-full object-cover" alt="Zone 10"></div>
                 </div>
             </div>
         </div>
