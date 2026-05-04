@@ -1,58 +1,31 @@
-FROM php:8.3-cli-alpine
+# Use serversideup/php — pre-built for Laravel, all extensions included (no OOM!)
+FROM serversideup/php:8.3-cli
 
-# Install system dependencies
-RUN apk add --no-cache \
-    git \
-    curl \
-    libpng-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    icu-dev \
-    oniguruma-dev \
-    libxml2-dev \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    nodejs \
-    npm
+# Switch to root to install packages
+USER root
 
-# Install PHP extensions from pre-compiled source (avoids OOM)
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        pdo_mysql \
-        mbstring \
-        exif \
-        pcntl \
-        bcmath \
-        gd \
-        intl \
-        zip \
-        tokenizer \
-        ctype \
-        fileinfo \
-        xml
+# Install Node.js 20
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Get Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+WORKDIR /var/www/html
 
-WORKDIR /app
-
-# Install PHP dependencies
+# Install PHP dependencies (layered for Docker cache)
 COPY composer.json composer.lock ./
 RUN composer install --optimize-autoloader --no-dev --no-interaction --no-scripts
 
-# Install Node and build assets
+# Install Node dependencies
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # Copy full application
 COPY . .
 
-# Run composer scripts after full copy
-RUN composer dump-autoload --optimize
-
-# Build Vite assets
-RUN npm run build
+# Finalize composer and build assets
+RUN composer dump-autoload --optimize \
+    && npm run build
 
 # Set permissions
 RUN chmod -R 775 storage bootstrap/cache \
