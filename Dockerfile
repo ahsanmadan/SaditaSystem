@@ -4,9 +4,10 @@ FROM serversideup/php:8.3-cli
 # Switch to root to install packages
 USER root
 
-# Install Node.js 20
+# Install Node.js 20 + intl PHP extension (only missing one from serversideup base image)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs --no-install-recommends \
+    && apt-get install -y nodejs libicu-dev --no-install-recommends \
+    && docker-php-ext-install intl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
