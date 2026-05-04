@@ -3,7 +3,6 @@
 @section('content')
     <section id="beranda" class="relative w-full h-[100svh] overflow-hidden bg-[#18181b]">
         <!-- Infinite Horizontal Carousel Background -->
-        <!-- Infinite Horizontal Carousel Background -->
         <div class="absolute inset-0 z-0 flex items-center overflow-hidden pointer-events-none opacity-40">
             <div class="flex flex-row items-center gap-3 sm:gap-5 animate-scroll-horizontal">
                 <!-- Set A (8 Curated Best Photos) -->
