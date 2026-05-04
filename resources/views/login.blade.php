@@ -40,7 +40,7 @@
             <!-- Content -->
             <div class="relative z-10 text-center px-12">
                 <h1
-                    class="text-6xl xl:text-7xl font-bold font-playfair tracking-wide text-[#E8C87A] drop-shadow-lg mb-6">
+                    class="carousel-text text-6xl xl:text-7xl font-bold italic font-playfair tracking-wide text-[#E8C87A] drop-shadow-lg mb-6 transition-opacity duration-500">
                     Sadita</h1>
                 <p class="text-lg xl:text-xl font-medium text-white/90 tracking-wide max-w-sm mx-auto leading-relaxed">
                     Hadiah bermakna untuk setiap momen spesial
@@ -59,7 +59,7 @@
             <div class="w-full max-w-md">
                 <!-- Mobile Logo -->
                 <div class="lg:hidden text-center mb-10">
-                    <h1 class="text-4xl font-bold font-playfair tracking-wide text-[#6B1B2A]">Sadita</h1>
+                    <h1 class="carousel-text text-4xl font-bold italic font-playfair tracking-wide text-[#6B1B2A] transition-opacity duration-500">Sadita</h1>
                 </div>
 
                 <div>
@@ -188,6 +188,29 @@
                     checkIcon.classList.add('hidden');
                 }
             });
+        }
+
+        // Text Carousel
+        const carouselTexts = ["Sadita", "Sadita Florist", "Sadita Hantaran", "Sadita Decor"];
+        let currentTextIndex = 0;
+        const textElements = document.querySelectorAll('.carousel-text');
+
+        if (textElements.length > 0) {
+            setInterval(() => {
+                // Fade out
+                textElements.forEach(el => el.classList.add('opacity-0'));
+                
+                setTimeout(() => {
+                    currentTextIndex = (currentTextIndex + 1) % carouselTexts.length;
+                    const nextText = carouselTexts[currentTextIndex];
+                    
+                    textElements.forEach(el => {
+                        el.textContent = nextText;
+                        // Fade in
+                        el.classList.remove('opacity-0');
+                    });
+                }, 500); // Wait for fade out transition (500ms matches duration-500)
+            }, 3000); // Change text every 3 seconds
         }
     </script>
 </body>
