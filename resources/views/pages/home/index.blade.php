@@ -271,18 +271,46 @@
                                 <div class="mt-2 text-[10px] sm:text-[11px] text-gray-500">Mulai <span
                                         class="font-extrabold text-[#7A1F2B] text-xs sm:text-sm">{{ $price }}</span>
                                 </div>
-                                <a href="https://wa.me/6289653090248?text=Halo+Sadita%2C+saya+tertarik+dengan+{{ urlencode($name) }}"
-                                    target="_blank"
-                                    class="mt-3 w-full py-1.5 sm:py-2 rounded-lg border border-[#7A1F2B] text-[#7A1F2B] text-[10px] sm:text-xs font-semibold text-center block transition-colors duration-300 group-hover:bg-[#7A1F2B] group-hover:text-white">
-                                    Hubungi Kami
-                                </a>
+                                @if ($key === 'dekorasi')
+                                    <a href="https://wa.me/62812616155335?text={{ urlencode(
+                                        'Halo Sadita 👋
+                                    
+                                    Saya ingin konsultasi dekorasi.
+                                    
+                                    📌 Jenis Dekorasi: ' .
+                                            $name .
+                                            '
+                                    
+                                    📅 Tanggal Acara:
+                                    ⏰ Waktu Acara:
+                                    
+                                    📍 Lokasi Acara:
+                                    
+                                    🎨 Konsep / Tema yang diinginkan:
+                                    (Contoh: elegan, rustic, minimalis, dll)
+                                    
+                                    📝 Catatan tambahan:
+                                    (opsional)
+                                    
+                                    Terima kasih 🙏',
+                                    ) }}"
+                                        target="_blank"
+                                        class="mt-3 w-full py-1.5 sm:py-2 rounded-lg border border-[#7A1F2B] text-[#7A1F2B] text-[10px] sm:text-xs font-semibold text-center block transition-colors duration-300 group-hover:bg-[#7A1F2B] group-hover:text-white">
+                                        Konsultasi Sekarang
+                                    </a>
+                                @else
+                                    <a href="{{ route('order') }}?product={{ urlencode($name) }}&price={{ urlencode($price) }}&img={{ urlencode($img) }}"
+                                        class="mt-3 w-full py-1.5 sm:py-2 rounded-lg border border-[#7A1F2B] text-[#7A1F2B] text-[10px] sm:text-xs font-semibold text-center block transition-colors duration-300 group-hover:bg-[#7A1F2B] group-hover:text-white">
+                                        Pesan Sekarang
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     @endforeach
 
                     <!-- 6th Card CTA (WhatsApp) -->
                     <div class="group min-w-[150px] sm:min-w-[180px] max-w-[150px] sm:max-w-[180px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-[#7A1F2B] text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(122,31,43,0.3)] flex flex-col justify-center items-center text-center p-4 sm:p-5 cursor-pointer relative"
-                        onclick="window.open('https://wa.me/6289653090248?text=Halo+Sadita%2C+saya+ingin+konsultasi+mengenai+pesanan+saya', '_blank')">
+                        onclick="window.open('https://wa.me/62812616155335?text=Halo+Sadita%2C+saya+ingin+konsultasi+mengenai+pesanan+saya', '_blank')">
                         <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                         <div
                             class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
@@ -608,14 +636,16 @@
                     <h2 class="mt-3 text-3xl sm:text-4xl font-bold text-[#2D1E1E]">Tentang Sadita</h2>
                     <p class="mt-4 text-sm sm:text-base text-[#5b4747] leading-relaxed">
                         Sadita adalah layanan florist dan hadiah premium berbasis di Padang yang berfokus pada keindahan,
-                        detail, dan makna dalam setiap karya. Kami percaya setiap momen spesial layak dirayakan dengan keindahan
+                        detail, dan makna dalam setiap karya. Kami percaya setiap momen spesial layak dirayakan dengan
+                        keindahan
                         yang tak terlupakan.
                     </p>
                 </div>
                 <div class="mt-auto pt-8 grid grid-cols-3 gap-3 sm:gap-4">
                     <div class="text-center p-3 sm:p-4 rounded-xl bg-white shadow-sm border border-gray-50">
                         <div class="text-xl sm:text-3xl font-bold text-[#7A1F2B]">3+</div>
-                        <div class="text-[10px] sm:text-xs text-gray-500 mt-1 font-medium leading-tight">Tahun Pengalaman</div>
+                        <div class="text-[10px] sm:text-xs text-gray-500 mt-1 font-medium leading-tight">Tahun Pengalaman
+                        </div>
                     </div>
                     <div class="text-center p-3 sm:p-4 rounded-xl bg-white shadow-sm border border-gray-50">
                         <div class="text-xl sm:text-3xl font-bold text-[#7A1F2B]">500+</div>
@@ -623,7 +653,8 @@
                     </div>
                     <div class="text-center p-3 sm:p-4 rounded-xl bg-white shadow-sm border border-gray-50">
                         <div class="text-xl sm:text-3xl font-bold text-[#7A1F2B]">4.9</div>
-                        <div class="text-[10px] sm:text-xs text-gray-500 mt-1 font-medium leading-tight">Rating Bintang</div>
+                        <div class="text-[10px] sm:text-xs text-gray-500 mt-1 font-medium leading-tight">Rating Bintang
+                        </div>
                     </div>
                 </div>
             </div>
@@ -656,7 +687,8 @@
                         </div>
                         <div class="overflow-hidden">
                             <div class="font-bold text-sm text-[#2D1E1E]">Instagram</div>
-                            <div class="text-[11px] sm:text-xs text-gray-500 mt-0.5 truncate tracking-tight">@sadita.decor · @sadita.hantaran · @sadita.florist</div>
+                            <div class="text-[11px] sm:text-xs text-gray-500 mt-0.5 truncate tracking-tight">@sadita.decor
+                                · @sadita.hantaran · @sadita.florist</div>
                         </div>
                     </a>
                     <a href="https://maps.google.com/?q=Padang+Sumatera+Barat" target="_blank"
