@@ -19,4 +19,18 @@ php artisan route:cache  && echo "[OK] Route cached"  || echo "[WARN] Route cach
 php artisan view:cache   && echo "[OK] View cached"   || echo "[WARN] View cache failed"
 
 echo "==> [Server] Starting php artisan serve on 0.0.0.0:$PORT ..."
-exec php artisan serve --host=0.0.0.0 --port="$PORT"
+# Try artisan serve first, fall back to php built-in server
+php artisan serve --host=0.0.0.0 --port="$PORT" 2>&1 &
+SERVE_PID=$!
+
+# Give it 3 seconds to start
+sleep 3
+
+# Check if it's still running
+if kill -0 $SERVE_PID 2>/dev/null; then
+    echo "[OK] php artisan serve is running (PID: $SERVE_PID)"
+    wait $SERVE_PID
+else
+    echo "[WARN] artisan serve crashed, falling back to php -S"
+    exec php -S 0.0.0.0:"$PORT" -t public
+fi
