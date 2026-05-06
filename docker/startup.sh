@@ -7,8 +7,8 @@ echo "==> [SaditaSystem] Starting on port $PORT"
 echo "==> [DB] Running migrations..."
 php artisan migrate --force && echo "[OK] Migrate done" || echo "[WARN] Migrate failed"
 
-echo "==> [DB] Running seeders..."
-php artisan db:seed --force && echo "[OK] Seed done" || echo "[WARN] Seed failed"
+# NOTE: Seeder removed from startup - data already in DB and seeder hangs on duplicate inserts
+# To re-seed manually: php artisan db:seed --force
 
 echo "==> [Laravel] Storage link..."
 php artisan storage:link 2>/dev/null || true
