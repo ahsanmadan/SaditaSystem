@@ -70,17 +70,9 @@ RUN chown -R www-data:www-data /var/www/html \
 
 EXPOSE 8080
 
-# Startup: configure Apache port dynamically, run artisan, start Apache
-CMD sh -c "\
-    export PORT=${PORT:-8080}; \
-    sed -i \"s/Listen 80/Listen \$PORT/\" /etc/apache2/ports.conf; \
-    sed -i \"s/<VirtualHost \*:80>/<VirtualHost *:\$PORT>/\" /etc/apache2/sites-available/000-default.conf; \
-    echo '==> Migrate...' && php artisan migrate --force || echo '[WARN] migrate failed'; \
-    echo '==> Seed...' && php artisan db:seed --force || echo '[WARN] seed failed'; \
-    php artisan storage:link || true; \
-    php artisan config:cache || echo '[WARN] config:cache failed'; \
-    php artisan route:cache || true; \
-    php artisan view:cache || true; \
-    echo '==> Starting Apache on port '\$PORT'...'; \
-    apache2-foreground \
-"
+# Copy and set up startup script
+COPY docker/startup.sh /startup.sh
+RUN chmod +x /startup.sh
+
+CMD ["/startup.sh"]
+
