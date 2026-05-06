@@ -1,10 +1,7 @@
-# Standard PHP 8.3 + Apache image — proven, no entrypoint conflicts
-FROM php:8.3-apache
+# Standard PHP 8.3 CLI — clean, minimal, no entrypoint conflicts
+FROM php:8.3-cli
 
-# Enable Apache mod_rewrite for Laravel
-RUN a2enmod rewrite
-
-# Install system dependencies + all required PHP extensions
+# Install system deps + all PHP extensions needed by Laravel/Filament
 RUN apt-get update && apt-get install -y \
     libicu-dev \
     libzip-dev \
@@ -39,13 +36,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Apache document root to Laravel public/
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/*.conf \
-    /etc/apache2/apache2.conf \
-    /etc/apache2/conf-available/*.conf
-
 WORKDIR /var/www/html
 
 # Install PHP dependencies
@@ -64,15 +54,13 @@ RUN composer dump-autoload --optimize \
     && npm run build
 
 # Permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache \
+RUN chmod -R 775 storage bootstrap/cache \
     && mkdir -p storage/framework/{sessions,views,cache,testing} storage/logs
 
 EXPOSE 8080
 
-# Copy and set up startup script
+# Startup script
 COPY docker/startup.sh /startup.sh
 RUN chmod +x /startup.sh
 
 CMD ["/startup.sh"]
-
