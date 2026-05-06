@@ -34,4 +34,11 @@ RUN chmod -R 775 storage bootstrap/cache \
 
 EXPOSE 8080
 
-CMD sh -c "php artisan migrate --force && php artisan db:seed --force && php artisan storage:link && php artisan config:cache && php artisan route:cache && php artisan view:cache && php -S 0.0.0.0:${PORT:-8080} -t public"
+CMD sh -c "\
+    echo '==> Running migrations...' && php artisan migrate --force || echo '[WARN] migrate failed'; \
+    echo '==> Running seeders...' && php artisan db:seed --force || echo '[WARN] seed failed'; \
+    echo '==> Storage link...' && php artisan storage:link || true; \
+    echo '==> Caching config/routes/views...' && php artisan config:cache && php artisan route:cache && php artisan view:cache || echo '[WARN] cache failed'; \
+    echo '==> Starting PHP server on port ${PORT:-8080}...'; \
+    php -S 0.0.0.0:${PORT:-8080} -t public \
+"
