@@ -1,7 +1,8 @@
 <header id="main-navbar" class="fixed top-0 inset-x-0 z-50 transition-all duration-500">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-4">
         <!-- Logo -->
-        <a href="#beranda" class="navbar-logo transition-colors duration-300 hover:opacity-90 italic" style="font-family:'Playfair Display',serif">
+        <a href="/" class="navbar-logo transition-colors duration-300 hover:opacity-90 italic"
+            style="font-family:'Playfair Display',serif">
             Sadita
         </a>
 
@@ -46,10 +47,10 @@
             <a href="#lacak" class="mobile-nav-link">Lacak</a>
             <a href="#tentang" class="mobile-nav-link">Tentang</a>
             <a href="#kontak" class="mobile-nav-link">Kontak</a>
-            <div class="mt-6 pt-6 border-t border-[#7A1F2B]/10">
-                <a href="#kategori"
-                    class="block w-full text-center py-3 rounded-full bg-[#7A1F2B] text-white font-semibold text-sm hover:bg-[#5e1721] transition-colors duration-300">
-                    Pesan Sekarang
+            <div class="mt-6 pt-6 border-t border-[#E8C87A]/10">
+                <a href="/login"
+                    class="block w-full text-center py-3 rounded-full text-[13px] font-semibold tracking-wide transition-all duration-300 bg-[#E8C87A] text-[#7A1F2B] hover:bg-[#d4b468] hover:shadow-md">
+                    Login
                 </a>
             </div>
         </div>
