@@ -16,18 +16,11 @@ class PelanggansTable
     {
         return $table
             ->query(
-                // Eager load aggregates lewat subquery — hindari N+1
                 Pelanggan::query()
                     ->withCount([
                         'riwayatPesanan as total_pesanan',
-                        'riwayatPesanan as pesanan_selesai' => fn (Builder $q) =>
-                            $q->where('status', 'selesai'),
+                        'riwayatPesanan as pesanan_selesai' => fn (Builder $q) => $q->where('status', 'selesai'),
                     ])
-                    ->withSum(
-                        ['riwayatPesanan as total_revenue' => fn (Builder $q) =>
-                            $q->where('status', 'selesai')],
-                        'grand_total'
-                    )
                     ->withMax('riwayatPesanan as last_order_at', 'created_at')
             )
             ->columns([
@@ -60,13 +53,6 @@ class PelanggansTable
                     ->color('success')
                     ->sortable(),
 
-                TextColumn::make('total_revenue')
-                    ->label('Total Revenue')
-                    ->formatStateUsing(fn ($state) => $state
-                        ? 'Rp ' . number_format($state, 0, ',', '.')
-                        : 'Rp 0')
-                    ->sortable(),
-
                 TextColumn::make('last_order_at')
                     ->label('Order Terakhir')
                     ->dateTime('d M Y')
@@ -83,7 +69,7 @@ class PelanggansTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('total_revenue', 'desc')
+            ->defaultSort('last_order_at', 'desc')
             ->filters([
                 Filter::make('repeat_customer')
                     ->label('Repeat Customer (≥2 order selesai)')
