@@ -1,4 +1,4 @@
-    <footer class="bg-[#2D1E1E] text-white py-12 sm:py-16">
+    <footer class="bg-[#2D1E1E] text-white py-12 sm:py-16 pb-24 sm:pb-16">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-8">
                 <div class="text-center md:text-left">
@@ -16,9 +16,9 @@
                 </div>
             </div>
             <div
-                class="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/50">
-                <div>&copy; {{ date('Y') }} Sadita – Padang. Seluruh hak cipta dilindungi.</div>
-                <div>SaditaSystem by <a href="https://github.com/Twolines-Dev"
+                class="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/50 text-center sm:text-left">
+                <div class="w-full sm:w-auto break-words">&copy; {{ date('Y') }} Sadita – Padang. Seluruh hak cipta dilindungi.</div>
+                <div class="w-full sm:w-auto break-words">SaditaSystem by <a href="https://github.com/Twolines-Dev"
                         class="hover:text-[#E8C87A] transition-colors">TwoLines-Dev</a></div>
             </div>
         </div>
