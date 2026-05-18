@@ -31,7 +31,7 @@
             <div class="mb-6 space-y-1">
                 <div class="flex justify-between text-xs">
                     <span class="text-gray-500">PESANAN:</span>
-                    <span class="font-bold">{{ $order->order_id }}</span>
+                    <span class="font-bold">{{ $order->kode_pesanan }}</span>
                 </div>
                 <div class="flex justify-between text-xs">
                     <span class="text-gray-500">TANGGAL:</span>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="flex justify-between text-xs">
                     <span class="text-gray-500">PELANGGAN:</span>
-                    <span class="font-bold uppercase">{{ $order->sender_name }}</span>
+                    <span class="font-bold uppercase">{{ $order->pelanggan->nama_lengkap ?? 'Umum' }}</span>
                 </div>
             </div>
 
@@ -47,12 +47,15 @@
 
             <!-- Items -->
             <div class="mb-6 space-y-4">
+                @foreach($order->detailItems as $detail)
                 <div class="flex justify-between items-start text-xs">
                     <div>
-                        <div class="font-bold uppercase pr-4">{{ $order->product_name }}</div>
+                        <div class="font-bold uppercase pr-4">{{ $detail->nama_produk_snapshot }}</div>
+                        <div class="text-gray-500">{{ $detail->kuantitas }}x</div>
                     </div>
-                    <div class="font-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</div>
+                    <div class="font-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</div>
                 </div>
+                @endforeach
             </div>
 
             <div class="border-t border-dashed border-gray-300 my-6"></div>
@@ -61,11 +64,11 @@
             <div class="mb-6 space-y-2">
                 <div class="flex justify-between text-xs">
                     <span class="text-gray-500">SUBTOTAL</span>
-                    <span class="font-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</span>
+                    <span class="font-bold">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
                 </div>
                 <div class="flex justify-between text-xs">
                     <span class="text-gray-500">PENGIRIMAN</span>
-                    <span class="font-bold">Rp 0</span>
+                    <span class="font-bold">Rp {{ number_format($order->biaya_ongkir, 0, ',', '.') }}</span>
                 </div>
             </div>
 
@@ -74,7 +77,7 @@
             <!-- Total -->
             <div class="flex justify-between items-center mb-8">
                 <span class="text-lg font-bold">TOTAL</span>
-                <span class="text-lg font-bold">Rp {{ number_format($order->price, 0, ',', '.') }}</span>
+                <span class="text-lg font-bold">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</span>
             </div>
 
             <div class="border-t border-dashed border-gray-300 my-6"></div>
@@ -94,7 +97,7 @@
                 </div>
                 <div class="text-[8px] tracking-widest text-gray-500 mb-1">KODE VERIFIKASI</div>
                 <div class="bg-gray-100 px-3 py-1 text-xs font-bold font-mono tracking-widest border border-gray-200">
-                    {{ substr(md5($order->order_id), 0, 10) }}
+                    {{ substr(md5($order->kode_pesanan), 0, 10) }}
                 </div>
             </div>
 
