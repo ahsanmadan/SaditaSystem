@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if (env('APP_ENV') !== 'local') {
+        if (app()->environment('production') && str_starts_with((string) config('app.url'), 'https://')) {
             \URL::forceScheme('https');
         }
     }

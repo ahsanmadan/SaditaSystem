@@ -61,6 +61,7 @@ class PesananResource extends Resource
     {
         return [
             'index'  => ListPesanans::route('/'),
+            'create' => CreatePesanan::route('/create'),
             'view'   => ViewPesanan::route('/{record}'),
             'edit'   => EditPesanan::route('/{record}/edit'),
         ];
