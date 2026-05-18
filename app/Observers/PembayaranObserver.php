@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Pembayaran;
+use App\Services\Analytics\DashboardKpiService;
 use Illuminate\Support\Facades\Cache;
 
 class PembayaranObserver
@@ -11,9 +12,8 @@ class PembayaranObserver
      * Cache keys selaras dengan DashboardKpiService dan DashboardReportService.
      */
     private array $cacheKeys = [
-        'kpi_gross_profit_month',   // DashboardKpiService
-        'kpi_repeat_customers',     // DashboardKpiService
-        'kpi_top_pelanggan',        // DashboardReportService
+        DashboardKpiService::OVERVIEW_CACHE_KEY,
+        'kpi_top_pelanggan',
     ];
 
     public function updated(Pembayaran $pembayaran): void

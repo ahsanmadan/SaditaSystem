@@ -43,6 +43,11 @@ class Pesanan extends Model
         return $this->hasMany(Pembayaran::class, 'pesanan_id', 'id');
     }
 
+    public function pembayaranTerakhir()
+    {
+        return $this->hasOne(Pembayaran::class, 'pesanan_id', 'id')->latestOfMany();
+    }
+
     public function pengiriman()
     {
         return $this->hasOne(Pengiriman::class, 'pesanan_id', 'id');

@@ -17,12 +17,13 @@ class StatsOverviewWidget extends BaseWidget
     protected function getStats(): array
     {
         $kpi = new DashboardKpiService();
+        $stats = $kpi->getOverviewStats();
 
-        $omzet = $kpi->getOmzetTodayByCompletionDate();
-        $kasIn = $kpi->getCashInTodayByPaymentDate();
-        $profit = $kpi->getGrossProfitMonthByCompletionDate();
-        $pending = $kpi->getPendingOrdersCount();
-        $repeat = $kpi->getRepeatCustomerCount();
+        $omzet = $stats['omzet'];
+        $kasIn = $stats['kas_masuk'];
+        $profit = $stats['profit'];
+        $pending = $stats['pending'];
+        $repeat = $stats['repeat'];
 
         return [
             Stat::make('Omzet Hari Ini', 'Rp ' . number_format($omzet, 0, ',', '.'))
