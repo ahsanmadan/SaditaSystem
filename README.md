@@ -1,199 +1,157 @@
-# SaditaSystem
+# Dependency Laravel Proyek PBL SaditaSystem
 
-Sistem Informasi Manajemen Bisnis Sadita untuk layanan sewa, jasa dekorasi, dan hantaran.
+Dokumen ini berisi identifikasi dependency/package Laravel yang digunakan atau kemungkinan akan digunakan pada proyek PBL SaditaSystem, dengan penjelasan berformat 5W+1H.
 
-## Stack
+## 1. Laravel Framework
 
-- Backend: Laravel 13
-- Admin panel: Filament 5
-- PHP: 8.3 atau lebih baru
-- Database lokal/produksi: MySQL atau MariaDB
-- Frontend: Vite dan Tailwind CSS 4
-- Package manager: Composer dan npm
+Nama package: `laravel/framework`
 
-## Catatan Penting Untuk XAMPP
+| 5W+1H | Penjelasan |
+|---|---|
+| What | Framework utama yang digunakan untuk membangun aplikasi SaditaSystem. |
+| Why | Dibutuhkan karena menyediakan struktur MVC, routing, middleware, migration, validation, authentication, dan Eloquent ORM. |
+| Who | Lead Programmer dan tim sebagai pengembang utama aplikasi. |
+| When | Digunakan sejak awal pengembangan dan dipakai terus di seluruh proses pembuatan fitur. |
+| Where | Digunakan di seluruh project, seperti `routes`, `app`, `database`, `resources/views`, dan `tests`. |
+| How | Diinstal melalui Composer lalu dipakai untuk mengatur alur route, controller, model, view, dan database. |
 
-Proyek ini membutuhkan **PHP 8.3+**. Banyak instalasi XAMPP lama masih memakai PHP 8.1 atau 8.2, sehingga `composer install` atau `php artisan` bisa gagal walaupun MySQL XAMPP-nya berjalan.
+Referensi:
 
-Cek versi PHP:
+- [Laravel Documentation](https://laravel.com/docs/13.x)
 
-```bash
-php -v
-```
+---
 
-Jika hasilnya di bawah PHP 8.3, gunakan XAMPP yang sudah membawa PHP 8.3+, atau gunakan PHP 8.3 terpisah lalu pastikan folder PHP tersebut masuk ke `PATH`.
+## 2. Filament
 
-## Setup Lokal Dengan XAMPP
+Nama package: `filament/filament`
 
-1. Clone repository.
+| 5W+1H | Penjelasan |
+|---|---|
+| What | Package admin panel untuk Laravel. |
+| Why | Dibutuhkan agar pembuatan dashboard admin, CRUD data, table, form, dan widget menjadi lebih cepat. |
+| Who | Admin, owner, staff operasional, dan developer yang mengembangkan panel admin. |
+| When | Digunakan saat mengelola data kategori, produk, pelanggan, pesanan, pembayaran, dan ulasan. |
+| Where | Digunakan pada area `/admin`, terutama di `app/Filament/Resources`, `app/Filament/Widgets`, dan `app/Providers/Filament/AdminPanelProvider.php`. |
+| How | Diinstal dengan Composer, lalu resource admin dibuat melalui struktur Filament agar otomatis memiliki halaman list, create, edit, dan view. |
 
-```bash
-git clone https://github.com/ahsanmadan/SaditaSystem.git
-cd SaditaSystem
-```
+Referensi:
 
-2. Pastikan berada di branch `develop`.
+- [Filament Documentation](https://filamentphp.com/docs)
+- [Filament Panel Configuration](https://filamentphp.com/docs/5.x/panel-configuration)
 
-```bash
-git checkout develop
-git pull origin develop
-```
+---
 
-3. Install dependency.
+## 3. Midtrans PHP
 
-```bash
-composer install
-npm install
-```
+Nama package: `midtrans/midtrans-php`
 
-4. Buat file `.env`.
+| 5W+1H | Penjelasan |
+|---|---|
+| What | Library PHP resmi untuk integrasi payment gateway Midtrans. |
+| Why | Dibutuhkan agar sistem bisa menangani pembayaran digital tanpa membuat mekanisme pembayaran online sendiri. |
+| Who | Developer saat integrasi, admin saat verifikasi pembayaran, dan pelanggan saat melakukan pembayaran pesanan. |
+| When | Digunakan ketika order sudah dibuat dan pelanggan masuk ke tahap pembayaran. |
+| Where | Digunakan pada fitur invoice, token pembayaran, notifikasi transaksi, dan pembaruan status pembayaran. |
+| How | Data transaksi dikirim dari Laravel ke Midtrans, lalu hasil transaksi atau notifikasi dari Midtrans digunakan untuk memperbarui status pembayaran di sistem. |
 
-```bash
-copy .env.example .env
-php artisan key:generate
-```
+Referensi:
 
-Untuk Git Bash atau terminal Linux/macOS:
+- [Midtrans Documentation](https://docs.midtrans.com/)
+- [midtrans-php GitHub](https://github.com/Midtrans/midtrans-php)
 
-```bash
-cp .env.example .env
-php artisan key:generate
-```
+---
 
-5. Jalankan MySQL di XAMPP, lalu buat database kosong lewat phpMyAdmin.
+## 4. Simple QrCode
 
-Nama database yang disarankan:
+Nama package: `simplesoftwareio/simple-qrcode`
 
-```text
-sadita_system
-```
+| 5W+1H | Penjelasan |
+|---|---|
+| What | Package untuk membuat QR code di Laravel/PHP. |
+| Why | Dibutuhkan untuk menghasilkan QR code dengan cepat tanpa membuat generator QR manual. |
+| Who | Developer saat implementasi, serta admin dan pelanggan yang nantinya memakai hasil QR code tersebut. |
+| When | Digunakan saat menampilkan invoice, tautan tracking, atau tautan pembayaran. |
+| Where | Bisa digunakan di halaman invoice publik, tracking pesanan, atau tampilan cetak/admin. |
+| How | Package dipanggil dari controller atau Blade view untuk menghasilkan QR code yang berisi link atau kode tertentu. |
 
-6. Pastikan konfigurasi database di `.env` sesuai XAMPP.
+Referensi:
 
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=sadita_system
-DB_USERNAME=root
-DB_PASSWORD=
-DB_CHARSET=utf8mb4
-DB_COLLATION=utf8mb4_unicode_ci
-```
+- [Simple QrCode GitHub](https://github.com/SimpleSoftwareIO/simple-qrcode)
 
-Jika MySQL XAMPP memakai port lain, misalnya `3307`, ubah `DB_PORT` sesuai port yang aktif.
+---
 
-7. Jalankan migration dan seeder.
+## 5. Laravel Pint
 
-```bash
-php artisan migrate --seed
-```
+Nama package: `laravel/pint`
 
-8. Jalankan server.
+| 5W+1H | Penjelasan |
+|---|---|
+| What | Formatter kode PHP resmi dari Laravel. |
+| Why | Dibutuhkan agar format kode tetap rapi dan konsisten saat dikerjakan oleh banyak anggota tim. |
+| Who | Developer yang menulis dan merapikan kode PHP di proyek. |
+| When | Digunakan setelah ada perubahan kode dan sebelum commit atau pull request. |
+| Where | Digunakan pada file PHP di dalam project, misalnya `app`, `database`, `routes`, dan `tests`. |
+| How | Dijalankan melalui `vendor/bin/pint` atau script `composer run format` untuk merapikan style code secara otomatis. |
 
-Terminal 1:
+Referensi:
 
-```bash
-php artisan serve
-```
+- [Laravel Pint Documentation](https://laravel.com/docs/13.x/pint)
 
-Terminal 2:
+---
 
-```bash
-npm run dev
-```
+## 6. Laravel Pail
 
-Buka aplikasi di:
+Nama package: `laravel/pail`
 
-```text
-http://localhost:8000
-```
+| 5W+1H | Penjelasan |
+|---|---|
+| What | Tool Laravel untuk membaca log aplikasi secara real-time. |
+| Why | Dibutuhkan agar proses debugging lebih cepat saat terjadi error atau warning. |
+| Who | Developer selama proses development dan pengujian lokal. |
+| When | Digunakan saat server lokal berjalan dan fitur sedang diuji. |
+| Where | Digunakan di environment development, terutama saat menjalankan workflow harian project. |
+| How | Dijalankan dengan `php artisan pail`, lalu log aplikasi akan tampil langsung di terminal. |
 
-Admin panel:
+Referensi:
 
-```text
-http://localhost:8000/admin
-```
+- [Laravel Logging Documentation](https://laravel.com/docs/13.x/logging)
 
-## Akun Demo
+---
 
-Jika `php artisan migrate --seed` berhasil, akun admin demo dibuat oleh seeder:
+## 7. Spatie Laravel Permission
 
-```text
-email: admin
-password: admin
-```
+Nama package: `spatie/laravel-permission`
 
-## Error XAMPP Yang Sering Terjadi
+| 5W+1H | Penjelasan |
+|---|---|
+| What | Package Laravel untuk mengatur role dan permission user. |
+| Why | Dibutuhkan jika hak akses owner, admin, dan staff perlu dibedakan lebih detail. |
+| Who | Developer sebagai pengatur sistem akses, dan user admin sesuai role yang dimiliki. |
+| When | Digunakan saat sistem membutuhkan pembagian hak akses yang lebih rinci. |
+| Where | Bisa digunakan pada middleware, policy, role user, dan kontrol akses di panel admin. |
+| How | Diinstal lewat Composer, lalu role dan permission dibuat serta dihubungkan ke user sesuai kebutuhan sistem. |
 
-### `php` tidak dikenali
+Referensi:
 
-Artinya folder PHP belum masuk `PATH`.
+- [Spatie Laravel Permission Docs](https://spatie.be/docs/laravel-permission)
+- [Spatie Laravel Permission GitHub](https://github.com/spatie/laravel-permission)
 
-Solusi cepat:
+---
 
-```bash
-C:\xampp\php\php.exe artisan serve
-```
+## 8. Laravel Excel
 
-Atau tambahkan `C:\xampp\php` ke environment variable `PATH`.
+Nama package: `maatwebsite/excel`
 
-### `SQLSTATE[HY000] [1049] Unknown database`
+| 5W+1H | Penjelasan |
+|---|---|
+| What | Package Laravel untuk export dan import file Excel/CSV. |
+| Why | Dibutuhkan jika sistem perlu membuat laporan transaksi, data pelanggan, atau rekap pesanan dalam bentuk file Excel. |
+| Who | Developer saat implementasi, serta admin atau owner saat memakai fitur laporan. |
+| When | Digunakan ketika sistem sudah membutuhkan fitur laporan dan ekspor data. |
+| Where | Bisa digunakan di modul laporan, pembayaran, pelanggan, atau pesanan pada panel admin. |
+| How | Diinstal lewat Composer lalu digunakan melalui class export/import agar data dari database bisa diubah menjadi file Excel atau CSV. |
 
-Database belum dibuat di phpMyAdmin.
+Referensi:
 
-Buat database:
-
-```text
-sadita_system
-```
-
-Lalu ulangi:
-
-```bash
-php artisan migrate --seed
-```
-
-### `SQLSTATE[HY000] [2002] Connection refused`
-
-MySQL XAMPP belum menyala atau port salah.
-
-Cek di XAMPP Control Panel, lalu sesuaikan `DB_PORT` di `.env`.
-
-### Composer menolak karena versi PHP
-
-Project membutuhkan PHP 8.3+.
-
-Solusi:
-
-- upgrade XAMPP ke versi dengan PHP 8.3+
-- atau install PHP 8.3 terpisah dan arahkan Composer/terminal ke PHP tersebut
-
-## Git Workflow Tim
-
-Gunakan branch `develop` sebagai base kerja.
-
-```bash
-git checkout develop
-git pull origin develop
-git checkout -b feature/nama_fitur
-```
-
-Setelah fitur selesai:
-
-```bash
-git add .
-git commit -m "feat: deskripsi fitur dalam bahasa indonesia"
-git push origin feature/nama_fitur
-```
-
-Commit prefix yang dipakai:
-
-- `feat`: fitur baru
-- `fix`: perbaikan bug
-- `chore`: konfigurasi, dependency, maintenance
-- `docs`: dokumentasi
-- `style`: formatting
-- `test`: pengujian
-
-Feature branch direview dan dimerge ke `develop` oleh Lead Programmer.
+- [Laravel Excel Documentation](https://laravel-excel.com/)
+- [Laravel Excel GitHub](https://github.com/SpartnerNL/Laravel-Excel)
