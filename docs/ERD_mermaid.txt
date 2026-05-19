@@ -1,0 +1,190 @@
+erDiagram
+
+    USERS {
+        bigint id PK
+        string name
+        string email UK
+        string password
+        string role
+        boolean is_admin
+        timestamps created_at
+    }
+
+    KATEGORI {
+        bigint id PK
+        string nama
+        string slug UK
+        text deskripsi
+        boolean is_aktif
+        timestamps created_at
+    }
+
+    PRODUK {
+        bigint id PK
+        bigint kategori_id FK
+        string nama
+        string slug UK
+        text deskripsi
+        unsignedBigInteger harga_dasar
+        string tipe_layanan "sewa, jasa, hantaran"
+        boolean is_customizable
+        boolean is_sewa
+        boolean is_aktif
+        timestamps created_at
+        softDeletes deleted_at
+    }
+
+    GAMBAR_PRODUK {
+        bigint id PK
+        bigint produk_id FK
+        string path_gambar
+        boolean is_utama
+        timestamps created_at
+    }
+
+    PELANGGAN {
+        bigint id PK
+        string nama_lengkap
+        string no_hp
+        string email
+        timestamps created_at
+    }
+
+    PESANAN {
+        bigint id PK
+        bigint pelanggan_id FK
+        string kode_pesanan UK
+        string tipe_layanan "sewa, jasa, hantaran"
+        string mode_hantaran "box_only, titip_belanja"
+        string status
+        unsignedBigInteger subtotal_produk_jasa
+        unsignedBigInteger estimasi_belanja
+        unsignedBigInteger realisasi_belanja
+        unsignedBigInteger biaya_tambahan
+        unsignedBigInteger total_harga
+        unsignedBigInteger biaya_ongkir
+        unsignedBigInteger grand_total
+        unsignedBigInteger total_dibayar
+        unsignedBigInteger sisa_tagihan
+        timestamp batas_waktu_bayar
+        timestamp waktu_selesai
+        text catatan_pembeli
+        timestamps created_at
+    }
+
+    DETAIL_PESANAN {
+        bigint id PK
+        bigint pesanan_id FK
+        bigint produk_id FK
+        string nama_produk_snapshot
+        unsignedBigInteger harga_satuan_snapshot
+        integer kuantitas
+        unsignedBigInteger subtotal
+        text teks_ucapan
+        string referensi_desain
+        timestamps created_at
+    }
+
+    PEMBAYARAN {
+        bigint id PK
+        bigint pesanan_id FK
+        string metode
+        string jenis_tagihan "dp, pelunasan, tambahan_biaya, pelunasan_akhir"
+        unsignedBigInteger jumlah_dibayar
+        string bukti_transfer
+        string status
+        text alasan_penolakan
+        bigint diverifikasi_oleh FK
+        timestamp waktu_dibayar
+        timestamp waktu_diverifikasi
+        timestamps created_at
+    }
+
+    PENGIRIMAN {
+        bigint id PK
+        bigint pesanan_id FK
+        string nama_penerima
+        string no_hp_penerima
+        text alamat_lengkap
+        string patokan_lokasi
+        date tanggal_pengiriman
+        time jam_pengiriman
+        string nama_kurir
+        string no_hp_kurir
+        string foto_bukti_kirim
+        string status
+        timestamps created_at
+    }
+
+    PENGELUARAN_PESANAN {
+        bigint id PK
+        bigint pesanan_id FK
+        string nama_pengeluaran
+        unsignedBigInteger nominal
+        timestamps created_at
+    }
+
+    PENGEMBALIAN_PESANAN {
+        bigint id PK
+        bigint pesanan_id FK
+        date tanggal_jemput
+        string status_pengembalian
+        string kondisi_barang
+        text catatan_kerusakan
+        string foto_bukti_kerusakan
+        unsignedBigInteger denda_kerusakan
+        string status_denda
+        timestamp waktu_dijemput
+        timestamps created_at
+    }
+
+    ULASAN {
+        bigint id PK
+        bigint pesanan_id FK
+        bigint produk_id FK
+        string nama_pengulas
+        tinyint rating
+        text komentar
+        string foto_ulasan
+        string token_ulasan UK
+        boolean is_tampil
+        timestamps created_at
+    }
+
+    EMAIL_LOG {
+        bigint id PK
+        bigint pesanan_id FK
+        string email_tujuan
+        string jenis
+        string status
+        timestamp dikirim_at
+        timestamps created_at
+    }
+
+    ACTIVITY_LOGS {
+        bigint id PK
+        bigint user_id FK
+        string action
+        string subject_type
+        unsignedBigInteger subject_id
+        string ip_address
+        timestamps created_at
+    }
+
+    KATEGORI ||--o{ PRODUK : "memuat"
+    PRODUK ||--o{ GAMBAR_PRODUK : "punya foto"
+    PRODUK ||--o{ DETAIL_PESANAN : "dipesan sebagai"
+    PRODUK ||--o{ ULASAN : "dinilai"
+
+    PELANGGAN ||--o{ PESANAN : "melakukan"
+
+    PESANAN ||--|{ DETAIL_PESANAN : "terdiri dari"
+    PESANAN ||--o{ PEMBAYARAN : "dibayar melalui"
+    PESANAN ||--o| PENGIRIMAN : "dikirim ke"
+    PESANAN ||--o{ PENGELUARAN_PESANAN : "memiliki modal"
+    PESANAN ||--o| PENGEMBALIAN_PESANAN : "disewakan dan kembali"
+    PESANAN ||--o{ ULASAN : "direview"
+    PESANAN ||--o{ EMAIL_LOG : "mengirimkan"
+
+    USERS ||--o{ PEMBAYARAN : "memverifikasi"
+    USERS ||--o{ ACTIVITY_LOGS : "terekam di"
