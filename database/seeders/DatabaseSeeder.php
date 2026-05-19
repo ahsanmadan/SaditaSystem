@@ -14,6 +14,10 @@ class DatabaseSeeder extends Seeder {
             'is_admin' => true,
         ]);
 
+        $this->call([
+            KatalogSeeder::class,
+            TransactionSeeder::class,
+        ]);
         $seeders = [
             MasterSeeder::class,
         ];

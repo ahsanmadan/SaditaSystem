@@ -9,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -22,17 +23,28 @@ class ProduksTable
     {
         return $table
             ->columns([
+                ImageColumn::make('foto_utama')
+                    ->label('Foto')
+                    ->square()
+                    ->size(52)
+                    ->defaultImageUrl('https://placehold.co/52x52/f8f5f0/7A1F2B?text=No+Foto')
+                    ->getStateUsing(function ($record) {
+                        if (!$record->foto_utama) return null;
+                        // Jika hanya nama file (foto lama dari public/images/)
+                        if (!str_contains($record->foto_utama, '/')) {
+                            return asset('images/' . $record->foto_utama);
+                        }
+                        // Jika path lengkap (upload baru dari storage)
+                        return asset('storage/' . $record->foto_utama);
+                    })
+                    ->extraImgAttributes(['class' => 'rounded-lg object-cover']),
+
                 TextColumn::make('nama')
                     ->label('Nama Produk')
                     ->searchable()
                     ->sortable()
-                    ->weight('semibold'),
-
-                TextColumn::make('kategori.nama')
-                    ->label('Kategori')
-                    ->badge()
-                    ->color('info')
-                    ->sortable(),
+                    ->weight('semibold')
+                    ->description(fn ($record) => $record->kategori?->nama),
 
                 TextColumn::make('harga_dasar')
                     ->label('Harga Dasar')

@@ -14,8 +14,9 @@ class Produk extends Model
 
     protected $casts = [
         'is_customizable' => 'boolean',
-        'is_sewa' => 'boolean',
-        'is_aktif' => 'boolean',
+        'is_sewa'         => 'boolean',
+        'is_aktif'        => 'boolean',
+        'galeri_foto'     => 'array',
     ];
 
     public function kategori()

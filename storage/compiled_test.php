@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <section id="beranda" class="relative w-full h-[100svh] overflow-hidden bg-[#18181b]">
         <!-- Infinite Horizontal Carousel Background -->
         <div class="absolute inset-0 z-0 flex items-center overflow-hidden pointer-events-none opacity-40">
@@ -149,31 +147,7 @@
             </div>
 
             <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto px-4">
-                @php
-                    $categories = [
-                        [
-                            'Papan Ucapan',
-                            'Mulai Rp 85rb',
-                            'Standing board & mirror elegan untuk momen berharga',
-                            '/images/cat-papan-ucapan.jpg',
-                            '#greeting-board',
-                        ],
-                        [
-                            'Hantaran',
-                            'Mulai Rp 30rb',
-                            'Seserahan & gift box premium dengan detail cantik',
-                            '/images/cat-hantaran.jpg',
-                            '#hantaran',
-                        ],
-                        [
-                            'Dekorasi',
-                            'Mulai Rp 500rb',
-                            'Wujudkan dekorasi impian untuk hari bahagia Anda',
-                            '/images/cat-dekorasi.jpg',
-                            '#dekorasi',
-                        ],
-                    ];
-                @endphp
+                <?php($categories = [['Papan Ucapan', 'Mulai Rp 85rb', 'Standing board & mirror elegan untuk momen berharga', '/images/cat-papan-ucapan.jpg', '#greeting-board'], ['Hantaran', 'Mulai Rp 30rb', 'Seserahan & gift box premium dengan detail cantik', '/images/cat-hantaran.jpg', '#hantaran'], ['Dekorasi', 'Mulai Rp 500rb', 'Wujudkan dekorasi impian untuk hari bahagia Anda', '/images/cat-dekorasi.jpg', '#dekorasi']])
                 @foreach ($categories as $i => [$title, $price, $desc, $img, $link])
                     <div class="reveal-on-scroll {{ $i === 1 ? 'md:-translate-y-8' : '' }}"
                         style="animation-delay: {{ $i * 150 }}ms">
@@ -181,7 +155,7 @@
                             <div
                                 class="relative overflow-hidden rounded-[2rem] aspect-[3/4] shadow-xl border border-gray-100 transition-all duration-500 group-hover:shadow-2xl group-hover:border-[#E8C87A]/50 bg-gray-100">
                                 <!-- Image -->
-                                <img src="{{ asset($img) }}" alt="{{ $title }}"
+                                <img src="{{ $img }}" alt="{{ $title }}"
                                     class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                                     loading="lazy">
                                 <!-- Gradient overlay with maroon hover -->
@@ -227,26 +201,27 @@
             <span class="flex items-center gap-1.5"><span class="text-white">✦</span> Custom Design</span>
             <span class="flex items-center gap-1.5"><span class="text-white">✦</span> Harga Terjangkau</span>
             <span class="flex items-center gap-1.5"><span class="text-white">✦</span> Pengiriman Padang</span>
+            <span class="flex items-center gap-1.5"><span class="text-white">✦</span> 500+ Pelanggan</span>
         </div>
     </div>
 
     @foreach ($kategoris as $kategori)
-        @if ($kategori->daftarProduk->isEmpty())
-            @continue
-        @endif
-        <section id="kategori-{{ $kategori->slug }}"
-            class="pt-10 pb-4 sm:pt-14 sm:pb-8 {{ $loop->odd ? 'bg-[#FAF5F0]' : 'bg-white' }}">
-            @if (!$loop->first)
+        @php
+            $isDekorasi = $kategori->slug === 'dekorasi';
+            $bgClass = $loop->odd ? 'bg-[#FAF5F0]' : 'bg-white';
+        ?>
+        <section id="<?php echo e($kategori->slug); ?>"
+            class="pt-10 pb-4 sm:pt-14 sm:pb-8 <?php echo e($bgClass); ?>">
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$loop->first): ?>
                 <div style="width:80px; height:2px; background:#C9A84C; margin: 0 auto 40px; opacity: 0.5;"></div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
                 <div class="flex items-end justify-between mb-6 reveal-on-scroll">
                     <div>
                         <span
-                            class="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#7A1F2B]/70 font-semibold">{{ $kategori->nama }}</span>
-                        <h2 class="text-2xl sm:text-3xl font-bold text-[#2D1E1E]">{{ $kategori->nama }}</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-1">
-                            {{ $kategori->deskripsi ?? 'Koleksi eksklusif dari Sadita' }}</p>
+                            class="text-[10px] sm:text-xs uppercase tracking-[0.15em] text-[#7A1F2B]/70 font-semibold"><?php echo e($kategori->nama); ?></span>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-[#2D1E1E]"><?php echo e($kategori->nama); ?></h2>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-1"><?php echo e($kategori->deskripsi ?? 'Produk pilihan terbaik untuk Anda'); ?></p>
                     </div>
                     <a href="#"
                         class="text-xs sm:text-sm text-[#7A1F2B] font-semibold hover:underline whitespace-nowrap">Lihat
@@ -255,70 +230,78 @@
 
                 <div
                     class="product-scroll-container flex gap-4 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-hide reveal-on-scroll">
-                    @foreach ($kategori->daftarProduk as $produk)
-                        @php
-                            $isDecor = strtolower($kategori->nama) === 'dekorasi';
-                            $imgUrl =
-                                !empty($produk->galeri_foto) && is_array($produk->galeri_foto)
-                                    ? asset('storage/' . $produk->galeri_foto[0])
-                                    : asset('images/placeholder.jpg');
-                            $priceStr = 'Rp ' . number_format($produk->harga_dasar, 0, ',', '.');
-                            $descStr = $produk->deskripsi ?? 'Detail produk ' . $produk->nama;
-                        @endphp
-                        <div onclick="openProductModal('{{ addslashes($produk->nama) }}', '{{ $priceStr }}', '{{ $imgUrl }}', '{{ addslashes($descStr) }}', '{{ addslashes($kategori->nama) }}', {{ $isDecor ? 'true' : 'false' }})"
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($kategori->daftarProduk->isEmpty()): ?>
+                        <p class="text-sm text-gray-400 py-8">Belum ada produk di kategori ini.</p>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $kategori->daftarProduk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                        <?php
+                            // Resolusi URL gambar: jika path mengandung '/' → dari storage, jika tidak → dari public/images/
+                            $imgUrl = null;
+                            if ($produk->foto_utama) {
+                                $imgUrl = str_contains($produk->foto_utama, '/')
+                                    ? asset('storage/' . $produk->foto_utama)
+                                    : asset('images/' . $produk->foto_utama);
+                            }
+                            $hargaFormatted = 'Rp ' . number_format($produk->harga_dasar, 0, ',', '.');
+                            $tag = $produk->is_customizable ? 'Custom' : ($produk->is_sewa ? 'Sewa' : 'Ready');
+                            $desc = $produk->deskripsi ?? $kategori->deskripsi ?? 'Produk premium dari Sadita Floral.';
+                        ?>
+                        <div onclick="openProductModal(
+                                '<?php echo e(addslashes($produk->nama)); ?>',
+                                '<?php echo e(addslashes($hargaFormatted)); ?>',
+                                '<?php echo e($imgUrl ?? ''); ?>',
+                                '<?php echo e(addslashes($desc)); ?>',
+                                <?php echo e($produk->is_customizable ? 'true' : 'false'); ?>,
+                                <?php echo e($produk->is_sewa ? 'true' : 'false'); ?>,
+                                '<?php echo e(addslashes($kategori->nama)); ?>',
+                                '<?php echo e(addslashes($produk->slug ?? '')); ?>'
+                            )"
                             class="group product-card cursor-pointer min-w-[160px] sm:min-w-[220px] max-w-[160px] sm:max-w-[220px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-white border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(122,31,43,0.15)] flex flex-col">
                             <div class="relative h-48 sm:h-60 w-full overflow-hidden flex-shrink-0 bg-gray-50">
-                                <img src="{{ $imgUrl }}" alt="{{ $produk->nama }}"
-                                    class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
-                                    loading="lazy">
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($imgUrl): ?>
+                                    <img src="<?php echo e($imgUrl); ?>" alt="<?php echo e($produk->nama); ?>"
+                                        class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                                        loading="lazy">
+                                <?php else: ?>
+                                    <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    </div>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 <div
                                     class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                 </div>
                                 <span
-                                    class="absolute top-2 left-2 z-10 px-2.5 py-0.5 bg-white/95 backdrop-blur-sm text-[#7A1F2B] text-[9px] sm:text-[10px] font-bold rounded-full shadow-sm">{{ $kategori->nama }}</span>
+                                    class="absolute top-2 left-2 z-10 px-2.5 py-0.5 bg-white/95 backdrop-blur-sm text-[#7A1F2B] text-[9px] sm:text-[10px] font-bold rounded-full shadow-sm"><?php echo e($tag); ?></span>
                             </div>
                             <div class="p-3 sm:p-4 flex flex-col flex-1 bg-white relative z-10">
                                 <div class="flex text-[#C9A84C] text-[10px] mb-1 tracking-widest">
                                     &#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                 <h4 class="text-xs sm:text-sm font-semibold text-[#2D1E1E] line-clamp-2 leading-tight flex-1"
-                                    style="min-height: 2.5rem;">{{ $produk->nama }}</h4>
-                                <div class="mt-2 mb-3 text-[10px] sm:text-[11px] text-gray-500">Mulai <span
-                                        class="font-extrabold text-[#7A1F2B] text-xs sm:text-sm">{{ $priceStr }}</span>
+                                    style="min-height: 2.5rem;"><?php echo e($produk->nama); ?></h4>
+                                <div class="mt-2 text-[10px] sm:text-[11px] text-gray-500">Mulai <span
+                                        class="font-extrabold text-[#7A1F2B] text-xs sm:text-sm"><?php echo e($hargaFormatted); ?></span>
                                 </div>
-                                <div class="mt-auto">
-                                    @if ($isDecor)
-                                        @php
-                                            $waText = "Halo Sadita 👋\n\nSaya ingin konsultasi dekorasi.\n\n📌 Jenis Dekorasi: {$produk->nama}\n\n📅 Tanggal Acara:\n⏰ Waktu Acara:\n\n📍 Lokasi Acara:\n\n🎨 Konsep / Tema yang diinginkan:\n(Contoh: elegan, rustic, minimalis, dll)\n\n📝 Catatan tambahan:\n(opsional)\n\nTerima kasih 🙏";
-                                        @endphp
-                                        <button
-                                            onclick="event.stopPropagation(); window.open('https://wa.me/62812616155335?text={{ rawurlencode($waText) }}', '_blank')"
-                                            class="w-full py-2 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white text-[10px] sm:text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors">
-                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
-                                            </svg>
-                                            Konsultasi
-                                        </button>
-                                    @else
-                                        <button
-                                            onclick="event.stopPropagation(); window.location.href='{{ route('order') }}?product={{ rawurlencode($produk->nama) }}&price={{ rawurlencode($priceStr) }}&img={{ rawurlencode($imgUrl) }}&jenis={{ rawurlencode($kategori->nama) }}'"
-                                            class="w-full py-2 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white text-[10px] sm:text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors">
-                                            Pesan
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                                            </svg>
-                                        </button>
-                                    @endif
-                                </div>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isDekorasi): ?>
+                                    <a onclick="event.stopPropagation()"
+                                        href="https://wa.me/6289653090248?text=<?php echo e(urlencode('Halo Sadita 👋 Saya ingin konsultasi dekorasi: ' . $produk->nama)); ?>"
+                                        target="_blank"
+                                        class="mt-3 w-full py-1.5 sm:py-2 rounded-lg border border-[#7A1F2B] text-[#7A1F2B] text-[10px] sm:text-xs font-semibold text-center block transition-colors duration-300 group-hover:bg-[#7A1F2B] group-hover:text-white">
+                                        Konsultasi Sekarang
+                                    </a>
+                                <?php else: ?>
+                                    <a onclick="event.stopPropagation()"
+                                        href="<?php echo e(route('order')); ?>?product=<?php echo e(urlencode($produk->nama)); ?>&price=<?php echo e(urlencode($hargaFormatted)); ?>&img=<?php echo e(urlencode($imgUrl ?? '')); ?>"
+                                        class="mt-3 w-full py-1.5 sm:py-2 rounded-lg border border-[#7A1F2B] text-[#7A1F2B] text-[10px] sm:text-xs font-semibold text-center block transition-colors duration-300 group-hover:bg-[#7A1F2B] group-hover:text-white">
+                                        Pesan Sekarang
+                                    </a>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
-                    @endforeach
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
 
-                    <!-- 6th Card CTA (WhatsApp) -->
+                    <!-- Card CTA (WhatsApp) -->
                     <div class="group min-w-[160px] sm:min-w-[220px] max-w-[160px] sm:max-w-[220px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-[#7A1F2B] text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(122,31,43,0.3)] flex flex-col justify-center items-center text-center p-4 sm:p-5 cursor-pointer relative"
-                        onclick="window.open('https://wa.me/62812616155335?text=Halo+Sadita%2C+saya+ingin+konsultasi+mengenai+pesanan+saya', '_blank')">
+                        onclick="window.open('https://wa.me/6289653090248?text=Halo+Sadita%2C+saya+ingin+konsultasi+mengenai+pesanan+saya', '_blank')">
                         <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                         <div
                             class="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-3 sm:mb-5 group-hover:scale-110 transition-transform duration-300">
@@ -336,7 +319,7 @@
                 </div>
             </div>
         </section>
-    @endforeach
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
 
     <section class="py-16 sm:py-20 bg-[#FFFDFB] overflow-hidden">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
@@ -345,23 +328,23 @@
                 <h2 class="mt-3 text-3xl sm:text-4xl font-bold text-[#2D1E1E]">Kenapa Pilih Sadita?</h2>
             </div>
             <div class="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
-                @foreach ([['01', 'Kualitas Premium', 'Bahan material terbaik dengan detail pengerjaan yang teliti untuk hasil yang elegan dan memukau.', '/images/why-premium.png'], ['02', 'Proses Cepat', 'Pengerjaan profesional yang responsif dan tepat waktu untuk momen berharga Anda.', '/images/why-fast.png'], ['03', 'Gratis Ongkir', 'Layanan pengiriman aman dan gratis untuk seluruh wilayah Padang dan sekitarnya.', '/images/why-delivery.png'], ['04', 'Custom Request', 'Kebebasan berekspresi. Desain dapat disesuaikan sepenuhnya dengan keinginan Anda.', '/images/why-custom.png']] as $index => $feature)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = [['01', 'Kualitas Premium', 'Bahan material terbaik dengan detail pengerjaan yang teliti untuk hasil yang elegan dan memukau.', '/images/why-premium.png'], ['02', 'Proses Cepat', 'Pengerjaan profesional yang responsif dan tepat waktu untuk momen berharga Anda.', '/images/why-fast.png'], ['03', 'Gratis Ongkir', 'Layanan pengiriman aman dan gratis untuk seluruh wilayah Padang dan sekitarnya.', '/images/why-delivery.png'], ['04', 'Custom Request', 'Kebebasan berekspresi. Desain dapat disesuaikan sepenuhnya dengan keinginan Anda.', '/images/why-custom.png']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $feature): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                     <div
                         class="group relative bg-white border border-gray-100 rounded-2xl p-6 sm:p-8 hover:shadow-[0_12px_30px_rgba(122,31,43,0.08)] transition-all duration-300 reveal-on-scroll flex flex-col h-full min-h-[280px]">
                         <div
                             class="absolute top-4 right-6 text-6xl font-playfair font-black text-gray-200 group-hover:text-[#F3E8D6] transition-colors duration-300 pointer-events-none">
-                            {{ $feature[0] }}</div>
+                            <?php echo e($feature[0]); ?></div>
 
-                        <img src="{{ asset($feature[3]) }}" alt="{{ $feature[1] }}"
+                        <img src="<?php echo e($feature[3]); ?>" alt="<?php echo e($feature[1]); ?>"
                             class="w-[120px] h-[120px] object-contain block mb-6 relative z-10 group-hover:scale-110 transition-transform duration-300 drop-shadow-sm flex-shrink-0"
                             loading="lazy">
 
                         <div class="flex flex-col flex-1 relative z-10">
-                            <h3 class="text-lg sm:text-xl font-bold text-[#2D1E1E] mb-3">{{ $feature[1] }}</h3>
-                            <p class="text-sm text-gray-500 leading-relaxed">{{ $feature[2] }}</p>
+                            <h3 class="text-lg sm:text-xl font-bold text-[#2D1E1E] mb-3"><?php echo e($feature[1]); ?></h3>
+                            <p class="text-sm text-gray-500 leading-relaxed"><?php echo e($feature[2]); ?></p>
                         </div>
                     </div>
-                @endforeach
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </div>
         </div>
     </section>
@@ -390,39 +373,23 @@
             </div>
 
             <div class="masonry-grid mt-10" id="gallery-container">
-                @php
-                    $galleryImages = [
-                        ['papan-1.jpg', 'tall', 'papan', '🌸 Papan Ucapan Premium'],
-                        ['hantaran-1.jpg', 'normal', 'hantaran', '🎁 Hantaran Seserahan'],
-                        ['dekorasi-1.jpg', 'normal', 'dekorasi', '✨ Dekorasi Pernikahan'],
-                        ['papan-2.jpg', 'wide', 'papan', '🌸 Papan Bunga Rustic'],
-                        ['hantaran-3.jpg', 'tall', 'hantaran', '🎁 Hantaran Eksklusif'],
-                        ['dekorasi-3.jpg', 'normal', 'dekorasi', '✨ Dekorasi Lamaran'],
-                        ['papan-3.jpg', 'normal', 'papan', '🌸 Papan Congratulations'],
-                        ['hantaran-4.jpg', 'normal', 'hantaran', '🎁 Hantaran Adat'],
-                        ['dekorasi-4.jpg', 'tall', 'dekorasi', '✨ Dekorasi Premium'],
-                        ['papan-4.jpg', 'wide', 'papan', '🌸 Standing Mirror'],
-                        ['hantaran-5.jpg', 'wide', 'hantaran', '🎁 Hantaran Gold'],
-                        ['dekorasi-5.jpg', 'normal', 'dekorasi', '✨ Grand Opening'],
-                        ['papan-5.jpg', 'normal', 'papan', '🌸 Ucapan Custom'],
-                    ];
-                @endphp
-                @foreach ($galleryImages as $i => [$gImg, $gSize, $gCat, $gLabel])
-                    <div class="masonry-item masonry-{{ $gSize }} reveal-on-scroll"
-                        data-category="{{ $gCat }}" style="animation-delay:{{ $i * 50 }}ms">
+                <?php ($galleryImages = [['papan-1.jpg', 'tall', 'papan', '🌸 Papan Ucapan Premium'], ['hantaran-1.jpg', 'normal', 'hantaran', '🎁 Hantaran Seserahan'], ['dekorasi-1.jpg', 'normal', 'dekorasi', '✨ Dekorasi Pernikahan'], ['papan-2.jpg', 'wide', 'papan', '🌸 Papan Bunga Rustic'], ['hantaran-3.jpg', 'tall', 'hantaran', '🎁 Hantaran Eksklusif'], ['dekorasi-3.jpg', 'normal', 'dekorasi', '✨ Dekorasi Lamaran'], ['papan-3.jpg', 'normal', 'papan', '🌸 Papan Congratulations'], ['hantaran-4.jpg', 'normal', 'hantaran', '🎁 Hantaran Adat'], ['dekorasi-4.jpg', 'tall', 'dekorasi', '✨ Dekorasi Premium'], ['papan-4.jpg', 'wide', 'papan', '🌸 Standing Mirror'], ['hantaran-5.jpg', 'wide', 'hantaran', '🎁 Hantaran Gold'], ['dekorasi-5.jpg', 'normal', 'dekorasi', '✨ Grand Opening'], ['papan-5.jpg', 'normal', 'papan', '🌸 Ucapan Custom']]); ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $galleryImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => [$gImg, $gSize, $gCat, $gLabel]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                    <div class="masonry-item masonry-<?php echo e($gSize); ?> reveal-on-scroll"
+                        data-category="<?php echo e($gCat); ?>" style="animation-delay:<?php echo e($i * 50); ?>ms">
                         <div
                             class="gallery-card group relative overflow-hidden rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 cursor-pointer w-full h-full">
-                            <img src="{{ asset('images/' . $gImg) }}" alt="{{ $gLabel }}"
+                            <img src="/images/<?php echo e($gImg); ?>" alt="<?php echo e($gLabel); ?>"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 loading="lazy">
                             <div
                                 class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-5 transition-all duration-500 opacity-0 group-hover:opacity-100 flex items-end">
                                 <span
-                                    class="text-[#E8C87A] text-[11px] sm:text-xs font-bold tracking-widest uppercase transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{{ $gLabel }}</span>
+                                    class="text-[#E8C87A] text-[11px] sm:text-xs font-bold tracking-widest uppercase transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500"><?php echo e($gLabel); ?></span>
                             </div>
                         </div>
                     </div>
-                @endforeach
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </div>
 
             <!-- CTA Lihat Semua -->
@@ -483,63 +450,44 @@
 
     <section id="cara-pesan" class="pt-16 pb-10 sm:pt-20 sm:pb-12 bg-white overflow-hidden">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-            <div class="text-center reveal-on-scroll mb-10">
+            <div class="text-center reveal-on-scroll">
                 <span class="text-xs uppercase tracking-[0.2em] text-[#7A1F2B] font-semibold">Mudah & Cepat</span>
                 <h2 class="mt-3 text-3xl sm:text-4xl font-bold text-[#2D1E1E]">Cara Pesan</h2>
             </div>
-            <div class="flex flex-col md:flex-row items-stretch justify-center gap-6 md:gap-2 lg:gap-4 w-full max-w-6xl mx-auto px-2">
-                @php
-                    $steps = [
-                        [
-                            '01',
-                            'Pilih Produk',
-                            'Jelajahi koleksi dan pilih yang sesuai',
-                            '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>',
-                        ],
-                        [
-                            '02',
-                            'Isi Detail',
-                            'Lengkapi detail pesanan & alamat',
-                            '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>',
-                        ],
-                        [
-                            '03',
-                            'Bayar',
-                            'Lakukan pembayaran yang aman',
-                            '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>',
-                        ],
-                        [
-                            '04',
-                            'Lacak',
-                            'Pantau status pesanan Anda',
-                            '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>',
-                        ],
-                    ];
-                @endphp
-                @foreach ($steps as $i => [$num, $stepTitle, $stepDesc, $icon])
+            <div class="mt-10 flex flex-col md:flex-row gap-6 sm:gap-4 justify-between relative">
+                <?php (
+    $steps = [
+        ['01', 'Pilih Produk', 'Jelajahi koleksi dan pilih yang sesuai', '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>'],
+        ['02', 'Isi Detail', 'Lengkapi detail pesanan & alamat', '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>'],
+        ['03', 'Bayar', 'Lakukan pembayaran yang aman', '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>'],
+        ['04', 'Lacak', 'Pantau status pesanan Anda', '<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>']
+    ]
+); ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $steps; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => [$num, $stepTitle, $stepDesc, $icon]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                     <div class="step-card relative text-center p-5 sm:p-6 pt-8 sm:pt-10 rounded-2xl bg-[#FAF5F0] reveal-on-scroll hover:shadow-lg transition-all duration-300 flex flex-col flex-1 h-full border border-gray-100 overflow-hidden"
-                        style="animation-delay:{{ $i * 100 }}ms">
+                        style="animation-delay:<?php echo e($i * 100); ?>ms">
                         <div
                             class="absolute top-0 left-0 w-10 h-10 rounded-br-2xl bg-[#E8C87A] text-[#7A1F2B] font-bold flex items-center justify-center text-sm shadow-sm">
-                            {{ $num }}</div>
+                            <?php echo e($num); ?></div>
                         <div
                             class="w-14 h-14 mx-auto rounded-full bg-[#7A1F2B] text-white flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform flex-shrink-0">
-                            {!! $icon !!}
+                            <?php echo $icon; ?>
+
                         </div>
                         <div class="flex flex-col flex-1">
-                            <h3 class="text-sm sm:text-base font-bold text-[#2D1E1E]">{{ $stepTitle }}</h3>
-                            <p class="mt-2 text-xs sm:text-sm text-gray-500 leading-relaxed">{{ $stepDesc }}</p>
+                            <h3 class="text-sm sm:text-base font-bold text-[#2D1E1E]"><?php echo e($stepTitle); ?></h3>
+                            <p class="mt-2 text-xs sm:text-sm text-gray-500 leading-relaxed"><?php echo e($stepDesc); ?></p>
                         </div>
                     </div>
-                    @if ($i < count($steps) - 1)
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($i < count($steps) - 1): ?>
                         <div class="hidden md:flex items-center justify-center text-gray-300 self-center">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                             </svg>
                         </div>
-                    @endif
-                @endforeach
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </div>
         </div>
     </section>
@@ -614,74 +562,58 @@
             btnText.textContent = "Mencari...";
             spinner.classList.remove('hidden');
             resultBox.classList.add('hidden');
+            resultBox.classList.remove('translate-y-0', 'opacity-100');
 
-            // API Call
-            fetch('/api/track/' + encodeURIComponent(code))
-                .then(response => response.json())
-                .then(data => {
-                    btnText.textContent = "Lacak";
-                    spinner.classList.add('hidden');
-                    resultBox.classList.remove('hidden');
+            // Simulate API call
+            setTimeout(() => {
+                btnText.textContent = "Lacak";
+                spinner.classList.add('hidden');
 
-                    if (data.found) {
-                        let statusBadge = '';
-                        if (data.status === 'UNPAID') statusBadge =
-                            '<span class="text-xs font-bold text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">Menunggu Pembayaran</span>';
-                        else if (data.status === 'PAID') statusBadge =
-                            '<span class="text-xs font-bold text-blue-600 bg-blue-100 px-3 py-1 rounded-full">Sedang Diproses</span>';
-                        else if (data.status === 'DELIVERED') statusBadge =
-                            '<span class="text-xs font-bold text-green-600 bg-green-100 px-3 py-1 rounded-full">Terkirim</span>';
-                        else statusBadge =
-                            `<span class="text-xs font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">${data.status}</span>`;
+                resultBox.classList.remove('hidden');
 
-                        resultBox.innerHTML = `
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-[#2D1E1E] font-bold text-lg">Pesanan Ditemukan</h4>
-                                    <p class="text-xs text-gray-500 font-mono">${data.order_id}</p>
-                                </div>
+                // Demo logic: If starts with SDT, assume success, else not found
+                if (code.startsWith('SDT')) {
+                    resultBox.innerHTML = `
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             </div>
-                            <div class="border-t border-gray-100 pt-4 space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-500">Produk</span>
-                                    <span class="text-sm font-semibold text-[#2D1E1E] text-right truncate max-w-[150px]" title="${data.product_name}">${data.product_name}</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-500">Status</span>
-                                    ${statusBadge}
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-500">Jadwal Kirim</span>
-                                    <span class="text-sm font-semibold text-[#2D1E1E]">${data.delivery_date} | ${data.delivery_time}</span>
-                                </div>
+                            <div>
+                                <h4 class="text-[#2D1E1E] font-bold text-lg">Pesanan Ditemukan</h4>
+                                <p class="text-xs text-gray-500 font-mono">${code}</p>
                             </div>
-                        `;
-                    } else {
-                        resultBox.innerHTML = `
-                            <div class="flex flex-col items-center justify-center py-4 text-center">
-                                <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 mb-3">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </div>
-                                <h4 class="text-[#2D1E1E] font-bold">Kode Tidak Ditemukan</h4>
-                                <p class="text-sm text-gray-500 mt-1">Pastikan Anda memasukkan kode pesanan yang benar (Contoh: SDT-...).</p>
+                        </div>
+                        <div class="border-t border-gray-100 pt-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm text-gray-500">Status</span>
+                                <span class="text-xs font-bold text-[#7A1F2B] bg-[#FAF5F0] px-3 py-1 rounded-full">Dalam Proses Pengerjaan</span>
                             </div>
-                        `;
-                    }
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500">Estimasi Selesai</span>
+                                <span class="text-sm font-semibold text-[#2D1E1E]">Besok, 14:00 WIB</span>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-center text-gray-400 mt-4">Hubungi admin jika terdapat kesalahan data.</p>
+                    `;
+                } else {
+                    resultBox.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-4 text-center">
+                            <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 mb-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </div>
+                            <h4 class="text-[#2D1E1E] font-bold">Kode Tidak Ditemukan</h4>
+                            <p class="text-sm text-gray-500 mt-1">Pastikan Anda memasukkan kode pesanan yang benar (Contoh: SDT-...).</p>
+                        </div>
+                    `;
+                }
 
-                    // Animate in
-                    setTimeout(() => {
-                        resultBox.classList.add('translate-y-0', 'opacity-100');
-                        resultBox.classList.remove('translate-y-4', 'opacity-0');
-                    }, 50);
-                })
-                .catch(error => {
-                    btnText.textContent = "Lacak";
-                    spinner.classList.add('hidden');
-                    alert('Terjadi kesalahan saat melacak pesanan.');
-                });
+                // Animate in
+                setTimeout(() => {
+                    resultBox.classList.add('translate-y-0', 'opacity-100');
+                    resultBox.classList.remove('translate-y-4', 'opacity-0');
+                }, 50);
+
+            }, 1200);
         }
     </script>
 
@@ -772,166 +704,143 @@
 
     <!-- Product Detail Modal -->
     <div id="productModal"
-        class="fixed inset-0 z-[100] hidden flex justify-center items-center p-4 sm:p-6 opacity-0 transition-opacity duration-300"
+        class="fixed inset-0 z-[100] hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-300"
         onclick="closeProductModal()">
 
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-[#2D1E1E]/40 backdrop-blur-sm transition-opacity"></div>
-
-        <!-- Modal Card (Split Layout on Desktop) -->
-        <div class="bg-white w-[95%] sm:w-full max-w-[360px] md:max-w-[750px] lg:max-w-[850px] rounded-[1.5rem] md:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] transform scale-95 transition-transform duration-300 ease-out relative z-10 flex flex-col md:flex-row overflow-hidden max-h-[90vh]"
+        <div id="productModalContent"
+            class="bg-white w-full max-w-sm sm:max-w-md md:max-w-4xl rounded-[1.5rem] md:rounded-[2rem] flex flex-col md:flex-row overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 relative"
             onclick="event.stopPropagation()">
 
             <!-- Close Button -->
             <button onclick="closeProductModal()"
-                class="absolute top-3 right-3 md:top-5 md:right-5 z-20 w-8 h-8 md:w-10 md:h-10 bg-white/80 md:bg-gray-100 backdrop-blur-sm md:backdrop-blur-none rounded-full flex items-center justify-center text-[#2D1E1E] hover:bg-white hover:text-[#7A1F2B] hover:shadow-md transition-all group">
-                <svg class="w-4 h-4 md:w-5 md:h-5 transform group-hover:rotate-90 transition-transform duration-300"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12">
-                    </path>
+                class="absolute top-3 right-3 z-30 w-9 h-9 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/50 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
 
-            <!-- Image Area -->
-            <div
-                class="w-full md:w-[45%] aspect-[4/3] md:aspect-auto md:h-auto relative flex items-center justify-center bg-[#F9F9F9] overflow-hidden group">
+            <!-- Image Section -->
+            <div class="relative w-full md:w-5/12 h-52 sm:h-64 md:h-auto flex-shrink-0 bg-gray-100">
                 <img id="modalImg" src="" alt=""
-                    class="w-full h-full md:absolute md:inset-0 object-cover transition-transform duration-700 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent md:hidden">
+                    class="absolute inset-0 w-full h-full object-cover">
+                <!-- Fallback jika tidak ada gambar -->
+                <div id="modalImgFallback" class="absolute inset-0 hidden items-center justify-center bg-gray-50">
+                    <svg class="w-16 h-16 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none"></div>
             </div>
 
-            <!-- Content Area -->
-            <div class="w-full md:w-[55%] p-6 md:p-10 flex flex-col justify-center relative bg-white">
-                <div
-                    class="text-[#C9A84C] text-[10px] md:text-xs font-bold uppercase tracking-widest mb-3 md:mb-4 flex items-center gap-2">
-                    <span class="w-4 md:w-6 h-[1px] bg-[#C9A84C]"></span> Sadita Collection
-                </div>
-                <h3 id="modalTitle" class="text-xl md:text-3xl font-bold text-[#2D1E1E] mb-3 md:mb-4 leading-tight"
-                    style="font-family:'Playfair Display',serif"></h3>
+            <!-- Info Section -->
+            <div class="w-full md:w-7/12 flex flex-col bg-[#FFFDFB] p-5 sm:p-6 md:p-10 overflow-y-auto max-h-[70vh] md:max-h-none">
 
-                <div class="flex-1 overflow-y-auto pr-2 scrollbar-hide mb-6 md:mb-8">
-                    <p id="modalDesc"
-                        class="text-xs md:text-sm text-gray-500 leading-relaxed line-clamp-4 md:line-clamp-none mb-4 md:mb-6">
-                    </p>
-
-                    <!-- Detail List -->
-                    <ul class="hidden md:flex flex-col space-y-3 text-xs md:text-sm text-gray-500">
-                        <li class="flex items-center gap-3">
-                            <div class="w-6 h-6 rounded-full bg-[#FAF5F0] flex items-center justify-center text-[#C9A84C]">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
-                            Kualitas Premium & Eksklusif
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <div class="w-6 h-6 rounded-full bg-[#FAF5F0] flex items-center justify-center text-[#C9A84C]">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
-                            Desain Elegan dan Tahan Lama
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <div class="w-6 h-6 rounded-full bg-[#FAF5F0] flex items-center justify-center text-[#C9A84C]">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
-                            Dapat Disesuaikan (Custom)
-                        </li>
-                    </ul>
+                <!-- Top: Kategori + Badges -->
+                <div class="flex items-center gap-2 flex-wrap mb-3">
+                    <span id="modalKategori" class="text-[10px] text-[#7A1F2B]/70 uppercase tracking-widest font-semibold"></span>
+                    <span id="modalBadgeCustom" class="hidden text-[9px] text-[#C9A84C] font-bold bg-[#C9A84C]/10 px-2 py-0.5 rounded-full">✦ Custom</span>
+                    <span id="modalBadgeSewa" class="hidden text-[9px] text-blue-500 font-bold bg-blue-50 px-2 py-0.5 rounded-full">🔄 Sewa</span>
                 </div>
 
-                <div class="mt-auto pt-5 md:pt-6 border-t border-gray-100 flex items-center justify-between">
-                    <div>
-                        <div
-                            class="text-[9px] md:text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-0.5 md:mb-1">
-                            Mulai Dari</div>
-                        <div id="modalPrice" class="text-lg md:text-2xl font-bold text-[#7A1F2B]">
+                <!-- Stars -->
+                <div class="text-[#C9A84C] text-xs tracking-widest mb-2">★★★★★</div>
+
+                <!-- Title -->
+                <h3 id="modalTitle"
+                    class="text-xl sm:text-2xl md:text-3xl font-bold text-[#2D1E1E] leading-tight mb-2"
+                    style="font-family:'Playfair Display',serif">
+                </h3>
+
+                <!-- Divider -->
+                <div class="w-10 h-[3px] bg-[#C9A84C] rounded-full mb-3"></div>
+
+                <!-- Description -->
+                <p id="modalDesc" class="text-xs sm:text-sm text-gray-500 leading-relaxed"></p>
+
+                <!-- Price + CTA -->
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <div class="flex items-end justify-between gap-3 mb-4">
+                        <div>
+                            <div class="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Harga Mulai</div>
+                            <div id="modalPrice" class="text-xl sm:text-2xl md:text-3xl font-bold text-[#7A1F2B] leading-none"></div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[9px] text-gray-400 uppercase tracking-widest mb-0.5">Layanan</div>
+                            <div class="text-[10px] text-gray-600 font-medium">Konsultasi Gratis</div>
                         </div>
                     </div>
                     <button id="modalOrderBtn"
-                        class="py-2.5 md:py-3 px-6 md:px-8 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white rounded-xl md:rounded-2xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group">
-                        <span id="modalBtnText">Pesan</span>
-                        <span id="modalBtnIcon">
-                            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                            </svg>
-                        </span>
+                        class="w-full py-3 bg-[#7A1F2B] text-white rounded-xl text-xs sm:text-sm font-bold uppercase tracking-widest hover:bg-[#5e1721] active:scale-95 transition-all duration-200 shadow-[0_6px_16px_rgba(122,31,43,0.3)] flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Pesan Sekarang
                     </button>
+                    <a id="modalWaBtn"
+                        href="#"
+                        target="_blank"
+                        class="mt-2 w-full py-2.5 rounded-xl border border-[#25D366] text-[#25D366] text-xs font-semibold text-center flex items-center justify-center gap-2 hover:bg-[#25D366]/5 transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        Tanya via WhatsApp
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        function openProductModal(title, price, img, desc, tag = '', isDecor = false) {
+        function openProductModal(title, price, img, desc, isCustom = false, isSewa = false, kategori = '', slug = '') {
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalPrice').textContent = price;
-            document.getElementById('modalImg').src = img;
             document.getElementById('modalDesc').textContent = desc;
 
-            const orderBtn = document.getElementById('modalOrderBtn');
-            const btnText = document.getElementById('modalBtnText');
-            const btnIcon = document.getElementById('modalBtnIcon');
-
-            const encodedTitle = encodeURIComponent(title);
-            const encodedPrice = encodeURIComponent(price);
-            const encodedImg = encodeURIComponent(img);
-            const encodedTag = encodeURIComponent(tag);
-
-            if (isDecor) {
-                btnText.textContent = 'Konsultasi Sekarang';
-                btnIcon.innerHTML =
-                    `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>`;
-                orderBtn.className =
-                    "py-2.5 md:py-3 px-6 md:px-8 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white rounded-xl md:rounded-2xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group";
+            // Handle gambar
+            const imgEl = document.getElementById('modalImg');
+            const fallback = document.getElementById('modalImgFallback');
+            if (img) {
+                imgEl.src = img;
+                imgEl.classList.remove('hidden');
+                if (fallback) fallback.classList.add('hidden');
             } else {
-                btnText.textContent = 'Pesan';
-                btnIcon.innerHTML =
-                    `<svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
-                orderBtn.className =
-                    "py-2.5 md:py-3 px-6 md:px-8 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white rounded-xl md:rounded-2xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group";
+                imgEl.src = '';
+                imgEl.classList.add('hidden');
+                if (fallback) { fallback.classList.remove('hidden'); fallback.classList.add('flex'); }
             }
 
-            const handleOrder = function() {
+            // Kategori label
+            const katEl = document.getElementById('modalKategori');
+            if (katEl) katEl.textContent = kategori;
+
+            // Badges
+            const badgeCustom = document.getElementById('modalBadgeCustom');
+            const badgeSewa = document.getElementById('modalBadgeSewa');
+            if (badgeCustom) badgeCustom.classList.toggle('hidden', !isCustom);
+            if (badgeSewa) badgeSewa.classList.toggle('hidden', !isSewa);
+
+            // Tombol Pesan
+            const orderBtn = document.getElementById('modalOrderBtn');
+            orderBtn.onclick = function() {
                 closeProductModal();
-                if (isDecor) {
-                    const waText =
-                        `Halo Sadita 👋\n\nSaya ingin konsultasi dekorasi.\n\n📌 Jenis Dekorasi: ${title}\n\n📅 Tanggal Acara:\n⏰ Waktu Acara:\n\n📍 Lokasi Acara:\n\n🎨 Konsep / Tema yang diinginkan:\n(Contoh: elegan, rustic, minimalis, dll)\n\n📝 Catatan tambahan:\n(opsional)\n\nTerima kasih 🙏`;
-                    window.open(`https://wa.me/62812616155335?text=${encodeURIComponent(waText)}`, '_blank');
-                } else {
-                    window.location.href =
-                        `{{ route('order') }}?product=${encodedTitle}&price=${encodedPrice}&img=${encodedImg}&jenis=${encodedTag}`;
-                }
+                window.location.href = `<?php echo e(route('order')); ?>?product=${encodeURIComponent(title)}&price=${encodeURIComponent(price)}&img=${encodeURIComponent(img)}`;
             };
 
-            orderBtn.onclick = handleOrder;
+            // Tombol WhatsApp
+            const waBtn = document.getElementById('modalWaBtn');
+            if (waBtn) {
+                const waMsg = `Halo Sadita 👋\n\nSaya tertarik dengan produk:\n📦 *${title}*\n💰 ${price}\n\nBoleh info lebih lanjut?`;
+                waBtn.href = `https://wa.me/6289653090248?text=${encodeURIComponent(waMsg)}`;
+            }
 
             const modal = document.getElementById('productModal');
+            const content = document.getElementById('productModalContent');
             modal.classList.remove('hidden');
-
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
-                const modalContent = modal.querySelector('.bg-white');
-                modalContent.classList.remove('scale-95');
-            }, 20);
+                content.classList.remove('scale-95');
+            }, 10);
         }
 
         function closeProductModal() {
             const modal = document.getElementById('productModal');
-            const modalContent = modal.querySelector('.bg-white');
-
+            const content = document.getElementById('productModalContent');
             modal.classList.add('opacity-0');
-            modalContent.classList.add('scale-95');
-
+            content.classList.add('scale-95');
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 300);
@@ -954,4 +863,6 @@
             will-change: transform;
         }
     </style>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
