@@ -1,19 +1,44 @@
-# Use serversideup/php — pre-built for Laravel, all extensions included (no OOM!)
-FROM serversideup/php:8.3-cli
+# Standard PHP 8.3 CLI — clean, minimal, no entrypoint conflicts
+FROM php:8.3-cli
 
-# Switch to root to install packages
-USER root
+# Install system deps + all PHP extensions needed by Laravel/Filament
+RUN apt-get update && apt-get install -y \
+    libicu-dev \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
+    unzip \
+    curl \
+    git \
+    --no-install-recommends \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        mbstring \
+        bcmath \
+        intl \
+        zip \
+        gd \
+        pcntl \
+        opcache \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js 20 + intl PHP extension (only missing one from serversideup base image)
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Install Node.js 20
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs libicu-dev --no-install-recommends \
-    && docker-php-ext-install intl \
+    && apt-get install -y nodejs --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
 
-# Install PHP dependencies (layered for Docker cache)
+# Install PHP dependencies
 COPY composer.json composer.lock ./
 RUN composer install --optimize-autoloader --no-dev --no-interaction --no-scripts
 
@@ -24,14 +49,18 @@ RUN npm ci
 # Copy full application
 COPY . .
 
-# Finalize composer and build assets
+# Finalize
 RUN composer dump-autoload --optimize \
     && npm run build
 
-# Set permissions
+# Permissions
 RUN chmod -R 775 storage bootstrap/cache \
     && mkdir -p storage/framework/{sessions,views,cache,testing} storage/logs
 
 EXPOSE 8080
 
-CMD sh -c "php artisan migrate --force && php artisan db:seed --force && php artisan storage:link && php artisan config:cache && php artisan route:cache && php artisan view:cache && php -S 0.0.0.0:${PORT:-8080} -t public"
+# Startup script
+COPY docker/startup.sh /startup.sh
+RUN chmod +x /startup.sh
+
+CMD ["/startup.sh"]

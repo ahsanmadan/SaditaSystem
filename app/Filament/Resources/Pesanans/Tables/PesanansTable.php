@@ -20,7 +20,7 @@ class PesanansTable
     {
         return $table
             ->query(
-                Pesanan::query()->with(['pelanggan', 'riwayatPembayaran'])
+                Pesanan::query()->with(['pelanggan', 'pembayaranTerakhir'])
             )
             ->columns([
                 TextColumn::make('kode_pesanan')
@@ -58,7 +58,7 @@ class PesanansTable
                     ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.'))
                     ->sortable(),
 
-                BadgeColumn::make('riwayatPembayaran.status')
+                BadgeColumn::make('pembayaranTerakhir.status')
                     ->label('Status Bayar')
                     ->colors([
                         'warning' => Pembayaran::STATUS_MENUNGGU,
@@ -70,8 +70,7 @@ class PesanansTable
                         Pembayaran::STATUS_LUNAS => 'Lunas',
                         Pembayaran::STATUS_DITOLAK => 'Ditolak',
                         default => '-',
-                    })
-                    ->separator(','),
+                    }),
 
                 TextColumn::make('created_at')
                     ->label('Tanggal Order')

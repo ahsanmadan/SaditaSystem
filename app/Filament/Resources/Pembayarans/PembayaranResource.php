@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Pembayarans;
 
+use App\Filament\Resources\Pembayarans\Pages\CreatePembayaran;
 use App\Filament\Resources\Pembayarans\Pages\EditPembayaran;
 use App\Filament\Resources\Pembayarans\Pages\ListPembayarans;
 use App\Filament\Resources\Pembayarans\Schemas\PembayaranForm;
@@ -61,8 +62,9 @@ class PembayaranResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListPembayarans::route('/'),
-            'edit' => EditPembayaran::route('/{record}/edit'),
+            'index'  => ListPembayarans::route('/'),
+            'create' => CreatePembayaran::route('/create'),
+            'edit'   => EditPembayaran::route('/{record}/edit'),
         ];
     }
 }

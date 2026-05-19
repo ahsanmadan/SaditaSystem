@@ -18,5 +18,16 @@ class DatabaseSeeder extends Seeder {
             KatalogSeeder::class,
             TransactionSeeder::class,
         ]);
+        $seeders = [
+            MasterSeeder::class,
+        ];
+
+        // TransactionSeeder uses fakerphp/faker (dev-only dependency)
+        // Only run it in local/testing where dev dependencies are installed
+        if (app()->environment('local', 'testing')) {
+            $seeders[] = TransactionSeeder::class;
+        }
+
+        $this->call($seeders);
     }
 }

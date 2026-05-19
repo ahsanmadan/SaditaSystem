@@ -1,83 +1,199 @@
-<div align="center">
+# SaditaSystem
 
-# 🌸 SaditaSystem
+Sistem Informasi Manajemen Bisnis Sadita untuk layanan sewa, jasa dekorasi, dan hantaran.
 
-### Sistem Informasi E-Commerce & Manajemen Dekorasi Berbasis Web
+## Stack
 
-[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org/)
+- Backend: Laravel 13
+- Admin panel: Filament 5
+- PHP: 8.3 atau lebih baru
+- Database lokal/produksi: MySQL atau MariaDB
+- Frontend: Vite dan Tailwind CSS 4
+- Package manager: Composer dan npm
 
-</div>
+## Catatan Penting Untuk XAMPP
 
----
+Proyek ini membutuhkan **PHP 8.3+**. Banyak instalasi XAMPP lama masih memakai PHP 8.1 atau 8.2, sehingga `composer install` atau `php artisan` bisa gagal walaupun MySQL XAMPP-nya berjalan.
 
-## 📖 Tentang Aplikasi
+Cek versi PHP:
 
-**SaditaSystem** adalah platform *e-commerce* dan sistem informasi manajemen penyewaan dekorasi, hantaran, serta florist khusus untuk UMKM **Sadita Decoration** di Padang. 
+```bash
+php -v
+```
 
-Aplikasi ini bertujuan untuk mendigitalisasi proses pemesanan yang sebelumnya manual via WhatsApp. Fitur utama yang dikembangkan antara lain:
-- Katalog produk digital interaktif.
-- Sistem *booking* online dan pengecekan ketersediaan jadwal.
-- Manajemen inventaris stok barang dekorasi/seserahan.
-- Integrasi *Chatbot AI* otomatis untuk menjawab pertanyaan pelanggan.
+Jika hasilnya di bawah PHP 8.3, gunakan XAMPP yang sudah membawa PHP 8.3+, atau gunakan PHP 8.3 terpisah lalu pastikan folder PHP tersebut masuk ke `PATH`.
 
----
+## Setup Lokal Dengan XAMPP
 
-## 👥 Tim Pengembang (Kelompok 5)
+1. Clone repository.
 
-Proyek ini dirancang dan dikembangkan bersama-sama oleh **Kelompok 5** (Semester 4), dengan rincian anggota tim dan perannya masing-masing:
-
-| Nama Lengkap | NIM | Peran / Role | Akun GitHub |
-|---|---|---|---|
-| **Bagastio Putra Joandri** | 2411081005 | Project Manager & AI Specialist | [@git-bjoand](https://github.com/git-bjoand) |
-| **Ahsan Ramadan** | 2411081002 | Lead Programmer | [@ahsanmadan](https://github.com/ahsanmadan) |
-| **Jeli Mayora** | 2411081012 | System Analyst | [@jelmayora24-hub](https://github.com/jelmayora24-hub) |
-| **Aprila Maulida** | 2411083002 | Quality Assurance | [@maulidaaprila12](https://github.com/maulidaaprila12) |
-
----
-
-## 🛠️ Panduan Menjalankan Proyek (Bagi Anggota Tim)
-
-Untuk menjalankan proyek ini di laptop masing-masing, ikuti langkah berikut:
-
-### 1. Kloning Repository
 ```bash
 git clone https://github.com/ahsanmadan/SaditaSystem.git
 cd SaditaSystem
 ```
 
-### 2. Install Dependency (Backend & Frontend)
+2. Pastikan berada di branch `develop`.
+
+```bash
+git checkout develop
+git pull origin develop
+```
+
+3. Install dependency.
+
 ```bash
 composer install
 npm install
 ```
 
-### 3. Persiapan File Konfigurasi `.env`
-Duplikat file yang sudah ada lalu *generate* kunci aplikasi:
+4. Buat file `.env`.
+
+```bash
+copy .env.example .env
+php artisan key:generate
+```
+
+Untuk Git Bash atau terminal Linux/macOS:
+
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-### 4. Setup Database
-Proyek sudah menggunakan SQLite by default. Langsung jalankan migrasi database:
+5. Jalankan MySQL di XAMPP, lalu buat database kosong lewat phpMyAdmin.
+
+Nama database yang disarankan:
+
+```text
+sadita_system
+```
+
+6. Pastikan konfigurasi database di `.env` sesuai XAMPP.
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sadita_system
+DB_USERNAME=root
+DB_PASSWORD=
+DB_CHARSET=utf8mb4
+DB_COLLATION=utf8mb4_unicode_ci
+```
+
+Jika MySQL XAMPP memakai port lain, misalnya `3307`, ubah `DB_PORT` sesuai port yang aktif.
+
+7. Jalankan migration dan seeder.
+
 ```bash
 php artisan migrate --seed
 ```
 
-### 5. Jalankan Server
-Buka dua terminal terpisah:
-- **Terminal 1** (Backend): 
-  ```bash
-  php artisan serve
-  ```
-- **Terminal 2** (Frontend Auto-reload):
-  ```bash
-  npm run dev
-  ```
+8. Jalankan server.
 
-Buka hasil akhirnya di web browser kesayanganmu: `http://localhost:8000` ✨
+Terminal 1:
 
----
-*Dikembangkan untuk Tugas Mata Kuliah Web Programming Framework - 2026*
+```bash
+php artisan serve
+```
+
+Terminal 2:
+
+```bash
+npm run dev
+```
+
+Buka aplikasi di:
+
+```text
+http://localhost:8000
+```
+
+Admin panel:
+
+```text
+http://localhost:8000/admin
+```
+
+## Akun Demo
+
+Jika `php artisan migrate --seed` berhasil, akun admin demo dibuat oleh seeder:
+
+```text
+email: admin
+password: admin
+```
+
+## Error XAMPP Yang Sering Terjadi
+
+### `php` tidak dikenali
+
+Artinya folder PHP belum masuk `PATH`.
+
+Solusi cepat:
+
+```bash
+C:\xampp\php\php.exe artisan serve
+```
+
+Atau tambahkan `C:\xampp\php` ke environment variable `PATH`.
+
+### `SQLSTATE[HY000] [1049] Unknown database`
+
+Database belum dibuat di phpMyAdmin.
+
+Buat database:
+
+```text
+sadita_system
+```
+
+Lalu ulangi:
+
+```bash
+php artisan migrate --seed
+```
+
+### `SQLSTATE[HY000] [2002] Connection refused`
+
+MySQL XAMPP belum menyala atau port salah.
+
+Cek di XAMPP Control Panel, lalu sesuaikan `DB_PORT` di `.env`.
+
+### Composer menolak karena versi PHP
+
+Project membutuhkan PHP 8.3+.
+
+Solusi:
+
+- upgrade XAMPP ke versi dengan PHP 8.3+
+- atau install PHP 8.3 terpisah dan arahkan Composer/terminal ke PHP tersebut
+
+## Git Workflow Tim
+
+Gunakan branch `develop` sebagai base kerja.
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/nama_fitur
+```
+
+Setelah fitur selesai:
+
+```bash
+git add .
+git commit -m "feat: deskripsi fitur dalam bahasa indonesia"
+git push origin feature/nama_fitur
+```
+
+Commit prefix yang dipakai:
+
+- `feat`: fitur baru
+- `fix`: perbaikan bug
+- `chore`: konfigurasi, dependency, maintenance
+- `docs`: dokumentasi
+- `style`: formatting
+- `test`: pengujian
+
+Feature branch direview dan dimerge ke `develop` oleh Lead Programmer.

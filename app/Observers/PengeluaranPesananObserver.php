@@ -3,12 +3,14 @@
 namespace App\Observers;
 
 use App\Models\PengeluaranPesanan;
+use App\Services\Analytics\DashboardKpiService;
 use Illuminate\Support\Facades\Cache;
 
 class PengeluaranPesananObserver
 {
     private array $cacheKeys = [
-        'kpi_gross_profit_month', // Profit = omzet - pengeluaran
+        DashboardKpiService::OVERVIEW_CACHE_KEY,
+        'dashboard_chart_omzet_30_hari',
     ];
 
     public function created(PengeluaranPesanan $pengeluaran): void

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Ulasans;
 
+use App\Filament\Resources\Ulasans\Pages\CreateUlasan;
 use App\Filament\Resources\Ulasans\Pages\EditUlasan;
 use App\Filament\Resources\Ulasans\Pages\ListUlasans;
 use App\Filament\Resources\Ulasans\Schemas\UlasanForm;
@@ -57,8 +58,9 @@ class UlasanResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListUlasans::route('/'),
-            'edit'  => EditUlasan::route('/{record}/edit'),
+            'index'  => ListUlasans::route('/'),
+            'create' => CreateUlasan::route('/create'),
+            'edit'   => EditUlasan::route('/{record}/edit'),
         ];
     }
 }
