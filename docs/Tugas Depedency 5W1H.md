@@ -10,7 +10,7 @@ Nama package: `laravel/framework`
 |---|---|
 | What | Framework utama yang digunakan untuk membangun aplikasi SaditaSystem. |
 | Why | Dibutuhkan karena menyediakan struktur MVC, routing, middleware, migration, validation, authentication, dan Eloquent ORM. |
-| Who | Developer backend dan full-stack sebagai pengembang utama aplikasi. |
+| Who | Lead Programmer dan tim sebagai pengembang utama aplikasi. |
 | When | Digunakan sejak awal pengembangan dan dipakai terus di seluruh proses pembuatan fitur. |
 | Where | Digunakan di seluruh project, seperti `routes`, `app`, `database`, `resources/views`, dan `tests`. |
 | How | Diinstal melalui Composer lalu dipakai untuk mengatur alur route, controller, model, view, dan database. |
