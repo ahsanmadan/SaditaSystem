@@ -21,7 +21,7 @@
 
             <!-- Header -->
             <div class="text-center mb-8">
-                <div class="text-[10px] tracking-widest uppercase mb-2 text-gray-500">Sadita Florist</div>
+                <div class="text-[10px] tracking-widest uppercase mb-2 text-gray-500">Sadita Decoration</div>
                 <h1 class="text-3xl font-bold uppercase tracking-widest text-black mb-2"
                     style="font-family: 'Playfair Display', serif;">SADITA</h1>
                 <div class="text-[9px] tracking-[0.2em] uppercase text-gray-500">Premium Essential Goods</div>

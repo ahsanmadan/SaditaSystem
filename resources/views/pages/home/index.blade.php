@@ -8,15 +8,15 @@
                 <!-- Set A (8 Curated Best Photos) -->
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/hantaran-1.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/bridesmaid-gift-box.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
-                    <img src="/images/dekorasi-2.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/dekorasi-tunangan.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-6">
-                    <img src="/images/hantaran-2.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/set-hantaran-nikah.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-3">
@@ -24,32 +24,32 @@
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-2">
-                    <img src="/images/hantaran-3.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/hantaran-premium-wedding.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-6">
-                    <img src="/images/dekorasi-1.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/dekorasi-lamaran.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/hantaran-4.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/seserahan-adat-minang.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
-                    <img src="/images/papan-2.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/papan-congratulations-eksklusif.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <!-- Set B (Duplicate for seamless infinite loop) -->
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/hantaran-1.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/bridesmaid-gift-box.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
-                    <img src="/images/dekorasi-2.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/dekorasi-tunangan.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-6">
-                    <img src="/images/hantaran-2.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/set-hantaran-nikah.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-3">
@@ -57,19 +57,19 @@
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-2">
-                    <img src="/images/hantaran-3.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/hantaran-premium-wedding.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-6">
-                    <img src="/images/dekorasi-1.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/dekorasi-lamaran.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/hantaran-4.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/seserahan-adat-minang.jpg" alt="" class="w-full h-full object-cover">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
-                    <img src="/images/papan-2.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/papan-congratulations-eksklusif.jpg" alt="" class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
@@ -83,8 +83,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
                 <div class="max-w-2xl mx-auto text-center">
                     <span
-                        class="inline-block text-[10px] sm:text-sm uppercase tracking-[0.25em] sm:tracking-[0.3em] text-[#E8C87A] font-medium mb-3 sm:mb-4 reveal-on-scroll">Florist
-                        & Gift · Padang</span>
+                        class="inline-block text-[10px] sm:text-sm uppercase tracking-[0.25em] sm:tracking-[0.3em] text-[#E8C87A] font-medium mb-3 sm:mb-4 reveal-on-scroll">Papan Bunga, Hantaran & Dekorasi - Padang</span>
                     <h1 class="text-3xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold text-white leading-[1.1] sm:leading-[1.05] reveal-on-scroll"
                         style="font-family:'Playfair Display',serif; text-shadow: 0 2px 20px rgba(0,0,0,0.6);">
                         Papan Bunga,<br>Hantaran &amp; <em class="italic text-[#E8C87A]">Dekorasi</em>
@@ -120,7 +119,7 @@
                         </div>
                         <div class="w-px h-6 sm:h-8 bg-white/15"></div>
                         <div class="text-center">
-                            <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-[#E8C87A]">4.9★</div>
+                            <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-[#E8C87A]">4.9/5</div>
                             <div class="text-[9px] sm:text-[10px] text-white/50 mt-0.5 uppercase tracking-wider">Rating
                             </div>
                         </div>
@@ -224,9 +223,9 @@
     <div class="w-full bg-[#7A1F2B] text-[#E8C87A] py-3 sm:py-4 overflow-hidden border-y border-[#E8C87A]/30">
         <div
             class="max-w-7xl mx-auto px-4 flex justify-between sm:justify-center sm:gap-12 items-center text-[10px] sm:text-xs font-semibold tracking-wider uppercase whitespace-nowrap overflow-x-auto scrollbar-hide">
-            <span class="flex items-center gap-1.5"><span class="text-white">✦</span> Custom Design</span>
-            <span class="flex items-center gap-1.5"><span class="text-white">✦</span> Harga Terjangkau</span>
-            <span class="flex items-center gap-1.5"><span class="text-white">✦</span> Pengiriman Padang</span>
+            <span class="flex items-center gap-1.5"><span class="text-white">*</span> Custom Design</span>
+            <span class="flex items-center gap-1.5"><span class="text-white">*</span> Harga Terjangkau</span>
+            <span class="flex items-center gap-1.5"><span class="text-white">*</span> Pengiriman Padang</span>
         </div>
     </div>
 
@@ -250,7 +249,7 @@
                     </div>
                     <a href="#"
                         class="text-xs sm:text-sm text-[#7A1F2B] font-semibold hover:underline whitespace-nowrap">Lihat
-                        Semua →</a>
+                        Semua -></a>
                 </div>
 
                 <div
@@ -258,10 +257,7 @@
                     @foreach ($kategori->daftarProduk as $produk)
                         @php
                             $isDecor = strtolower($kategori->nama) === 'dekorasi';
-                            $imgUrl =
-                                !empty($produk->galeri_foto) && is_array($produk->galeri_foto)
-                                    ? asset('storage/' . $produk->galeri_foto[0])
-                                    : asset('images/placeholder.jpg');
+                            $imgUrl = $produk->fotoUtamaUrl();
                             $priceStr = 'Rp ' . number_format($produk->harga_dasar, 0, ',', '.');
                             $descStr = $produk->deskripsi ?? 'Detail produk ' . $produk->nama;
                         @endphp
@@ -288,7 +284,7 @@
                                 <div class="mt-auto">
                                     @if ($isDecor)
                                         @php
-                                            $waText = "Halo Sadita 👋\n\nSaya ingin konsultasi dekorasi.\n\n📌 Jenis Dekorasi: {$produk->nama}\n\n📅 Tanggal Acara:\n⏰ Waktu Acara:\n\n📍 Lokasi Acara:\n\n🎨 Konsep / Tema yang diinginkan:\n(Contoh: elegan, rustic, minimalis, dll)\n\n📝 Catatan tambahan:\n(opsional)\n\nTerima kasih 🙏";
+                                            $waText = "Halo Sadita,\n\nSaya ingin konsultasi dekorasi.\n\nJenis Dekorasi: {$produk->nama}\n\nTanggal Acara:\nWaktu Acara:\n\nLokasi Acara:\n\nKonsep / Tema yang diinginkan:\n(Contoh: elegan, rustic, minimalis, dll)\n\nCatatan tambahan:\n(opsional)\n\nTerima kasih.";
                                         @endphp
                                         <button
                                             onclick="event.stopPropagation(); window.open('https://wa.me/62812616155335?text={{ rawurlencode($waText) }}', '_blank')"
@@ -392,19 +388,19 @@
             <div class="masonry-grid mt-10" id="gallery-container">
                 @php
                     $galleryImages = [
-                        ['papan-1.jpg', 'tall', 'papan', '🌸 Papan Ucapan Premium'],
-                        ['hantaran-1.jpg', 'normal', 'hantaran', '🎁 Hantaran Seserahan'],
-                        ['dekorasi-1.jpg', 'normal', 'dekorasi', '✨ Dekorasi Pernikahan'],
-                        ['papan-2.jpg', 'wide', 'papan', '🌸 Papan Bunga Rustic'],
-                        ['hantaran-3.jpg', 'tall', 'hantaran', '🎁 Hantaran Eksklusif'],
-                        ['dekorasi-3.jpg', 'normal', 'dekorasi', '✨ Dekorasi Lamaran'],
-                        ['papan-3.jpg', 'normal', 'papan', '🌸 Papan Congratulations'],
-                        ['hantaran-4.jpg', 'normal', 'hantaran', '🎁 Hantaran Adat'],
-                        ['dekorasi-4.jpg', 'tall', 'dekorasi', '✨ Dekorasi Premium'],
-                        ['papan-4.jpg', 'wide', 'papan', '🌸 Standing Mirror'],
-                        ['hantaran-5.jpg', 'wide', 'hantaran', '🎁 Hantaran Gold'],
-                        ['dekorasi-5.jpg', 'normal', 'dekorasi', '✨ Grand Opening'],
-                        ['papan-5.jpg', 'normal', 'papan', '🌸 Ucapan Custom'],
+                        ['papan-standing-mirror-premium.jpg', 'tall', 'papan', 'Papan Standing Mirror Premium'],
+                        ['bridesmaid-gift-box.jpg', 'normal', 'hantaran', 'Bridesmaid Gift Box'],
+                        ['dekorasi-lamaran.jpg', 'normal', 'dekorasi', 'Dekorasi Lamaran'],
+                        ['papan-congratulations-eksklusif.jpg', 'wide', 'papan', 'Papan Congratulations Eksklusif'],
+                        ['hantaran-premium-wedding.jpg', 'tall', 'hantaran', 'Hantaran Premium Wedding'],
+                        ['table-setting-premium.jpg', 'normal', 'dekorasi', 'Table Setting Premium'],
+                        ['papan-rustic-custom.jpg', 'normal', 'papan', 'Papan Rustic Custom'],
+                        ['seserahan-adat-minang.jpg', 'normal', 'hantaran', 'Seserahan Adat Minang'],
+                        ['dekorasi-grand-opening.jpg', 'tall', 'dekorasi', 'Dekorasi Grand Opening'],
+                        ['standing-mirror-besar.jpg', 'wide', 'papan', 'Standing Mirror Besar'],
+                        ['hantaran-gold-edition.jpg', 'wide', 'hantaran', 'Hantaran Gold Edition'],
+                        ['dekorasi-akad-nikah.jpg', 'normal', 'dekorasi', 'Dekorasi Akad Nikah'],
+                        ['papan-ucapan-selamatan.jpg', 'normal', 'papan', 'Papan Ucapan Selamatan'],
                     ];
                 @endphp
                 @foreach ($galleryImages as $i => [$gImg, $gSize, $gCat, $gLabel])
@@ -692,10 +688,9 @@
                     <span class="text-xs uppercase tracking-[0.2em] text-[#7A1F2B] font-semibold">Tentang Kami</span>
                     <h2 class="mt-3 text-3xl sm:text-4xl font-bold text-[#2D1E1E]">Tentang Sadita</h2>
                     <p class="mt-4 text-sm sm:text-base text-[#5b4747] leading-relaxed">
-                        Sadita adalah layanan florist dan hadiah premium berbasis di Padang yang berfokus pada keindahan,
-                        detail, dan makna dalam setiap karya. Kami percaya setiap momen spesial layak dirayakan dengan
-                        keindahan
-                        yang tak terlupakan.
+                        Sadita adalah layanan papan bunga, hantaran, dan dekorasi berbasis di Padang yang berfokus pada
+                        keindahan, detail, dan makna dalam setiap karya. Kami percaya setiap momen spesial layak
+                        dirayakan dengan kesan yang tak terlupakan.
                     </p>
                 </div>
                 <div class="mt-auto pt-8 grid grid-cols-3 gap-3 sm:gap-4">
@@ -730,10 +725,10 @@
                         </div>
                         <div>
                             <div class="font-bold text-sm text-[#2D1E1E]">WhatsApp</div>
-                            <div class="text-[11px] sm:text-xs text-gray-500 mt-0.5">0896-5309-0248 · Chat langsung</div>
+                            <div class="text-[11px] sm:text-xs text-gray-500 mt-0.5">0896-5309-0248 - Chat langsung</div>
                         </div>
                     </a>
-                    <a href="https://instagram.com/sadita.decor" target="_blank"
+                    <div
                         class="contact-card flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#7A1F2B]/30 transition-all duration-300">
                         <div
                             class="w-12 h-12 rounded-full bg-[#7A1F2B]/10 flex items-center justify-center text-[#7A1F2B] flex-shrink-0">
@@ -744,10 +739,19 @@
                         </div>
                         <div class="overflow-hidden">
                             <div class="font-bold text-sm text-[#2D1E1E]">Instagram</div>
-                            <div class="text-[11px] sm:text-xs text-gray-500 mt-0.5 truncate tracking-tight">@sadita.decor
-                                · @sadita.hantaran · @sadita.florist</div>
+                            <div
+                                class="text-[11px] sm:text-xs text-gray-500 mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 tracking-tight">
+                                <a href="https://instagram.com/sadita.decor" target="_blank" rel="noopener noreferrer"
+                                    class="hover:text-[#7A1F2B] hover:underline">@sadita.decor</a>
+                                <span>-</span>
+                                <a href="https://instagram.com/sadita.hantaran" target="_blank" rel="noopener noreferrer"
+                                    class="hover:text-[#7A1F2B] hover:underline">@sadita.hantaran</a>
+                                <span>-</span>
+                                <a href="https://instagram.com/sadita.florist" target="_blank" rel="noopener noreferrer"
+                                    class="hover:text-[#7A1F2B] hover:underline">@sadita.florist</a>
+                            </div>
                         </div>
-                    </a>
+                    </div>
                     <a href="https://maps.google.com/?q=Padang+Sumatera+Barat" target="_blank"
                         class="contact-card flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#7A1F2B]/30 transition-all duration-300">
                         <div
@@ -905,7 +909,7 @@
                 closeProductModal();
                 if (isDecor) {
                     const waText =
-                        `Halo Sadita 👋\n\nSaya ingin konsultasi dekorasi.\n\n📌 Jenis Dekorasi: ${title}\n\n📅 Tanggal Acara:\n⏰ Waktu Acara:\n\n📍 Lokasi Acara:\n\n🎨 Konsep / Tema yang diinginkan:\n(Contoh: elegan, rustic, minimalis, dll)\n\n📝 Catatan tambahan:\n(opsional)\n\nTerima kasih 🙏`;
+                        `Halo Sadita,\n\nSaya ingin konsultasi dekorasi.\n\nJenis Dekorasi: ${title}\n\nTanggal Acara:\nWaktu Acara:\n\nLokasi Acara:\n\nKonsep / Tema yang diinginkan:\n(Contoh: elegan, rustic, minimalis, dll)\n\nCatatan tambahan:\n(opsional)\n\nTerima kasih.`;
                     window.open(`https://wa.me/62812616155335?text=${encodeURIComponent(waText)}`, '_blank');
                 } else {
                     window.location.href =
@@ -955,3 +959,4 @@
         }
     </style>
 @endsection
+

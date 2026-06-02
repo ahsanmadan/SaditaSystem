@@ -22,21 +22,14 @@ class ProduksTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->query(\App\Models\Produk::query()->with('kategori'))
             ->columns([
                 ImageColumn::make('foto_utama')
                     ->label('Foto')
                     ->square()
                     ->size(52)
                     ->defaultImageUrl('https://placehold.co/52x52/f8f5f0/7A1F2B?text=No+Foto')
-                    ->getStateUsing(function ($record) {
-                        if (!$record->foto_utama) return null;
-                        // Jika hanya nama file (foto lama dari public/images/)
-                        if (!str_contains($record->foto_utama, '/')) {
-                            return asset('images/' . $record->foto_utama);
-                        }
-                        // Jika path lengkap (upload baru dari storage)
-                        return asset('storage/' . $record->foto_utama);
-                    })
+                    ->getStateUsing(fn ($record) => $record->fotoUtamaUrl())
                     ->extraImgAttributes(['class' => 'rounded-lg object-cover']),
 
                 TextColumn::make('nama')

@@ -34,9 +34,9 @@
             <!-- Background Image Carousel -->
             <div class="absolute inset-0 z-0" id="bgCarouselContainer">
                 <img id="bg-img-0" src="/images/hero-1.jpg" alt="Sadita" class="carousel-bg absolute inset-0 w-full h-full object-cover opacity-20 transition-opacity duration-1000">
-                <img id="bg-img-1" src="/images/hantaran-1.jpg" alt="Hantaran" class="carousel-bg absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
-                <img id="bg-img-2" src="/images/dekorasi-1.jpg" alt="Dekorasi" class="carousel-bg absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
-                <img id="bg-img-3" src="/images/papan-1.jpg" alt="Papan Ucapan" class="carousel-bg absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
+                <img id="bg-img-1" src="/images/bridesmaid-gift-box.jpg" alt="Hantaran" class="carousel-bg absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
+                <img id="bg-img-2" src="/images/dekorasi-lamaran.jpg" alt="Dekorasi" class="carousel-bg absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
+                <img id="bg-img-3" src="/images/papan-standing-mirror-premium.jpg" alt="Papan Ucapan" class="carousel-bg absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#6B1B2A] via-[#6B1B2A]/90 to-[#6B1B2A]/40"></div>
             </div>
 
@@ -198,9 +198,9 @@
         // ── Unified Carousel (Text + Background Image + Tagline + Dots) ───────
         const carouselData = [
             { text: "Sadita",          tagline: "Hadiah bermakna untuk setiap momen spesial",    img: 0 },
-            { text: "Sadita Florist",  tagline: "Rangkaian bunga segar penuh keindahan",          img: 1 },
-            { text: "Sadita Hantaran", tagline: "Hantaran elegan yang berkesan di hati",          img: 2 },
-            { text: "Sadita Decor",    tagline: "Dekorasi mewah untuk momen tak terlupakan",      img: 3 },
+            { text: "Sadita Hantaran", tagline: "Hantaran elegan yang berkesan di hati",          img: 1 },
+            { text: "Sadita Dekorasi", tagline: "Dekorasi mewah untuk momen tak terlupakan",      img: 2 },
+            { text: "Sadita Papan Ucapan", tagline: "Papan ucapan rapi untuk momen penting",     img: 3 },
         ];
 
         let currentIndex = 0;

@@ -4,7 +4,7 @@
     @php
         $productName = request('product', 'Sadita Exclusive Product');
         $productPrice = request('price', 'Rp 0');
-        $productImg = request('img', '/images/dekorasi-1.jpg');
+        $productImg = request('img', '/images/dekorasi-lamaran.jpg');
     @endphp
 
     <div class="min-h-screen bg-[#FFFDFB] mt-8 md:h-[100svh] flex flex-col md:flex-row pt-[72px] font-sans">
