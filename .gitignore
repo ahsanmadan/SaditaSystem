@@ -3,6 +3,8 @@
 .env
 .env.backup
 .env.production
+.env.*
+!.env.example
 .phpactor.json
 .phpunit.result.cache
 ERD_*.png
@@ -25,4 +27,3 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /public/robots.txt
-AGENTS.md
