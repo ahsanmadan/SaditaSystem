@@ -159,9 +159,9 @@
                                 <label class="block text-xs font-bold text-[#2D1E1E] mb-2">Waktu Pengiriman <span class="text-red-500">*</span></label>
                                 <select id="deliveryTime" name="delivery_time"
                                     class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-[#2D1E1E] focus:outline-none focus:ring-2 focus:ring-[#7A1F2B]/20 focus:border-[#7A1F2B] transition-all appearance-none">
-                                    <option value="Pagi (08:00 - 12:00)">Pagi (08:00 - 12:00)</option>
-                                    <option value="Siang (12:00 - 16:00)">Siang (12:00 - 16:00)</option>
-                                    <option value="Sore (16:00 - 20:00)">Sore (16:00 - 20:00)</option>
+                                    <option value="09:00:00">Pagi (08:00 - 12:00)</option>
+                                    <option value="13:00:00">Siang (12:00 - 16:00)</option>
+                                    <option value="17:00:00">Sore (16:00 - 20:00)</option>
                                 </select>
                             </div>
                         </div>

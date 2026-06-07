@@ -1,157 +1,135 @@
-# Dependency Laravel Proyek PBL SaditaSystem
+# SaditaSystem
 
-Dokumen ini berisi identifikasi dependency/package Laravel yang digunakan atau kemungkinan akan digunakan pada proyek PBL SaditaSystem, dengan penjelasan berformat 5W+1H.
+SaditaSystem adalah sistem informasi manajemen bisnis untuk **Sadita Decoration**. Aplikasi ini dipakai untuk mengelola layanan **sewa**, **jasa dekorasi**, dan **hantaran**, dengan alur utama:
 
-## 1. Laravel Framework
+`request order -> review admin -> finalisasi harga -> pembayaran -> proses -> selesai`
 
-Nama package: `laravel/framework`
+Project ini dibangun dengan Laravel untuk backend, Filament untuk admin panel, dan Vite + Tailwind CSS untuk frontend publik.
 
-| 5W+1H | Penjelasan |
-|---|---|
-| What | Framework utama yang digunakan untuk membangun aplikasi SaditaSystem. |
-| Why | Dibutuhkan karena menyediakan struktur MVC, routing, middleware, migration, validation, authentication, dan Eloquent ORM. |
-| Who | Lead Programmer dan tim sebagai pengembang utama aplikasi. |
-| When | Digunakan sejak awal pengembangan dan dipakai terus di seluruh proses pembuatan fitur. |
-| Where | Digunakan di seluruh project, seperti `routes`, `app`, `database`, `resources/views`, dan `tests`. |
-| How | Diinstal melalui Composer lalu dipakai untuk mengatur alur route, controller, model, view, dan database. |
+## Tim Pengembang
 
-Referensi:
+- Bagatio Putra Joandri - Project Manager dan AI Specialist
+- Ahsan Ramadan - Lead Programmer
+- Jeli Mayora - System Analyst
+- Aprilla Maulida - Quality Assurance
 
-- [Laravel Documentation](https://laravel.com/docs/13.x)
+## Stack Utama
 
----
+- PHP 8.3
+- Laravel 13
+- Filament 5.6
+- MySQL / MariaDB
+- Vite 8
+- Tailwind CSS 4
+- Midtrans PHP
+- Simple QrCode
 
-## 2. Filament
+## Fitur Inti
 
-Nama package: `filament/filament`
+### Public Website
 
-| 5W+1H | Penjelasan |
-|---|---|
-| What | Package admin panel untuk Laravel. |
-| Why | Dibutuhkan agar pembuatan dashboard admin, CRUD data, table, form, dan widget menjadi lebih cepat. |
-| Who | Admin, owner, staff operasional, dan developer yang mengembangkan panel admin. |
-| When | Digunakan saat mengelola data kategori, produk, pelanggan, pesanan, pembayaran, dan ulasan. |
-| Where | Digunakan pada area `/admin`, terutama di `app/Filament/Resources`, `app/Filament/Widgets`, dan `app/Providers/Filament/AdminPanelProvider.php`. |
-| How | Diinstal dengan Composer, lalu resource admin dibuat melalui struktur Filament agar otomatis memiliki halaman list, create, edit, dan view. |
+- landing page Sadita Decoration
+- form pemesanan tanpa login
+- halaman invoice pesanan
+- API tracking pesanan berbasis kode order
 
-Referensi:
+### Admin Panel
 
-- [Filament Documentation](https://filamentphp.com/docs)
-- [Filament Panel Configuration](https://filamentphp.com/docs/5.x/panel-configuration)
+- login admin
+- kelola kategori
+- kelola produk
+- kelola pelanggan
+- kelola pesanan
+- kelola pembayaran
+- kelola ulasan
+- dashboard widget Filament
 
----
+## Struktur Folder Singkat
 
-## 3. Midtrans PHP
+```text
+SaditaSystem/
+|-- app/
+|   |-- Filament/
+|   |-- Http/Controllers/
+|   |-- Models/
+|   |-- Observers/
+|   `-- Services/
+|-- database/
+|   |-- migrations/
+|   `-- seeders/
+|-- docs/
+|   |-- md/
+|   |-- pdf/
+|   |-- pic/
+|   |-- txt/
+|   `-- Word/
+|-- public/
+|-- resources/
+|-- routes/
+|-- tests/
+|-- .github/workflows/
+|-- composer.json
+|-- package.json
+`-- nixpacks.toml
+```
 
-Nama package: `midtrans/midtrans-php`
+## Cara Menjalankan Singkat
 
-| 5W+1H | Penjelasan |
-|---|---|
-| What | Library PHP resmi untuk integrasi payment gateway Midtrans. |
-| Why | Dibutuhkan agar sistem bisa menangani pembayaran digital tanpa membuat mekanisme pembayaran online sendiri. |
-| Who | Developer saat integrasi, admin saat verifikasi pembayaran, dan pelanggan saat melakukan pembayaran pesanan. |
-| When | Digunakan ketika order sudah dibuat dan pelanggan masuk ke tahap pembayaran. |
-| Where | Digunakan pada fitur invoice, token pembayaran, notifikasi transaksi, dan pembaruan status pembayaran. |
-| How | Data transaksi dikirim dari Laravel ke Midtrans, lalu hasil transaksi atau notifikasi dari Midtrans digunakan untuk memperbarui status pembayaran di sistem. |
+```bash
+composer install
+npm install
+copy .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+npm run dev
+```
 
-Referensi:
+Untuk panduan instalasi lengkap, lihat:
 
-- [Midtrans Documentation](https://docs.midtrans.com/)
-- [midtrans-php GitHub](https://github.com/Midtrans/midtrans-php)
+- [installation doc](./docs/md/installation-doc.md)
 
----
+## Akun Demo
 
-## 4. Simple QrCode
+Seeder default membuat akun admin demo:
 
-Nama package: `simplesoftwareio/simple-qrcode`
+- username / email: `admin`
+- password: `admin`
 
-| 5W+1H | Penjelasan |
-|---|---|
-| What | Package untuk membuat QR code di Laravel/PHP. |
-| Why | Dibutuhkan untuk menghasilkan QR code dengan cepat tanpa membuat generator QR manual. |
-| Who | Developer saat implementasi, serta admin dan pelanggan yang nantinya memakai hasil QR code tersebut. |
-| When | Digunakan saat menampilkan invoice, tautan tracking, atau tautan pembayaran. |
-| Where | Bisa digunakan di halaman invoice publik, tracking pesanan, atau tampilan cetak/admin. |
-| How | Package dipanggil dari controller atau Blade view untuk menghasilkan QR code yang berisi link atau kode tertentu. |
+Catatan: akun ini hanya untuk development lokal. Ganti untuk environment lain.
 
-Referensi:
+## Dokumentasi Pendukung
 
-- [Simple QrCode GitHub](https://github.com/SimpleSoftwareIO/simple-qrcode)
+- [installation doc](./docs/md/installation-doc.md)
+- [feature doc](./docs/md/feature-doc.md)
+- [changelog](./docs/md/changelog.md)
+- [dependency doc](./docs/md/dependency-doc.md)
+- [refactoring doc](./docs/md/refactoring-doc.md)
+- [github action doc](./docs/md/github-action-doc.md)
 
----
+## Screenshot Project
 
-## 5. Laravel Pint
+### Form Order
 
-Nama package: `laravel/pint`
+![form order](./docs/pic/order-form.png)
 
-| 5W+1H | Penjelasan |
-|---|---|
-| What | Formatter kode PHP resmi dari Laravel. |
-| Why | Dibutuhkan agar format kode tetap rapi dan konsisten saat dikerjakan oleh banyak anggota tim. |
-| Who | Developer yang menulis dan merapikan kode PHP di proyek. |
-| When | Digunakan setelah ada perubahan kode dan sebelum commit atau pull request. |
-| Where | Digunakan pada file PHP di dalam project, misalnya `app`, `database`, `routes`, dan `tests`. |
-| How | Dijalankan melalui `vendor/bin/pint` atau script `composer run format` untuk merapikan style code secara otomatis. |
+### Invoice Pesanan
 
-Referensi:
+![invoice pesanan](./docs/pic/order-invoice.png)
 
-- [Laravel Pint Documentation](https://laravel.com/docs/13.x/pint)
+## Catatan Pengembangan
 
----
+- database utama untuk perilaku lokal dan production adalah MySQL / MariaDB
+- pelanggan tidak diwajibkan login
+- scope project tidak mencakup florist / buket
+- tracking pesanan masih dikembangkan bertahap setelah create-order flow stabil
 
-## 6. Laravel Pail
+## Deployment
 
-Nama package: `laravel/pail`
+Deploy production saat ini diarahkan ke Railway dengan konfigurasi utama di:
 
-| 5W+1H | Penjelasan |
-|---|---|
-| What | Tool Laravel untuk membaca log aplikasi secara real-time. |
-| Why | Dibutuhkan agar proses debugging lebih cepat saat terjadi error atau warning. |
-| Who | Developer selama proses development dan pengujian lokal. |
-| When | Digunakan saat server lokal berjalan dan fitur sedang diuji. |
-| Where | Digunakan di environment development, terutama saat menjalankan workflow harian project. |
-| How | Dijalankan dengan `php artisan pail`, lalu log aplikasi akan tampil langsung di terminal. |
+- `nixpacks.toml`
 
-Referensi:
+## Lisensi
 
-- [Laravel Logging Documentation](https://laravel.com/docs/13.x/logging)
-
----
-
-## 7. Spatie Laravel Permission
-
-Nama package: `spatie/laravel-permission`
-
-| 5W+1H | Penjelasan |
-|---|---|
-| What | Package Laravel untuk mengatur role dan permission user. |
-| Why | Dibutuhkan jika hak akses owner, admin, dan staff perlu dibedakan lebih detail. |
-| Who | Developer sebagai pengatur sistem akses, dan user admin sesuai role yang dimiliki. |
-| When | Digunakan saat sistem membutuhkan pembagian hak akses yang lebih rinci. |
-| Where | Bisa digunakan pada middleware, policy, role user, dan kontrol akses di panel admin. |
-| How | Diinstal lewat Composer, lalu role dan permission dibuat serta dihubungkan ke user sesuai kebutuhan sistem. |
-
-Referensi:
-
-- [Spatie Laravel Permission Docs](https://spatie.be/docs/laravel-permission)
-- [Spatie Laravel Permission GitHub](https://github.com/spatie/laravel-permission)
-
----
-
-## 8. Laravel Excel
-
-Nama package: `maatwebsite/excel`
-
-| 5W+1H | Penjelasan |
-|---|---|
-| What | Package Laravel untuk export dan import file Excel/CSV. |
-| Why | Dibutuhkan jika sistem perlu membuat laporan transaksi, data pelanggan, atau rekap pesanan dalam bentuk file Excel. |
-| Who | Developer saat implementasi, serta admin atau owner saat memakai fitur laporan. |
-| When | Digunakan ketika sistem sudah membutuhkan fitur laporan dan ekspor data. |
-| Where | Bisa digunakan di modul laporan, pembayaran, pelanggan, atau pesanan pada panel admin. |
-| How | Diinstal lewat Composer lalu digunakan melalui class export/import agar data dari database bisa diubah menjadi file Excel atau CSV. |
-
-Referensi:
-
-- [Laravel Excel Documentation](https://laravel-excel.com/)
-- [Laravel Excel GitHub](https://github.com/SpartnerNL/Laravel-Excel)
+Project ini mengikuti lisensi MIT bawaan Laravel, kecuali ada penyesuaian lebih lanjut dari tim pengembang.
