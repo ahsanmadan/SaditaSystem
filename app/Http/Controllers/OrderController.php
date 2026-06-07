@@ -18,6 +18,8 @@ class OrderController extends Controller
         $rawPrice = preg_replace('/[^0-9]/', '', $request->price);
         $numericPrice = $rawPrice ? (int) $rawPrice : 0;
 
+        $jamPengiriman = $this->normalizeDeliveryTime($request->delivery_time);
+
         // 1. Create or Find Pelanggan (Sender)
         $pelanggan = Pelanggan::firstOrCreate(
             ['no_hp' => $request->sender_phone],
@@ -64,7 +66,7 @@ class OrderController extends Controller
             'alamat_lengkap' => $request->address ?? 'Ambil di Toko',
             'patokan_lokasi' => null,
             'tanggal_pengiriman' => $request->delivery_date ?? now()->toDateString(),
-            'jam_pengiriman' => $request->delivery_time ?? '09:00:00',
+            'jam_pengiriman' => $jamPengiriman,
             'status' => 'menunggu_jadwal',
         ]);
 
@@ -111,5 +113,26 @@ class OrderController extends Controller
         }
 
         return response()->json(['found' => false], 404);
+    }
+
+    private function normalizeDeliveryTime(?string $deliveryTime): string
+    {
+        $timeMap = [
+            'Pagi (08:00 - 12:00)' => '09:00:00',
+            'Siang (12:00 - 16:00)' => '13:00:00',
+            'Sore (16:00 - 20:00)' => '17:00:00',
+        ];
+
+        if (empty($deliveryTime)) {
+            return '09:00:00';
+        }
+
+        if (isset($timeMap[$deliveryTime])) {
+            return $timeMap[$deliveryTime];
+        }
+
+        return preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $deliveryTime)
+            ? (strlen($deliveryTime) === 5 ? $deliveryTime . ':00' : $deliveryTime)
+            : '09:00:00';
     }
 }
