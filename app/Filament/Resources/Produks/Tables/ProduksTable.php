@@ -100,6 +100,8 @@ class ProduksTable
                     ForceDeleteBulkAction::make()->label('Hapus Permanen'),
                     RestoreBulkAction::make()->label('Pulihkan'),
                 ]),
-            ]);
+            ])
+            ->emptyStateHeading('Belum ada produk yang tersedia')
+            ->emptyStateDescription('Silakan klik tombol "Buat Produk" di atas untuk menambahkan produk baru.');
     }
 }
