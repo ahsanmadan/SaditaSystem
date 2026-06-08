@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Produks\Tables;
 
-use App\Models\Kategori;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -71,9 +70,9 @@ class ProduksTable
             ])
             ->defaultSort('nama')
             ->filters([
-                SelectFilter::make('kategori_id')
+                SelectFilter::make('kategori')
                     ->label('Filter Kategori')
-                    ->options(Kategori::orderBy('nama')->pluck('nama', 'id'))
+                    ->relationship('kategori', 'nama', fn ($query) => $query->orderBy('nama'))
                     ->placeholder('Semua Kategori'),
 
                 Filter::make('aktif')

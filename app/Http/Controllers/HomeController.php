@@ -12,11 +12,14 @@ class HomeController extends Controller
         $kategoris = Kategori::where('is_aktif', true)
             ->with(['daftarProduk' => function ($q) {
                 $q->where('is_aktif', true)
-                  ->orderBy('harga_dasar', 'asc')
-                  ->limit(8);
+                  ->orderBy('harga_dasar', 'asc');
             }])
             ->orderBy('id')
-            ->get();
+            ->get()
+            ->map(function ($kategori) {
+                $kategori->setRelation('daftarProduk', $kategori->daftarProduk->take(8));
+                return $kategori;
+            });
 
         return view('pages.home.index', compact('kategoris'));
     }
