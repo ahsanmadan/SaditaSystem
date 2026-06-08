@@ -1,26 +1,26 @@
 <?php
+
 namespace Database\Seeders;
+
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-class DatabaseSeeder extends Seeder {
-    public function run(): void {
-        User::create([
-            'name' => 'Admin Sadita (Demo)',
-            'email' => 'admin',
-            'password' => Hash::make('admin'),
-            'role' => User::ROLE_OWNER,
-            'is_admin' => true,
-        ]);
+class DatabaseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        User::updateOrCreate(
+            ['email' => 'admin'],
+            [
+                'name' => 'Admin Sadita (Demo)',
+                'password' => Hash::make('admin'),
+                'role' => User::ROLE_OWNER,
+                'is_admin' => true,
+            ]
+        );
 
-        $this->call([
-            KatalogSeeder::class,
-            TransactionSeeder::class,
-        ]);
-        $seeders = [
-            MasterSeeder::class,
-        ];
+        $seeders = [KatalogSeeder::class];
 
         // TransactionSeeder uses fakerphp/faker (dev-only dependency)
         // Only run it in local/testing where dev dependencies are installed

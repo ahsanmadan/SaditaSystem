@@ -59,6 +59,13 @@ class OrderController extends Controller
         ]);
 
         // 5. Create Pengiriman
+        $timeMap = [
+            'Pagi (08:00 - 12:00)' => '08:00:00',
+            'Siang (12:00 - 16:00)' => '12:00:00',
+            'Sore (16:00 - 20:00)' => '16:00:00',
+        ];
+        $jamPengiriman = $timeMap[$request->delivery_time] ?? '09:00:00';
+
         Pengiriman::create([
             'pesanan_id' => $pesanan->id,
             'nama_penerima' => $request->receiver_name ?? $request->sender_name,

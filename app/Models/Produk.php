@@ -29,6 +29,32 @@ class Produk extends Model
         return $this->hasMany(GambarProduk::class, 'produk_id', 'id');
     }
 
+    public function fotoUtamaUrl(): string
+    {
+        $paths = array_filter([
+            $this->foto_utama,
+            'images/' . $this->slug . '.jpg',
+        ]);
+
+        foreach ($paths as $path) {
+            if (filter_var($path, FILTER_VALIDATE_URL)) {
+                return $path;
+            }
+
+            $path = ltrim($path, '/');
+
+            if (file_exists(public_path($path))) {
+                return asset($path);
+            }
+
+            if (file_exists(storage_path('app/public/' . $path))) {
+                return asset('storage/' . $path);
+            }
+        }
+
+        return asset('images/logo-sadita.png');
+    }
+
     public function itemTerjual()
     {
         return $this->hasMany(DetailPesanan::class, 'produk_id', 'id');

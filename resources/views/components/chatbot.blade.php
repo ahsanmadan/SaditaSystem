@@ -118,7 +118,7 @@
         let chatOpen = false;
         let isTyping = false;
 
-        const SYSTEM_PROMPT = `Kamu adalah "Sadita AI", asisten virtual premium untuk Sadita — layanan florist & gift terkemuka di Padang, Sumatera Barat.
+        const SYSTEM_PROMPT = `Kamu adalah "Sadita AI", asisten virtual premium untuk Sadita Decoration, layanan papan bunga, hantaran, dan dekorasi di Padang, Sumatera Barat.
 
 ## PERAN UTAMA
 Kamu adalah KONSULTAN, bukan mesin penjual. Tugasmu:
