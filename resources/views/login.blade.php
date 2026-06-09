@@ -73,6 +73,18 @@
                         mengakses sistem Sadita.</p>
                 </div>
 
+                @if (session('status'))
+                    <div class="mt-6 bg-green-50 border border-green-200 text-green-800 text-sm rounded-xl p-4 flex items-start gap-3 animate-fade-in">
+                        <svg class="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <span class="font-semibold text-green-900">Sukses!</span>
+                            <p class="text-xs text-green-700 mt-1">{{ session('status') }}</p>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Info Demo -->
                 <div class="mt-6 bg-[#6B1B2A]/10 border border-[#6B1B2A]/20 rounded-xl p-4 flex items-start gap-3">
                     <svg class="w-5 h-5 text-[#6B1B2A] mt-0.5 shrink-0" fill="none" stroke="currentColor"
@@ -105,7 +117,7 @@
                         <div class="flex items-center justify-between mb-2">
                             <label for="password"
                                 class="block text-sm font-semibold text-gray-700 tracking-wide">Password</label>
-                            <a href="#"
+                            <a href="{{ route('password.request') }}"
                                 class="text-xs font-bold text-[#6B1B2A] hover:text-[#5a1623] hover:underline transition-colors">Lupa
                                 Password?</a>
                         </div>

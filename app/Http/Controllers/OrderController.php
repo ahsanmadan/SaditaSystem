@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Pelanggan;
-use App\Models\Pesanan;
 use App\Models\DetailPesanan;
+use App\Models\Pelanggan;
 use App\Models\Pengiriman;
+use App\Models\Pesanan;
 use App\Models\Produk;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
@@ -25,12 +26,12 @@ class OrderController extends Controller
             ['no_hp' => $request->sender_phone],
             [
                 'nama_lengkap' => $request->sender_name,
-                'email' => null
+                'email' => null,
             ]
         );
 
         // 2. Create Pesanan
-        $kodePesanan = 'SDT-' . date('Ymd') . '-' . strtoupper(Str::random(5));
+        $kodePesanan = 'SDT-'.date('Ymd').'-'.strtoupper(Str::random(5));
         $pesanan = Pesanan::create([
             'pelanggan_id' => $pelanggan->id,
             'kode_pesanan' => $kodePesanan,
@@ -85,9 +86,9 @@ class OrderController extends Controller
     {
         // Now using Pesanan model to match Filament admin
         $order = Pesanan::with(['pelanggan', 'detailItems', 'pengiriman'])
-                    ->where('kode_pesanan', $order_id)
-                    ->firstOrFail();
-        
+            ->where('kode_pesanan', $order_id)
+            ->firstOrFail();
+
         $snapToken = null;
 
         return view('pages.home.invoice', compact('order', 'snapToken'));
@@ -104,7 +105,7 @@ class OrderController extends Controller
                 'diproses' => 'PAID',
                 'dikirim' => 'DELIVERED',
                 'selesai' => 'SELESAI',
-                'dibatalkan' => 'DIBATALKAN'
+                'dibatalkan' => 'DIBATALKAN',
             ];
             $mappedStatus = $statusMap[$pesanan->status] ?? strtoupper($pesanan->status);
             $pengiriman = $pesanan->pengiriman;
@@ -114,8 +115,8 @@ class OrderController extends Controller
                 'order_id' => $pesanan->kode_pesanan,
                 'product_name' => $productNames ?: 'Produk Sadita',
                 'status' => $mappedStatus,
-                'delivery_date' => $pengiriman ? \Carbon\Carbon::parse($pengiriman->tanggal_pengiriman)->format('d M Y') : '-',
-                'delivery_time' => $pengiriman ? \Carbon\Carbon::parse($pengiriman->jam_pengiriman)->format('H:i') : '-'
+                'delivery_date' => $pengiriman ? Carbon::parse($pengiriman->tanggal_pengiriman)->format('d M Y') : '-',
+                'delivery_time' => $pengiriman ? Carbon::parse($pengiriman->jam_pengiriman)->format('H:i') : '-',
             ]);
         }
 
@@ -139,7 +140,7 @@ class OrderController extends Controller
         }
 
         return preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $deliveryTime)
-            ? (strlen($deliveryTime) === 5 ? $deliveryTime . ':00' : $deliveryTime)
+            ? (strlen($deliveryTime) === 5 ? $deliveryTime.':00' : $deliveryTime)
             : '09:00:00';
     }
 }
