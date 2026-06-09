@@ -66,6 +66,12 @@
                     <span class="text-gray-500">SUBTOTAL</span>
                     <span class="font-bold">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
                 </div>
+                @if($order->diskon > 0)
+                <div class="flex justify-between text-xs text-red-600 font-bold">
+                    <span class="uppercase">POTONGAN PROMO ({{ $order->kodePromo?->kode ?? 'PROMO' }})</span>
+                    <span>-Rp {{ number_format($order->diskon, 0, ',', '.') }}</span>
+                </div>
+                @endif
                 <div class="flex justify-between text-xs">
                     <span class="text-gray-500">PENGIRIMAN</span>
                     <span class="font-bold">Rp {{ number_format($order->biaya_ongkir, 0, ',', '.') }}</span>
