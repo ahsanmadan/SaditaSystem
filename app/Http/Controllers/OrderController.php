@@ -2,89 +2,115 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Pelanggan;
-use App\Models\Pesanan;
 use App\Models\DetailPesanan;
+use App\Models\KodePromo;
+use App\Models\Pelanggan;
 use App\Models\Pengiriman;
+use App\Models\Pesanan;
 use App\Models\Produk;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
     public function store(Request $request)
     {
+        $request->validate([
+            'sender_name' => ['required', 'string', 'max:255'],
+            'sender_phone' => ['required', 'string', 'max:30'],
+            'receiver_name' => ['required', 'string', 'max:255'],
+            'address' => ['required', 'string'],
+            'delivery_date' => ['required', 'date'],
+            'delivery_time' => ['required', 'string'],
+            'promo_code' => ['nullable', 'string', 'min:6', 'max:12'],
+        ]);
+
         // For Midtrans, prices should be numeric. We strip non-numeric characters.
         $rawPrice = preg_replace('/[^0-9]/', '', $request->price);
         $numericPrice = $rawPrice ? (int) $rawPrice : 0;
-
         $jamPengiriman = $this->normalizeDeliveryTime($request->delivery_time);
+        $promoResult = $this->resolvePromo($request->promo_code, $numericPrice);
 
-        // 1. Create or Find Pelanggan (Sender)
-        $pelanggan = Pelanggan::firstOrCreate(
-            ['no_hp' => $request->sender_phone],
-            [
-                'nama_lengkap' => $request->sender_name,
-                'email' => null
-            ]
-        );
+        if (! $promoResult['valid']) {
+            return back()
+                ->withInput()
+                ->withErrors(['promo_code' => $promoResult['message']]);
+        }
 
-        // 2. Create Pesanan
-        $kodePesanan = 'SDT-' . date('Ymd') . '-' . strtoupper(Str::random(5));
-        $pesanan = Pesanan::create([
-            'pelanggan_id' => $pelanggan->id,
-            'kode_pesanan' => $kodePesanan,
-            'status' => 'menunggu_pembayaran',
-            'total_harga' => $numericPrice,
-            'biaya_ongkir' => 0,
-            'grand_total' => $numericPrice,
-            'batas_waktu_bayar' => now()->addHours(24),
-            'catatan_pembeli' => $request->special_instruction,
-        ]);
+        $promo = $promoResult['promo'];
+        $discount = $promoResult['discount'];
+        $grandTotal = max(0, $numericPrice - $discount);
 
-        // 3. Find Product (if not found, use first product as fallback to avoid crash)
-        $produk = Produk::where('nama', $request->product_name)->first();
-        $produkId = $produk ? $produk->id : Produk::first()->id ?? 1;
+        $pesanan = DB::transaction(function () use ($request, $numericPrice, $jamPengiriman, $promo, $discount, $grandTotal) {
+            // 1. Create or Find Pelanggan (Sender)
+            $pelanggan = Pelanggan::firstOrCreate(
+                ['no_hp' => $request->sender_phone],
+                [
+                    'nama_lengkap' => $request->sender_name,
+                    'email' => null,
+                ]
+            );
 
-        // 4. Create DetailPesanan
-        DetailPesanan::create([
-            'pesanan_id' => $pesanan->id,
-            'produk_id' => $produkId,
-            'nama_produk_snapshot' => $request->product_name ?? 'Produk Sadita',
-            'harga_satuan_snapshot' => $numericPrice,
-            'kuantitas' => 1,
-            'subtotal' => $numericPrice,
-            'teks_ucapan' => $request->greeting_msg,
-            'referensi_desain' => null,
-        ]);
+            // 2. Create Pesanan
+            $kodePesanan = 'SDT-'.date('Ymd').'-'.strtoupper(Str::random(5));
+            $pesanan = Pesanan::create([
+                'pelanggan_id' => $pelanggan->id,
+                'kode_pesanan' => $kodePesanan,
+                'status' => 'menunggu_pembayaran',
+                'total_harga' => $numericPrice,
+                'biaya_ongkir' => 0,
+                'diskon' => $discount,
+                'grand_total' => $grandTotal,
+                'kode_promo_id' => $promo?->id,
+                'kode_promo_snapshot' => $promo?->kode,
+                'batas_waktu_bayar' => now()->addHours(24),
+                'catatan_pembeli' => $request->special_instruction,
+            ]);
 
-        // 5. Create Pengiriman
-        $timeMap = [
-            'Pagi (08:00 - 12:00)' => '08:00:00',
-            'Siang (12:00 - 16:00)' => '12:00:00',
-            'Sore (16:00 - 20:00)' => '16:00:00',
-        ];
-        $jamPengiriman = $timeMap[$request->delivery_time] ?? '09:00:00';
+            // 3. Find Product (if not found, use first product as fallback to avoid crash)
+            $produk = Produk::where('nama', $request->product_name)->first();
+            $produkId = $produk?->id ?? Produk::query()->value('id') ?? 1;
 
-        Pengiriman::create([
-            'pesanan_id' => $pesanan->id,
-            'nama_penerima' => $request->receiver_name ?? $request->sender_name,
-            'no_hp_penerima' => $request->sender_phone,
-            'alamat_lengkap' => $request->address ?? 'Ambil di Toko',
-            'patokan_lokasi' => null,
-            'tanggal_pengiriman' => $request->delivery_date ?? now()->toDateString(),
-            'jam_pengiriman' => $jamPengiriman,
-            'status' => 'menunggu_jadwal',
-        ]);
+            // 4. Create DetailPesanan
+            DetailPesanan::create([
+                'pesanan_id' => $pesanan->id,
+                'produk_id' => $produkId,
+                'nama_produk_snapshot' => $request->product_name ?? 'Produk Sadita',
+                'harga_satuan_snapshot' => $numericPrice,
+                'kuantitas' => 1,
+                'subtotal' => $numericPrice,
+                'teks_ucapan' => $request->greeting_msg,
+                'referensi_desain' => null,
+            ]);
 
-        return redirect()->route('invoice.show', ['order_id' => $kodePesanan])
+            // 5. Create Pengiriman
+            Pengiriman::create([
+                'pesanan_id' => $pesanan->id,
+                'nama_penerima' => $request->receiver_name ?? $request->sender_name,
+                'no_hp_penerima' => $request->sender_phone,
+                'alamat_lengkap' => $request->address ?? 'Ambil di Toko',
+                'patokan_lokasi' => null,
+                'tanggal_pengiriman' => $request->delivery_date ?? now()->toDateString(),
+                'jam_pengiriman' => $jamPengiriman,
+                'status' => 'menunggu_jadwal',
+            ]);
+
+            if ($promo) {
+                $promo->increment('dipakai');
+            }
+
+            return $pesanan;
+        });
+
+        return redirect()->route('invoice.show', ['order_id' => $pesanan->kode_pesanan])
             ->with('success', 'Pesanan berhasil dibuat. Silakan selesaikan pembayaran.');
     }
 
     public function show($order_id)
     {
         // Now using Pesanan model to match Filament admin
-        $order = Pesanan::with(['pelanggan', 'detailItems', 'pengiriman'])
+        $order = Pesanan::with(['pelanggan', 'detailItems', 'pengiriman', 'kodePromo'])
                     ->where('kode_pesanan', $order_id)
                     ->firstOrFail();
         
@@ -141,5 +167,81 @@ class OrderController extends Controller
         return preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $deliveryTime)
             ? (strlen($deliveryTime) === 5 ? $deliveryTime . ':00' : $deliveryTime)
             : '09:00:00';
+    }
+
+    private function resolvePromo(?string $promoCode, int $subtotal): array
+    {
+        if (blank($promoCode)) {
+            return [
+                'valid' => true,
+                'promo' => null,
+                'discount' => 0,
+                'message' => null,
+            ];
+        }
+
+        $normalizedCode = strtoupper(trim($promoCode));
+        $promo = KodePromo::where('kode', $normalizedCode)->first();
+
+        if (! $promo) {
+            return [
+                'valid' => false,
+                'promo' => null,
+                'discount' => 0,
+                'message' => 'Kode promo tidak ditemukan.',
+            ];
+        }
+
+        if (! $promo->is_aktif) {
+            return [
+                'valid' => false,
+                'promo' => null,
+                'discount' => 0,
+                'message' => 'Kode promo sedang tidak aktif.',
+            ];
+        }
+
+        if ($promo->isNotStarted()) {
+            return [
+                'valid' => false,
+                'promo' => null,
+                'discount' => 0,
+                'message' => 'Kode promo belum mulai berlaku.',
+            ];
+        }
+
+        if ($promo->isExpired()) {
+            return [
+                'valid' => false,
+                'promo' => null,
+                'discount' => 0,
+                'message' => 'Kode promo sudah melewati masa berlaku.',
+            ];
+        }
+
+        if ($promo->isQuotaExceeded()) {
+            return [
+                'valid' => false,
+                'promo' => null,
+                'discount' => 0,
+                'message' => 'Kuota penggunaan kode promo sudah habis.',
+            ];
+        }
+
+        if ($subtotal < $promo->minimum_order) {
+            return [
+                'valid' => false,
+                'promo' => null,
+                'discount' => 0,
+                'message' => 'Minimal transaksi untuk promo ini adalah Rp '.number_format($promo->minimum_order, 0, ',', '.').'.',
+            ];
+        }
+
+        return [
+            'valid' => true,
+            'promo' => $promo,
+            'discount' => $promo->calculateDiscount($subtotal),
+            'message' => null,
+        ];
     }
 }

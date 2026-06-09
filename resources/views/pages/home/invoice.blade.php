@@ -66,6 +66,12 @@
                     <span class="text-gray-500">SUBTOTAL</span>
                     <span class="font-bold">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
                 </div>
+                @if($order->diskon > 0)
+                <div class="flex justify-between text-xs text-green-700">
+                    <span class="text-gray-500">PROMO {{ $order->kode_promo_snapshot ?? $order->kodePromo?->kode }}</span>
+                    <span class="font-bold">-Rp {{ number_format($order->diskon, 0, ',', '.') }}</span>
+                </div>
+                @endif
                 <div class="flex justify-between text-xs">
                     <span class="text-gray-500">PENGIRIMAN</span>
                     <span class="font-bold">Rp {{ number_format($order->biaya_ongkir, 0, ',', '.') }}</span>
@@ -111,7 +117,7 @@
             <!-- Pay Button (if UNPAID) -->
             <div
                 class="w-full bg-green-800 text-white py-3 mt-4 text-xs font-bold tracking-[0.2em] uppercase text-center print:hidden">
-                LUNAS
+                {{ $order->status === 'menunggu_pembayaran' ? 'MENUNGGU PEMBAYARAN' : 'LUNAS' }}
             </div>
 
         </div>

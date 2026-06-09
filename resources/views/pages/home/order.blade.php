@@ -181,6 +181,30 @@
                     </div>
                 </div>
 
+                <!-- 04 Kode Promo -->
+                <div class="mb-10">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-8 h-8 rounded-full bg-[#7A1F2B] text-white flex items-center justify-center font-bold text-xs shadow-md">4</div>
+                        <div>
+                            <h3 class="text-sm font-bold text-[#2D1E1E] uppercase tracking-wider">Kode Promo</h3>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Opsional. Kode promo akan dicek saat pesanan dikirim.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-[#2D1E1E] mb-2">Masukkan Kode Promo</label>
+                            <input type="text" id="promoCode" name="promo_code" value="{{ old('promo_code') }}"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm uppercase tracking-wide text-[#2D1E1E] focus:outline-none focus:ring-2 focus:ring-[#7A1F2B]/20 focus:border-[#7A1F2B] transition-all"
+                                placeholder="Contoh: SADITA10">
+                        </div>
+                        <p class="text-[11px] text-gray-500">Promo yang valid akan otomatis mengurangi total saat invoice dibuat.</p>
+                        @error('promo_code')
+                            <p class="text-xs font-semibold text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 <!-- Submit Area -->
                 <div class="mt-auto pt-6 border-t border-gray-200">
                     <div class="flex items-center justify-between mb-6">
