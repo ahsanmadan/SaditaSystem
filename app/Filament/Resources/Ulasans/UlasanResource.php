@@ -9,6 +9,7 @@ use App\Filament\Resources\Ulasans\Schemas\UlasanForm;
 use App\Filament\Resources\Ulasans\Tables\UlasansTable;
 use App\Models\Ulasan;
 use BackedEnum;
+use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -35,7 +36,7 @@ class UlasanResource extends Resource
         return 'Data Pelanggan';
     }
 
-    public static function getSlug(?\Filament\Panel $panel = null): string
+    public static function getSlug(?Panel $panel = null): string
     {
         return 'ulasan';
     }
@@ -58,9 +59,9 @@ class UlasanResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListUlasans::route('/'),
+            'index' => ListUlasans::route('/'),
             'create' => CreateUlasan::route('/create'),
-            'edit'   => EditUlasan::route('/{record}/edit'),
+            'edit' => EditUlasan::route('/{record}/edit'),
         ];
     }
 }

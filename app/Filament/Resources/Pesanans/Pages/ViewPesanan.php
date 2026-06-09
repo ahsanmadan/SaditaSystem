@@ -4,12 +4,11 @@ namespace App\Filament\Resources\Pesanans\Pages;
 
 use App\Filament\Resources\Pesanans\PesananResource;
 use Filament\Actions\EditAction;
-use Filament\Resources\Pages\ViewRecord;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\IconEntry;
+use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class ViewPesanan extends ViewRecord
 {
@@ -39,19 +38,19 @@ class ViewPesanan extends ViewRecord
                             ->badge()
                             ->color(fn ($state) => match ($state) {
                                 'menunggu_pembayaran' => 'warning',
-                                'diproses'            => 'info',
-                                'siap_kirim'          => 'primary',
-                                'selesai'             => 'success',
-                                'dibatalkan'          => 'danger',
-                                default               => 'gray',
+                                'diproses' => 'info',
+                                'siap_kirim' => 'primary',
+                                'selesai' => 'success',
+                                'dibatalkan' => 'danger',
+                                default => 'gray',
                             })
                             ->formatStateUsing(fn ($state) => match ($state) {
                                 'menunggu_pembayaran' => 'Menunggu Bayar',
-                                'diproses'            => 'Diproses',
-                                'siap_kirim'          => 'Siap Kirim',
-                                'selesai'             => 'Selesai',
-                                'dibatalkan'          => 'Dibatalkan',
-                                default               => $state,
+                                'diproses' => 'Diproses',
+                                'siap_kirim' => 'Siap Kirim',
+                                'selesai' => 'Selesai',
+                                'dibatalkan' => 'Dibatalkan',
+                                default => $state,
                             }),
 
                         TextEntry::make('created_at')
@@ -61,15 +60,15 @@ class ViewPesanan extends ViewRecord
 
                         TextEntry::make('total_harga')
                             ->label('Total Harga')
-                            ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.')),
+                            ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.')),
 
                         TextEntry::make('biaya_ongkir')
                             ->label('Ongkos Kirim')
-                            ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.')),
+                            ->formatStateUsing(fn ($state) => 'Rp '.number_format($state ?? 0, 0, ',', '.')),
 
                         TextEntry::make('grand_total')
                             ->label('Grand Total')
-                            ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                            ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.'))
                             ->weight('bold')
                             ->color('success'),
 
@@ -101,10 +100,10 @@ class ViewPesanan extends ViewRecord
                                 TextEntry::make('kuantitas')->label('Jumlah'),
                                 TextEntry::make('harga_satuan_snapshot')
                                     ->label('Harga Satuan')
-                                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.')),
+                                    ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.')),
                                 TextEntry::make('subtotal')
                                     ->label('Subtotal')
-                                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.')),
+                                    ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.')),
                             ])
                             ->columns(4),
                     ]),
@@ -117,21 +116,21 @@ class ViewPesanan extends ViewRecord
                                 TextEntry::make('metode')->label('Metode')->badge(),
                                 TextEntry::make('jumlah_dibayar')
                                     ->label('Jumlah')
-                                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.')),
+                                    ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.')),
                                 TextEntry::make('status')
                                     ->label('Status')
                                     ->badge()
                                     ->color(fn ($state) => match ($state) {
-                                        'lunas'    => 'success',
-                                        'ditolak'  => 'danger',
+                                        'lunas' => 'success',
+                                        'ditolak' => 'danger',
                                         'menunggu' => 'warning',
-                                        default    => 'gray',
+                                        default => 'gray',
                                     })
                                     ->formatStateUsing(fn ($state) => match ($state) {
-                                        'lunas'    => 'Lunas',
-                                        'ditolak'  => 'Ditolak',
+                                        'lunas' => 'Lunas',
+                                        'ditolak' => 'Ditolak',
                                         'menunggu' => 'Menunggu Verifikasi',
-                                        default    => $state,
+                                        default => $state,
                                     }),
                                 TextEntry::make('waktu_dibayar')
                                     ->label('Waktu Dibayar')

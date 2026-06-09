@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Pelanggans\Schemas;
 
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class PelangganForm

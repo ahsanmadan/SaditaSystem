@@ -4,11 +4,11 @@ namespace App\Filament\Resources\Pelanggans\Pages;
 
 use App\Filament\Resources\Pelanggans\PelangganResource;
 use Filament\Actions\EditAction;
-use Filament\Resources\Pages\ViewRecord;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class ViewPelanggan extends ViewRecord
 {
@@ -65,7 +65,7 @@ class ViewPelanggan extends ViewRecord
 
                         TextEntry::make('total_revenue')
                             ->label('Total Revenue')
-                            ->state(fn ($record) => 'Rp ' . number_format(
+                            ->state(fn ($record) => 'Rp '.number_format(
                                 $record->riwayatPesanan()
                                     ->where('status', 'selesai')
                                     ->sum('grand_total'),
@@ -97,25 +97,24 @@ class ViewPelanggan extends ViewRecord
                                     ->badge()
                                     ->color(fn ($state) => match ($state) {
                                         'menunggu_pembayaran' => 'warning',
-                                        'diproses'            => 'info',
-                                        'siap_kirim'          => 'primary',
-                                        'selesai'             => 'success',
-                                        'dibatalkan'          => 'danger',
-                                        default               => 'gray',
+                                        'diproses' => 'info',
+                                        'siap_kirim' => 'primary',
+                                        'selesai' => 'success',
+                                        'dibatalkan' => 'danger',
+                                        default => 'gray',
                                     })
                                     ->formatStateUsing(fn ($state) => match ($state) {
                                         'menunggu_pembayaran' => 'Menunggu Bayar',
-                                        'diproses'            => 'Diproses',
-                                        'siap_kirim'          => 'Siap Kirim',
-                                        'selesai'             => 'Selesai',
-                                        'dibatalkan'          => 'Dibatalkan',
-                                        default               => $state,
+                                        'diproses' => 'Diproses',
+                                        'siap_kirim' => 'Siap Kirim',
+                                        'selesai' => 'Selesai',
+                                        'dibatalkan' => 'Dibatalkan',
+                                        default => $state,
                                     }),
 
                                 TextEntry::make('grand_total')
                                     ->label('Grand Total')
-                                    ->formatStateUsing(fn ($state) =>
-                                        'Rp ' . number_format($state, 0, ',', '.')),
+                                    ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.')),
 
                                 TextEntry::make('created_at')
                                     ->label('Tanggal Order')

@@ -5,6 +5,8 @@
         $productName = request('product', 'Sadita Exclusive Product');
         $productPrice = request('price', 'Rp 0');
         $productImg = request('img', '/images/dekorasi-lamaran.jpg');
+        $rawPrice = preg_replace('/[^0-9]/', '', $productPrice);
+        $productPriceNumeric = $rawPrice ? (int) $rawPrice : 0;
     @endphp
 
     <div class="min-h-screen bg-[#FFFDFB] mt-8 md:h-[100svh] flex flex-col md:flex-row pt-[72px] font-sans">
@@ -64,6 +66,7 @@
                 @csrf
                 <input type="hidden" name="product_name" value="{{ $productName }}">
                 <input type="hidden" name="price" value="{{ $productPrice }}">
+                <input type="hidden" name="promo_code" id="promoCodeApplied" value="{{ old('promo_code') }}">
 
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-green-100 flex items-center gap-3 mb-8">
                     <span class="relative flex h-3 w-3">
@@ -181,11 +184,44 @@
                     </div>
                 </div>
 
+                <!-- 04 Kode Promo -->
+                <div class="mb-10">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-8 h-8 rounded-full bg-[#7A1F2B] text-white flex items-center justify-center font-bold text-xs shadow-md">4</div>
+                        <div>
+                            <h3 class="text-sm font-bold text-[#2D1E1E] uppercase tracking-wider">Kode Promo</h3>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Gunakan kode promo untuk mendapatkan potongan harga</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                        <div class="flex gap-3">
+                            <input type="text" id="promoCodeInput"
+                                class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-[#2D1E1E] focus:outline-none focus:ring-2 focus:ring-[#7A1F2B]/20 focus:border-[#7A1F2B] transition-all uppercase placeholder-gray-400"
+                                placeholder="Masukkan kode promo (Cth: SADITA10)"
+                                value="{{ old('promo_code') }}">
+                            <button type="button" id="applyPromoBtn"
+                                class="bg-[#7A1F2B] text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-[#5e1721] transition-colors shadow-sm focus:outline-none flex items-center justify-center min-w-[100px]">
+                                Terapkan
+                            </button>
+                        </div>
+                        <div id="promoMessage" class="text-xs hidden font-semibold"></div>
+                        @error('promo_code')
+                            <div class="text-xs text-red-600 font-semibold">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 <!-- Submit Area -->
                 <div class="mt-auto pt-6 border-t border-gray-200">
+                    <div id="discountRow" class="flex items-center justify-between mb-3 hidden text-sm font-bold text-green-600">
+                        <span>Potongan Promo (<span id="discountCodeName"></span>)</span>
+                        <span>-Rp <span id="discountVal">0</span></span>
+                    </div>
+
                     <div class="flex items-center justify-between mb-6">
                         <span class="text-lg font-bold text-[#2D1E1E]">Total Pembayaran</span>
-                        <span class="text-2xl font-bold text-[#7A1F2B]">{{ $productPrice }}</span>
+                        <span class="text-2xl font-bold text-[#7A1F2B]" id="grandTotalVal">{{ $productPrice }}</span>
                     </div>
 
                     <button type="submit"
@@ -214,5 +250,93 @@
             btn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses Pesanan...';
             btn.classList.add('opacity-80', 'cursor-not-allowed', 'pointer-events-none');
         });
+
+        // Promo Code AJAX Validation Logic
+        const applyPromoBtn = document.getElementById('applyPromoBtn');
+        const promoCodeInput = document.getElementById('promoCodeInput');
+        const promoCodeApplied = document.getElementById('promoCodeApplied');
+        const promoMessage = document.getElementById('promoMessage');
+        const discountRow = document.getElementById('discountRow');
+        const discountCodeName = document.getElementById('discountCodeName');
+        const discountVal = document.getElementById('discountVal');
+        const grandTotalVal = document.getElementById('grandTotalVal');
+        
+        const originalPriceText = "{{ $productPrice }}";
+        const originalPriceNumeric = {{ $productPriceNumeric }};
+
+        function formatRupiah(amount) {
+            return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        applyPromoBtn.addEventListener('click', function() {
+            const code = promoCodeInput.value.trim();
+            if (!code) {
+                showPromoMessage('Masukkan kode promo terlebih dahulu.', 'text-red-600');
+                return;
+            }
+
+            applyPromoBtn.disabled = true;
+            applyPromoBtn.innerHTML = '<svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+            
+            fetch("{{ route('promo.validate') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    code: code,
+                    subtotal: originalPriceNumeric
+                })
+            })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(res => {
+                applyPromoBtn.disabled = false;
+                applyPromoBtn.innerText = 'Terapkan';
+
+                if (res.status === 200 && res.body.success) {
+                    const data = res.body;
+                    showPromoMessage(data.message, 'text-green-600');
+                    
+                    // Update promo code applied input
+                    promoCodeApplied.value = data.code;
+                    
+                    // Show discount row
+                    discountCodeName.innerText = data.code;
+                    discountVal.innerText = data.formatted_discount.replace('Rp ', '');
+                    discountRow.classList.remove('hidden');
+
+                    // Update total price
+                    grandTotalVal.innerText = data.formatted_new_total;
+                } else {
+                    const errorMsg = res.body.message || 'Terjadi kesalahan saat memvalidasi kode promo.';
+                    showPromoMessage(errorMsg, 'text-red-600');
+                    resetPromo();
+                }
+            })
+            .catch(err => {
+                applyPromoBtn.disabled = false;
+                applyPromoBtn.innerText = 'Terapkan';
+                showPromoMessage('Terjadi kesalahan koneksi.', 'text-red-600');
+                resetPromo();
+            });
+        });
+
+        function showPromoMessage(msg, className) {
+            promoMessage.innerText = msg;
+            promoMessage.className = 'text-xs mt-3 font-semibold ' + className;
+            promoMessage.classList.remove('hidden');
+        }
+
+        function resetPromo() {
+            promoCodeApplied.value = '';
+            discountRow.classList.add('hidden');
+            grandTotalVal.innerText = originalPriceText;
+        }
+
+        // Trigger validation if old promo code exists (e.g. on validation redirect back)
+        if (promoCodeInput.value.trim() !== '') {
+            applyPromoBtn.click();
+        }
     </script>
 @endsection
