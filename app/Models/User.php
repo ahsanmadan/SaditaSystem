@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
 #[Fillable(['name', 'email', 'password', 'role', 'is_admin'])]
 #[Hidden(['password', 'remember_token'])]
@@ -20,9 +21,7 @@ class User extends Authenticatable implements FilamentUser
 
     // ─── Role Constants ──────────────────────────────────────────────────────
     const ROLE_OWNER = 'owner';
-
     const ROLE_ADMIN = 'admin';
-
     const ROLE_STAFF = 'staff';
 
     /**
@@ -78,8 +77,8 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_admin' => 'boolean',
+            'password'          => 'hashed',
+            'is_admin'          => 'boolean',
         ];
     }
 }

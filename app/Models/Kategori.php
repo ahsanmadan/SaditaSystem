@@ -10,7 +10,6 @@ class Kategori extends Model
     use SoftDeletes;
 
     protected $table = 'kategori';
-
     protected $guarded = ['id'];
 
     protected $casts = [

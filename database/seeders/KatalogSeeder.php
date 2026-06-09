@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class KatalogSeeder extends Seeder
 {
@@ -70,14 +70,14 @@ class KatalogSeeder extends Seeder
                 $prodPrice = $item[1];
                 $isSewa = $item[2];
                 $prodSlug = Str::slug($prodName);
-                $prodImg = 'images/'.$prodSlug.'.jpg';
+                $prodImg = 'images/' . $prodSlug . '.jpg';
 
                 DB::table('produk')->updateOrInsert(
                     ['slug' => $prodSlug],
                     [
                         'kategori_id' => $kat->id,
                         'nama' => $prodName,
-                        'deskripsi' => $prodName.' by Sadita.',
+                        'deskripsi' => $prodName . ' by Sadita.',
                         'foto_utama' => $prodImg,
                         'galeri_foto' => json_encode([$prodImg]),
                         'harga_dasar' => $prodPrice,

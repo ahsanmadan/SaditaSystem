@@ -4,14 +4,15 @@ namespace App\Filament\Resources\Produks\Schemas;
 
 use App\Models\Kategori;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
+use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ProdukForm
 {
@@ -95,7 +96,8 @@ class ProdukForm
                             ->required(false)
                             ->columnSpanFull()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file) => (string) str()->ulid().'.'.$file->getClientOriginalExtension()
+                                fn (\Livewire\Features\SupportFileUploads\TemporaryUploadedFile $file) =>
+                                    (string) str()->ulid() . '.' . $file->getClientOriginalExtension()
                             ),
 
                         FileUpload::make('galeri_foto')

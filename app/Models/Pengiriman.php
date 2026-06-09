@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Pengiriman extends Model
 {
     use HasFactory;
 
     protected $table = 'pengiriman';
-
     protected $guarded = ['id'];
 
     protected $casts = [

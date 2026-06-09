@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class DetailPesanan extends Model
 {
     protected $table = 'detail_pesanan';
-
     protected $guarded = ['id'];
 
     public function pesanan()

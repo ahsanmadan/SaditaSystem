@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class PengembalianPesanan extends Model
 {
     protected $table = 'pengembalian_pesanan';
-
     protected $guarded = ['id'];
 
     protected $casts = [

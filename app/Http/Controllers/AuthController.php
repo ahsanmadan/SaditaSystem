@@ -21,7 +21,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
+            
             // Redirect to filament admin panel since this user is an admin
             return redirect()->intended('/admin');
         }

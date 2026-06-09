@@ -10,14 +10,13 @@ class Produk extends Model
     use SoftDeletes;
 
     protected $table = 'produk';
-
     protected $guarded = ['id'];
 
     protected $casts = [
         'is_customizable' => 'boolean',
-        'is_sewa' => 'boolean',
-        'is_aktif' => 'boolean',
-        'galeri_foto' => 'array',
+        'is_sewa'         => 'boolean',
+        'is_aktif'        => 'boolean',
+        'galeri_foto'     => 'array',
     ];
 
     public function kategori()
@@ -34,7 +33,7 @@ class Produk extends Model
     {
         $paths = array_filter([
             $this->foto_utama,
-            'images/'.$this->slug.'.jpg',
+            'images/' . $this->slug . '.jpg',
         ]);
 
         foreach ($paths as $path) {
@@ -48,8 +47,8 @@ class Produk extends Model
                 return asset($path);
             }
 
-            if (file_exists(storage_path('app/public/'.$path))) {
-                return asset('storage/'.$path);
+            if (file_exists(storage_path('app/public/' . $path))) {
+                return asset('storage/' . $path);
             }
         }
 

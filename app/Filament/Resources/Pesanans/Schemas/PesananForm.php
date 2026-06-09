@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources\Pesanans\Schemas;
 
+use Filament\Forms\Components\Placeholder;
+use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class PesananForm
@@ -27,10 +28,10 @@ class PesananForm
                             ->label('Status Pesanan')
                             ->options([
                                 'menunggu_pembayaran' => 'Menunggu Pembayaran',
-                                'diproses' => 'Diproses',
-                                'siap_kirim' => 'Siap Kirim',
-                                'selesai' => 'Selesai',
-                                'dibatalkan' => 'Dibatalkan',
+                                'diproses'            => 'Diproses',
+                                'siap_kirim'          => 'Siap Kirim',
+                                'selesai'             => 'Selesai',
+                                'dibatalkan'          => 'Dibatalkan',
                             ])
                             ->required(),
 
@@ -45,18 +46,6 @@ class PesananForm
                             ->label('Biaya Ongkir (Rp)')
                             ->numeric()
                             ->prefix('Rp'),
-
-                        TextInput::make('kodePromo.kode')
-                            ->label('Kode Promo')
-                            ->disabled()
-                            ->dehydrated(false),
-
-                        TextInput::make('diskon')
-                            ->label('Potongan Diskon (Rp)')
-                            ->numeric()
-                            ->prefix('Rp')
-                            ->disabled()
-                            ->dehydrated(false),
 
                         TextInput::make('grand_total')
                             ->label('Grand Total (Rp)')

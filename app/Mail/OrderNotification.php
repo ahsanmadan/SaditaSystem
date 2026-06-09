@@ -2,13 +2,14 @@
 
 namespace App\Mail;
 
-use App\Models\Order;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Order;
 
 class OrderNotification extends Mailable
 {
@@ -30,7 +31,7 @@ class OrderNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '📦 PESANAN BARU - SADITA ('.$this->order->order_id.')',
+            subject: '📦 PESANAN BARU - SADITA (' . $this->order->order_id . ')',
         );
     }
 
@@ -47,7 +48,7 @@ class OrderNotification extends Mailable
     /**
      * Get the attachments for the message.
      *
-     * @return array<int, Attachment>
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
     {

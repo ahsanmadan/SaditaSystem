@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DetailPesanan;
-use App\Models\KodePromo;
-use App\Models\Pelanggan;
-use App\Models\Pengiriman;
-use App\Models\Pesanan;
-use App\Models\Produk;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\Pelanggan;
+use App\Models\Pesanan;
+use App\Models\DetailPesanan;
+use App\Models\Pengiriman;
+use App\Models\Produk;
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
@@ -22,68 +20,24 @@ class OrderController extends Controller
 
         $jamPengiriman = $this->normalizeDeliveryTime($request->delivery_time);
 
-        // Promo Code Verification
-        $diskon = 0;
-        $kodePromoId = null;
-
-        if ($request->filled('promo_code')) {
-            $promoCodeStr = trim($request->promo_code);
-            $promo = KodePromo::whereRaw('LOWER(kode) = ?', [strtolower($promoCodeStr)])->first();
-
-            if (! $promo || ! $promo->is_aktif) {
-                return back()->withInput()->withErrors(['promo_code' => 'Kode promo tidak valid atau tidak aktif.']);
-            }
-
-            if ($promo->berlaku_sampai && $promo->berlaku_sampai->isPast()) {
-                return back()->withInput()->withErrors(['promo_code' => 'Kode promo sudah kedaluwarsa.']);
-            }
-
-            if ($promo->kuota !== null && $promo->dipakai >= $promo->kuota) {
-                return back()->withInput()->withErrors(['promo_code' => 'Kuota kode promo sudah habis.']);
-            }
-
-            if ($numericPrice < $promo->minimum_order) {
-                return back()->withInput()->withErrors(['promo_code' => 'Minimal order untuk promo ini belum terpenuhi.']);
-            }
-
-            if ($promo->tipe_diskon === 'persentase') {
-                $diskon = (int) round(($promo->nilai_diskon / 100) * $numericPrice);
-            } else {
-                $diskon = (int) $promo->nilai_diskon;
-            }
-
-            if ($diskon > $numericPrice) {
-                $diskon = $numericPrice;
-            }
-
-            $kodePromoId = $promo->id;
-
-            // Increment usage count
-            $promo->increment('dipakai');
-        }
-
-        $grandTotal = $numericPrice - $diskon;
-
         // 1. Create or Find Pelanggan (Sender)
         $pelanggan = Pelanggan::firstOrCreate(
             ['no_hp' => $request->sender_phone],
             [
                 'nama_lengkap' => $request->sender_name,
-                'email' => null,
+                'email' => null
             ]
         );
 
         // 2. Create Pesanan
-        $kodePesanan = 'SDT-'.date('Ymd').'-'.strtoupper(Str::random(5));
+        $kodePesanan = 'SDT-' . date('Ymd') . '-' . strtoupper(Str::random(5));
         $pesanan = Pesanan::create([
             'pelanggan_id' => $pelanggan->id,
             'kode_pesanan' => $kodePesanan,
             'status' => 'menunggu_pembayaran',
-            'kode_promo_id' => $kodePromoId,
             'total_harga' => $numericPrice,
             'biaya_ongkir' => 0,
-            'diskon' => $diskon,
-            'grand_total' => $grandTotal,
+            'grand_total' => $numericPrice,
             'batas_waktu_bayar' => now()->addHours(24),
             'catatan_pembeli' => $request->special_instruction,
         ]);
@@ -131,9 +85,9 @@ class OrderController extends Controller
     {
         // Now using Pesanan model to match Filament admin
         $order = Pesanan::with(['pelanggan', 'detailItems', 'pengiriman'])
-            ->where('kode_pesanan', $order_id)
-            ->firstOrFail();
-
+                    ->where('kode_pesanan', $order_id)
+                    ->firstOrFail();
+        
         $snapToken = null;
 
         return view('pages.home.invoice', compact('order', 'snapToken'));
@@ -150,7 +104,7 @@ class OrderController extends Controller
                 'diproses' => 'PAID',
                 'dikirim' => 'DELIVERED',
                 'selesai' => 'SELESAI',
-                'dibatalkan' => 'DIBATALKAN',
+                'dibatalkan' => 'DIBATALKAN'
             ];
             $mappedStatus = $statusMap[$pesanan->status] ?? strtoupper($pesanan->status);
             $pengiriman = $pesanan->pengiriman;
@@ -160,8 +114,8 @@ class OrderController extends Controller
                 'order_id' => $pesanan->kode_pesanan,
                 'product_name' => $productNames ?: 'Produk Sadita',
                 'status' => $mappedStatus,
-                'delivery_date' => $pengiriman ? Carbon::parse($pengiriman->tanggal_pengiriman)->format('d M Y') : '-',
-                'delivery_time' => $pengiriman ? Carbon::parse($pengiriman->jam_pengiriman)->format('H:i') : '-',
+                'delivery_date' => $pengiriman ? \Carbon\Carbon::parse($pengiriman->tanggal_pengiriman)->format('d M Y') : '-',
+                'delivery_time' => $pengiriman ? \Carbon\Carbon::parse($pengiriman->jam_pengiriman)->format('H:i') : '-'
             ]);
         }
 
@@ -185,82 +139,7 @@ class OrderController extends Controller
         }
 
         return preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $deliveryTime)
-            ? (strlen($deliveryTime) === 5 ? $deliveryTime.':00' : $deliveryTime)
+            ? (strlen($deliveryTime) === 5 ? $deliveryTime . ':00' : $deliveryTime)
             : '09:00:00';
-    }
-
-    public function validatePromo(Request $request)
-    {
-        $code = trim($request->input('code'));
-        $subtotal = (int) $request->input('subtotal');
-
-        if (empty($code)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode promo tidak boleh kosong.',
-            ], 400);
-        }
-
-        $promo = KodePromo::whereRaw('LOWER(kode) = ?', [strtolower($code)])->first();
-
-        if (! $promo) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode promo tidak ditemukan.',
-            ], 404);
-        }
-
-        if (! $promo->is_aktif) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode promo tidak aktif.',
-            ], 422);
-        }
-
-        if ($promo->berlaku_sampai && $promo->berlaku_sampai->isPast()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode promo sudah kedaluwarsa.',
-            ], 422);
-        }
-
-        if ($promo->kuota !== null && $promo->dipakai >= $promo->kuota) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kuota kode promo sudah habis.',
-            ], 422);
-        }
-
-        if ($subtotal < $promo->minimum_order) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Minimal order untuk menggunakan promo ini adalah Rp '.number_format($promo->minimum_order, 0, ',', '.'),
-            ], 422);
-        }
-
-        // Calculate discount
-        $discount = 0;
-        if ($promo->tipe_diskon === 'persentase') {
-            $discount = (int) round(($promo->nilai_diskon / 100) * $subtotal);
-        } else {
-            $discount = (int) $promo->nilai_diskon;
-        }
-
-        // Cap discount at subtotal
-        if ($discount > $subtotal) {
-            $discount = $subtotal;
-        }
-
-        $newTotal = $subtotal - $discount;
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Kode promo berhasil diterapkan!',
-            'code' => $promo->kode,
-            'discount' => $discount,
-            'formatted_discount' => 'Rp '.number_format($discount, 0, ',', '.'),
-            'new_total' => $newTotal,
-            'formatted_new_total' => 'Rp '.number_format($newTotal, 0, ',', '.'),
-        ]);
     }
 }

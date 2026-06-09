@@ -9,7 +9,6 @@ use App\Filament\Resources\Kategoris\Schemas\KategoriForm;
 use App\Filament\Resources\Kategoris\Tables\KategorisTable;
 use App\Models\Kategori;
 use BackedEnum;
-use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -38,7 +37,7 @@ class KategoriResource extends Resource
         return 'Master Data';
     }
 
-    public static function getSlug(?Panel $panel = null): string
+    public static function getSlug(?\Filament\Panel $panel = null): string
     {
         return 'kategori';
     }

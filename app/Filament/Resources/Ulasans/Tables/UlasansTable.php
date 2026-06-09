@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Ulasans\Tables;
 
 use App\Models\Ulasan;
 use Filament\Actions\Action;
-use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -27,11 +27,11 @@ class UlasansTable
                 // Rating visual bintang
                 TextColumn::make('rating')
                     ->label('Rating')
-                    ->formatStateUsing(fn ($state) => str_repeat('★', $state).str_repeat('☆', 5 - $state))
+                    ->formatStateUsing(fn ($state) => str_repeat('★', $state) . str_repeat('☆', 5 - $state))
                     ->color(fn ($state) => match (true) {
                         $state >= 4 => 'success',
                         $state === 3 => 'warning',
-                        default => 'danger',
+                        default      => 'danger',
                     })
                     ->sortable(),
 
@@ -120,7 +120,7 @@ class UlasansTable
                         ? 'Ulasan tidak akan terlihat di halaman publik.'
                         : 'Ulasan akan tampil kembali di halaman publik.')
                     ->action(fn (Ulasan $record) => $record->update([
-                        'is_tampil' => ! $record->is_tampil,
+                        'is_tampil' => !$record->is_tampil,
                     ])),
             ])
             ->toolbarActions([

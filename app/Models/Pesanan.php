@@ -33,11 +33,6 @@ class Pesanan extends Model
         return $this->belongsTo(Pelanggan::class, 'pelanggan_id', 'id');
     }
 
-    public function kodePromo()
-    {
-        return $this->belongsTo(KodePromo::class, 'kode_promo_id', 'id');
-    }
-
     public function detailItems()
     {
         return $this->hasMany(DetailPesanan::class, 'pesanan_id', 'id');
