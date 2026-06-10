@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Pelanggan extends Model
 {
     use HasFactory;
 
     protected $table = 'pelanggan';
+
     protected $guarded = ['id'];
 
     // Accessor agar bisa dipanggil $pelanggan->nama (alias dari nama_lengkap)

@@ -2,11 +2,10 @@
 
 namespace App\Filament\Resources\Pesanans\Schemas;
 
-use Filament\Forms\Components\Placeholder;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class PesananForm
@@ -28,10 +27,10 @@ class PesananForm
                             ->label('Status Pesanan')
                             ->options([
                                 'menunggu_pembayaran' => 'Menunggu Pembayaran',
-                                'diproses'            => 'Diproses',
-                                'siap_kirim'          => 'Siap Kirim',
-                                'selesai'             => 'Selesai',
-                                'dibatalkan'          => 'Dibatalkan',
+                                'diproses' => 'Diproses',
+                                'siap_kirim' => 'Siap Kirim',
+                                'selesai' => 'Selesai',
+                                'dibatalkan' => 'Dibatalkan',
                             ])
                             ->required(),
 

@@ -62,9 +62,9 @@ class PembayaranResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListPembayarans::route('/'),
+            'index' => ListPembayarans::route('/'),
             'create' => CreatePembayaran::route('/create'),
-            'edit'   => EditPembayaran::route('/{record}/edit'),
+            'edit' => EditPembayaran::route('/{record}/edit'),
         ];
     }
 }

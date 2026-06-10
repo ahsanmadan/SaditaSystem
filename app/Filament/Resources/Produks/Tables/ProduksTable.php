@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Produks\Tables;
 
+use App\Models\Produk;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -21,7 +22,7 @@ class ProduksTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->query(\App\Models\Produk::query()->with('kategori'))
+            ->query(Produk::query()->with('kategori'))
             ->columns([
                 ImageColumn::make('foto_utama')
                     ->label('Foto')
@@ -40,7 +41,7 @@ class ProduksTable
 
                 TextColumn::make('harga_dasar')
                     ->label('Harga Dasar')
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                    ->formatStateUsing(fn ($state) => 'Rp '.number_format($state, 0, ',', '.'))
                     ->sortable(),
 
                 IconColumn::make('is_aktif')

@@ -10,6 +10,7 @@ use App\Filament\Resources\Pelanggans\Schemas\PelangganForm;
 use App\Filament\Resources\Pelanggans\Tables\PelanggansTable;
 use App\Models\Pelanggan;
 use BackedEnum;
+use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -36,7 +37,7 @@ class PelangganResource extends Resource
         return 'Data Pelanggan';
     }
 
-    public static function getSlug(?\Filament\Panel $panel = null): string
+    public static function getSlug(?Panel $panel = null): string
     {
         return 'pelanggan';
     }
@@ -59,10 +60,10 @@ class PelangganResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListPelanggans::route('/'),
+            'index' => ListPelanggans::route('/'),
             'create' => CreatePelanggan::route('/create'),
-            'view'   => ViewPelanggan::route('/{record}'),
-            'edit'   => EditPelanggan::route('/{record}/edit'),
+            'view' => ViewPelanggan::route('/{record}'),
+            'edit' => EditPelanggan::route('/{record}/edit'),
         ];
     }
 }

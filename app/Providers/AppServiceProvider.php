@@ -3,12 +3,12 @@
 namespace App\Providers;
 
 use App\Models\Pembayaran;
-use App\Models\Pesanan;
 use App\Models\PengeluaranPesanan;
+use App\Models\Pesanan;
 use App\Models\Ulasan;
 use App\Observers\PembayaranObserver;
-use App\Observers\PesananObserver;
 use App\Observers\PengeluaranPesananObserver;
+use App\Observers\PesananObserver;
 use App\Observers\UlasanObserver;
 use Illuminate\Support\ServiceProvider;
 
