@@ -19,6 +19,7 @@ class PesanansTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->query(
                 Pesanan::query()->with(['pelanggan', 'pembayaranTerakhir'])
             )

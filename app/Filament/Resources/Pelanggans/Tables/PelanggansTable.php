@@ -17,6 +17,7 @@ class PelanggansTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->query(
                 Pelanggan::query()
                     ->withCount([

@@ -3,18 +3,10 @@
 namespace App\Observers;
 
 use App\Models\Pesanan;
-use App\Services\Analytics\DashboardKpiService;
-use Illuminate\Support\Facades\Cache;
+use App\Support\DashboardCache;
 
 class PesananObserver
 {
-    private array $cacheKeys = [
-        DashboardKpiService::OVERVIEW_CACHE_KEY,
-        'dashboard_chart_omzet_30_hari',
-        'dashboard_chart_status_pesanan',
-        'kpi_top_pelanggan',
-    ];
-
     public function created(Pesanan $pesanan): void
     {
         $this->invalidateCache("Pesanan baru #{$pesanan->kode_pesanan}");
@@ -40,9 +32,7 @@ class PesananObserver
 
     private function invalidateCache(string $reason): void
     {
-        foreach ($this->cacheKeys as $key) {
-            Cache::forget($key);
-        }
+        DashboardCache::forgetAll();
 
         \Log::info("[CacheInvalidation] {$reason} -> cache dashboard di-reset.");
     }

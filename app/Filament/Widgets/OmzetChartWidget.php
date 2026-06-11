@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Pesanan;
+use App\Support\DashboardCache;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Cache;
@@ -18,7 +19,7 @@ class OmzetChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        return Cache::remember('dashboard_chart_omzet_30_hari', 60 * 10, function () {
+        return Cache::remember(DashboardCache::OMZET_CHART, 60 * 10, function () {
             $data = Pesanan::select(
                 DB::raw('DATE(waktu_selesai) as tanggal'),
                 DB::raw('SUM(total_harga) as omzet')

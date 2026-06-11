@@ -4,17 +4,16 @@ namespace App\Services\Analytics;
 
 use App\Models\Pembayaran;
 use App\Models\Pesanan;
+use App\Support\DashboardCache;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class DashboardKpiService
 {
-    public const OVERVIEW_CACHE_KEY = 'dashboard_overview_stats';
-
     public function getOverviewStats(): array
     {
-        return Cache::remember(self::OVERVIEW_CACHE_KEY, 60 * 5, function () {
+        return Cache::remember(DashboardCache::OVERVIEW_STATS, 60 * 5, function () {
             return [
                 'omzet' => $this->getOmzetTodayByCompletionDate(),
                 'kas_masuk' => $this->getCashInTodayByPaymentDate(),

@@ -22,6 +22,7 @@ class ProduksTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->query(Produk::query()->with('kategori'))
             ->columns([
                 ImageColumn::make('foto_utama')

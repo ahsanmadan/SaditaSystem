@@ -14,6 +14,7 @@ class UsersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->columns([
                 TextColumn::make('name')
                     ->label('Nama')
