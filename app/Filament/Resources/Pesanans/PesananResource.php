@@ -10,11 +10,11 @@ use App\Filament\Resources\Pesanans\Schemas\PesananForm;
 use App\Filament\Resources\Pesanans\Tables\PesanansTable;
 use App\Models\Pesanan;
 use BackedEnum;
+use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class PesananResource extends Resource
 {
@@ -37,7 +37,7 @@ class PesananResource extends Resource
         return 'Operasional';
     }
 
-    public static function getSlug(?\Filament\Panel $panel = null): string
+    public static function getSlug(?Panel $panel = null): string
     {
         return 'pesanan';
     }
@@ -60,10 +60,10 @@ class PesananResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListPesanans::route('/'),
+            'index' => ListPesanans::route('/'),
             'create' => CreatePesanan::route('/create'),
-            'view'   => ViewPesanan::route('/{record}'),
-            'edit'   => EditPesanan::route('/{record}/edit'),
+            'view' => ViewPesanan::route('/{record}'),
+            'edit' => EditPesanan::route('/{record}/edit'),
         ];
     }
 }

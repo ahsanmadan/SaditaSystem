@@ -3,13 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailPesanan;
+<<<<<<< HEAD
 use App\Models\KodePromo;
+=======
+>>>>>>> d0b6b6ba9cdf3f67230427ce2b808f72b0cc6532
 use App\Models\Pelanggan;
 use App\Models\Pengiriman;
 use App\Models\Pesanan;
 use App\Models\Produk;
+<<<<<<< HEAD
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+=======
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+>>>>>>> d0b6b6ba9cdf3f67230427ce2b808f72b0cc6532
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
@@ -32,6 +40,7 @@ class OrderController extends Controller
         $jamPengiriman = $this->normalizeDeliveryTime($request->delivery_time);
         $promoResult = $this->resolvePromo($request->promo_code, $numericPrice);
 
+<<<<<<< HEAD
         if (! $promoResult['valid']) {
             return back()
                 ->withInput()
@@ -41,6 +50,29 @@ class OrderController extends Controller
         $promo = $promoResult['promo'];
         $discount = $promoResult['discount'];
         $grandTotal = max(0, $numericPrice - $discount);
+=======
+        // 1. Create or Find Pelanggan (Sender)
+        $pelanggan = Pelanggan::firstOrCreate(
+            ['no_hp' => $request->sender_phone],
+            [
+                'nama_lengkap' => $request->sender_name,
+                'email' => null,
+            ]
+        );
+
+        // 2. Create Pesanan
+        $kodePesanan = 'SDT-'.date('Ymd').'-'.strtoupper(Str::random(5));
+        $pesanan = Pesanan::create([
+            'pelanggan_id' => $pelanggan->id,
+            'kode_pesanan' => $kodePesanan,
+            'status' => 'menunggu_pembayaran',
+            'total_harga' => $numericPrice,
+            'biaya_ongkir' => 0,
+            'grand_total' => $numericPrice,
+            'batas_waktu_bayar' => now()->addHours(24),
+            'catatan_pembeli' => $request->special_instruction,
+        ]);
+>>>>>>> d0b6b6ba9cdf3f67230427ce2b808f72b0cc6532
 
         $pesanan = DB::transaction(function () use ($request, $numericPrice, $jamPengiriman, $promo, $discount, $grandTotal) {
             // 1. Create or Find Pelanggan (Sender)
@@ -110,10 +142,17 @@ class OrderController extends Controller
     public function show($order_id)
     {
         // Now using Pesanan model to match Filament admin
+<<<<<<< HEAD
         $order = Pesanan::with(['pelanggan', 'detailItems', 'pengiriman', 'kodePromo'])
                     ->where('kode_pesanan', $order_id)
                     ->firstOrFail();
         
+=======
+        $order = Pesanan::with(['pelanggan', 'detailItems', 'pengiriman'])
+            ->where('kode_pesanan', $order_id)
+            ->firstOrFail();
+
+>>>>>>> d0b6b6ba9cdf3f67230427ce2b808f72b0cc6532
         $snapToken = null;
 
         return view('pages.home.invoice', compact('order', 'snapToken'));
@@ -130,7 +169,7 @@ class OrderController extends Controller
                 'diproses' => 'PAID',
                 'dikirim' => 'DELIVERED',
                 'selesai' => 'SELESAI',
-                'dibatalkan' => 'DIBATALKAN'
+                'dibatalkan' => 'DIBATALKAN',
             ];
             $mappedStatus = $statusMap[$pesanan->status] ?? strtoupper($pesanan->status);
             $pengiriman = $pesanan->pengiriman;
@@ -140,8 +179,8 @@ class OrderController extends Controller
                 'order_id' => $pesanan->kode_pesanan,
                 'product_name' => $productNames ?: 'Produk Sadita',
                 'status' => $mappedStatus,
-                'delivery_date' => $pengiriman ? \Carbon\Carbon::parse($pengiriman->tanggal_pengiriman)->format('d M Y') : '-',
-                'delivery_time' => $pengiriman ? \Carbon\Carbon::parse($pengiriman->jam_pengiriman)->format('H:i') : '-'
+                'delivery_date' => $pengiriman ? Carbon::parse($pengiriman->tanggal_pengiriman)->format('d M Y') : '-',
+                'delivery_time' => $pengiriman ? Carbon::parse($pengiriman->jam_pengiriman)->format('H:i') : '-',
             ]);
         }
 
@@ -165,7 +204,7 @@ class OrderController extends Controller
         }
 
         return preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $deliveryTime)
-            ? (strlen($deliveryTime) === 5 ? $deliveryTime . ':00' : $deliveryTime)
+            ? (strlen($deliveryTime) === 5 ? $deliveryTime.':00' : $deliveryTime)
             : '09:00:00';
     }
 

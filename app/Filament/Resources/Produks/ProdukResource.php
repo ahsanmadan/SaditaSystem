@@ -9,6 +9,7 @@ use App\Filament\Resources\Produks\Schemas\ProdukForm;
 use App\Filament\Resources\Produks\Tables\ProduksTable;
 use App\Models\Produk;
 use BackedEnum;
+use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -37,7 +38,7 @@ class ProdukResource extends Resource
         return 'Master Data';
     }
 
-    public static function getSlug(?\Filament\Panel $panel = null): string
+    public static function getSlug(?Panel $panel = null): string
     {
         return 'produk';
     }

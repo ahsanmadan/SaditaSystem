@@ -1,21 +1,25 @@
 <?php
+
 namespace Database\Seeders;
-use Illuminate\Database\Seeder;
-use App\Models\Pelanggan;
-use App\Models\Pesanan;
+
 use App\Models\DetailPesanan;
+use App\Models\Pelanggan;
 use App\Models\Pembayaran;
-use App\Models\Pengiriman;
 use App\Models\PengembalianPesanan;
-use App\Models\Ulasan;
+use App\Models\Pengiriman;
+use App\Models\Pesanan;
 use App\Models\Produk;
+use App\Models\Ulasan;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Faker\Factory as Faker;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
-class TransactionSeeder extends Seeder {
-    public function run(): void {
+class TransactionSeeder extends Seeder
+{
+    public function run(): void
+    {
         $faker = Faker::create('id_ID');
         $totalPesanan = env('SEEDER_STRESS_MODE', false) ? 1500 : 300;
 
@@ -27,9 +31,9 @@ class TransactionSeeder extends Seeder {
         $admin = User::first() ?? User::factory()->create();
 
         // Distribusi Status
-        $selesaiCount = (int)($totalPesanan * 0.55);
-        $diprosesCount = (int)($totalPesanan * 0.20);
-        $menungguCount = (int)($totalPesanan * 0.15);
+        $selesaiCount = (int) ($totalPesanan * 0.55);
+        $diprosesCount = (int) ($totalPesanan * 0.20);
+        $menungguCount = (int) ($totalPesanan * 0.15);
         $dibatalkanCount = $totalPesanan - ($selesaiCount + $diprosesCount + $menungguCount);
 
         $statuses = array_merge(
@@ -46,9 +50,11 @@ class TransactionSeeder extends Seeder {
             $daysAgo = $faker->numberBetween(1, 90);
             $date = Carbon::now()->subDays($daysAgo);
             if ($isWeekend) {
-                while (!$date->isWeekend()) {
+                while (! $date->isWeekend()) {
                     $date->addDay();
-                    if ($date->isFuture()) { $date->subDays(7); }
+                    if ($date->isFuture()) {
+                        $date->subDays(7);
+                    }
                 }
             }
 
@@ -59,7 +65,7 @@ class TransactionSeeder extends Seeder {
 
             $pesanan = Pesanan::create([
                 'pelanggan_id' => $pelanggan->id,
-                'kode_pesanan' => 'ORD-' . $date->format('Ymd') . '-' . strtoupper(Str::random(5)),
+                'kode_pesanan' => 'ORD-'.$date->format('Ymd').'-'.strtoupper(Str::random(5)),
                 'status' => $status,
                 'total_harga' => 0,
                 'biaya_ongkir' => $ongkir,
@@ -80,7 +86,9 @@ class TransactionSeeder extends Seeder {
                 $qty = $faker->numberBetween(1, 2);
                 $sub = $prod->harga_dasar * $qty;
                 $totalHarga += $sub;
-                if ($prod->is_sewa) $hasSewa = true;
+                if ($prod->is_sewa) {
+                    $hasSewa = true;
+                }
 
                 DetailPesanan::create([
                     'pesanan_id' => $pesanan->id,

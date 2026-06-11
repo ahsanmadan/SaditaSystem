@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\Pelanggans\Tables;
 
 use App\Models\Pelanggan;
+use Carbon\Carbon;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
@@ -59,7 +61,7 @@ class PelanggansTable
                     ->timezone('Asia/Jakarta')
                     ->sortable()
                     ->color(fn ($state) => $state &&
-                        \Carbon\Carbon::parse($state)->lt(now()->subMonths(3))
+                        Carbon::parse($state)->lt(now()->subMonths(3))
                         ? 'danger' : null),
 
                 TextColumn::make('created_at')
@@ -74,42 +76,37 @@ class PelanggansTable
                 Filter::make('repeat_customer')
                     ->label('Repeat Customer (≥2 order selesai)')
                     ->query(fn (Builder $q) => $q->withCount([
-                            'riwayatPesanan as pesanan_selesai_count' => fn ($q) =>
-                                $q->where('status', 'selesai'),
-                        ])->having('pesanan_selesai_count', '>=', 2)),
+                        'riwayatPesanan as pesanan_selesai_count' => fn ($q) => $q->where('status', 'selesai'),
+                    ])->having('pesanan_selesai_count', '>=', 2)),
 
                 Filter::make('belum_selesai')
                     ->label('Belum Pernah Order Selesai')
                     ->query(fn (Builder $q) => $q
-                        ->whereDoesntHave('riwayatPesanan', fn ($q) =>
-                            $q->where('status', 'selesai'))),
+                        ->whereDoesntHave('riwayatPesanan', fn ($q) => $q->where('status', 'selesai'))),
 
                 Filter::make('pasif')
                     ->label('Tidak Order > 3 Bulan')
                     ->query(fn (Builder $q) => $q
                         ->whereHas('riwayatPesanan')
                         ->where(function ($q) {
-                            $q->whereDoesntHave('riwayatPesanan', fn ($q) =>
-                                $q->where('created_at', '>=', now()->subMonths(3)))
-                              ->orWhereDoesntHave('riwayatPesanan');
+                            $q->whereDoesntHave('riwayatPesanan', fn ($q) => $q->where('created_at', '>=', now()->subMonths(3)))
+                                ->orWhereDoesntHave('riwayatPesanan');
                         })),
 
                 Filter::make('tanggal_daftar')
                     ->label('Tanggal Daftar')
                     ->form([
-                        \Filament\Forms\Components\DatePicker::make('dari')
+                        DatePicker::make('dari')
                             ->label('Dari Tanggal')
                             ->native(false),
-                        \Filament\Forms\Components\DatePicker::make('sampai')
+                        DatePicker::make('sampai')
                             ->label('Sampai Tanggal')
                             ->native(false),
                     ])
                     ->query(function (Builder $q, array $data) {
                         return $q
-                            ->when($data['dari'], fn ($q, $v) =>
-                                $q->whereDate('created_at', '>=', $v))
-                            ->when($data['sampai'], fn ($q, $v) =>
-                                $q->whereDate('created_at', '<=', $v));
+                            ->when($data['dari'], fn ($q, $v) => $q->whereDate('created_at', '>=', $v))
+                            ->when($data['sampai'], fn ($q, $v) => $q->whereDate('created_at', '<=', $v));
                     }),
             ])
             ->recordActions([

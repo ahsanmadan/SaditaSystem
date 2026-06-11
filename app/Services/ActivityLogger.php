@@ -3,6 +3,10 @@
 namespace App\Services;
 
 use App\Models\ActivityLog;
+use App\Models\Pembayaran;
+use App\Models\Pesanan;
+use App\Models\Produk;
+use App\Models\Ulasan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -27,12 +31,12 @@ class ActivityLogger
     ): void {
         try {
             ActivityLog::create([
-                'user_id'      => Auth::id(),
-                'action'       => $action,
+                'user_id' => Auth::id(),
+                'action' => $action,
                 'subject_type' => $subject ? get_class($subject) : null,
-                'subject_id'   => $subject?->getKey(),
-                'payload'      => empty($payload) ? null : $payload,
-                'ip_address'   => Request::ip(),
+                'subject_id' => $subject?->getKey(),
+                'payload' => empty($payload) ? null : $payload,
+                'ip_address' => Request::ip(),
             ]);
         } catch (\Throwable $e) {
             // Jangan crash aplikasi karena gagal log
@@ -43,49 +47,49 @@ class ActivityLogger
     // ─── Shortcut Methods ─────────────────────────────────────────────────────
 
     public static function verifikasiPembayaran(
-        \App\Models\Pembayaran $pembayaran,
+        Pembayaran $pembayaran,
         string $status,
         ?string $alasan = null
     ): void {
         self::log('verifikasi_pembayaran', $pembayaran, [
-            'kode_pesanan'  => $pembayaran->pesanan?->kode_pesanan,
-            'jumlah'        => $pembayaran->jumlah_dibayar,
-            'status_baru'   => $status,
-            'alasan'        => $alasan,
+            'kode_pesanan' => $pembayaran->pesanan?->kode_pesanan,
+            'jumlah' => $pembayaran->jumlah_dibayar,
+            'status_baru' => $status,
+            'alasan' => $alasan,
         ]);
     }
 
     public static function ubahStatusPesanan(
-        \App\Models\Pesanan $pesanan,
+        Pesanan $pesanan,
         string $statusLama,
         string $statusBaru
     ): void {
         self::log('ubah_status_pesanan', $pesanan, [
             'kode_pesanan' => $pesanan->kode_pesanan,
-            'status_lama'  => $statusLama,
-            'status_baru'  => $statusBaru,
+            'status_lama' => $statusLama,
+            'status_baru' => $statusBaru,
         ]);
     }
 
     public static function moderasiUlasan(
-        \App\Models\Ulasan $ulasan,
+        Ulasan $ulasan,
         bool $isTampil
     ): void {
         self::log('moderasi_ulasan', $ulasan, [
             'nama_pengulas' => $ulasan->nama_pengulas,
-            'produk_id'     => $ulasan->produk_id,
-            'rating'        => $ulasan->rating,
-            'is_tampil'     => $isTampil,
+            'produk_id' => $ulasan->produk_id,
+            'rating' => $ulasan->rating,
+            'is_tampil' => $isTampil,
         ]);
     }
 
     public static function editHargaProduk(
-        \App\Models\Produk $produk,
+        Produk $produk,
         int $hargaLama,
         int $hargaBaru
     ): void {
         self::log('edit_harga_produk', $produk, [
-            'nama'       => $produk->nama,
+            'nama' => $produk->nama,
             'harga_lama' => $hargaLama,
             'harga_baru' => $hargaBaru,
         ]);

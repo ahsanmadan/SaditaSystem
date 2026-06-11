@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Sadita')
             ->colors([
                 'primary' => Color::hex('#7A1F2B'),
-                'gray'    => Color::Zinc,
+                'gray' => Color::Zinc,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
