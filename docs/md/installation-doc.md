@@ -83,6 +83,12 @@ npm run dev
 composer run dev
 ```
 
+Jika admin panel terasa lambat setelah instalasi awal, jalankan juga:
+
+```bash
+composer run optimize-local
+```
+
 ## 7. Akses Aplikasi
 
 - web publik: `http://127.0.0.1:8000`
@@ -108,3 +114,24 @@ php artisan storage:link
 ```bash
 php artisan optimize:clear
 ```
+
+## Optimasi XAMPP / PHP untuk Admin Panel
+
+Kalau memakai XAMPP dan admin panel terasa berat, aktifkan OPcache di `php.ini`:
+
+```ini
+zend_extension=opcache
+opcache.enable=1
+opcache.enable_cli=1
+opcache.memory_consumption=256
+opcache.interned_strings_buffer=16
+opcache.max_accelerated_files=20000
+opcache.revalidate_freq=2
+```
+
+Setelah edit `php.ini`, restart Apache.
+
+Catatan tambahan:
+
+- repo ini mendukung SPA mode Filament lewat `FILAMENT_SPA_MODE=true`
+- jika ingin melihat panduan optimasi lebih lengkap, baca [performance doc](./performance-doc.md)

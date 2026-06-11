@@ -3,16 +3,10 @@
 namespace App\Observers;
 
 use App\Models\PengeluaranPesanan;
-use App\Services\Analytics\DashboardKpiService;
-use Illuminate\Support\Facades\Cache;
+use App\Support\DashboardCache;
 
 class PengeluaranPesananObserver
 {
-    private array $cacheKeys = [
-        DashboardKpiService::OVERVIEW_CACHE_KEY,
-        'dashboard_chart_omzet_30_hari',
-    ];
-
     public function created(PengeluaranPesanan $pengeluaran): void
     {
         $this->invalidateCache("Pengeluaran baru #{$pengeluaran->id} pesanan={$pengeluaran->pesanan_id}");
@@ -30,10 +24,8 @@ class PengeluaranPesananObserver
 
     private function invalidateCache(string $reason): void
     {
-        foreach ($this->cacheKeys as $key) {
-            Cache::forget($key);
-        }
+        DashboardCache::forgetAll();
 
-        \Log::info("[CacheInvalidation] {$reason} → cache gross profit di-reset.");
+        \Log::info("[CacheInvalidation] {$reason} -> cache gross profit di-reset.");
     }
 }

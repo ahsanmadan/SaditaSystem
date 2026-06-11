@@ -19,6 +19,7 @@ class PembayaransTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->query(
                 Pembayaran::query()->with(['pesanan.pelanggan', 'verifikator'])->latest()
             )

@@ -106,6 +106,7 @@ Catatan: akun ini hanya untuk development lokal. Ganti untuk environment lain.
 - [dependency doc](./docs/md/dependency-doc.md)
 - [refactoring doc](./docs/md/refactoring-doc.md)
 - [github action doc](./docs/md/github-action-doc.md)
+- [performance doc](./docs/md/performance-doc.md)
 
 ## Screenshot Project
 
@@ -123,6 +124,7 @@ Catatan: akun ini hanya untuk development lokal. Ganti untuk environment lain.
 - pelanggan tidak diwajibkan login
 - scope project tidak mencakup florist / buket
 - tracking pesanan masih dikembangkan bertahap setelah create-order flow stabil
+- untuk optimasi lokal admin panel, jalankan `composer run optimize-local`
 
 ## Deployment
 

@@ -20,6 +20,7 @@ class UlasansTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->query(
                 Ulasan::query()->with(['produk:id,nama', 'pesanan:id,kode_pesanan'])
             )

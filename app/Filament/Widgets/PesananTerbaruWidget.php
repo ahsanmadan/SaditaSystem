@@ -3,10 +3,12 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Pesanan;
+use App\Support\DashboardCache;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Support\Facades\Cache;
 
 class PesananTerbaruWidget extends BaseWidget
 {
@@ -21,11 +23,20 @@ class PesananTerbaruWidget extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
+            ->deferLoading()
             ->query(
                 Pesanan::query()
+                    ->whereKey(
+                        Cache::remember(DashboardCache::RECENT_ORDER_IDS, 60 * 3, function () {
+                            return Pesanan::query()
+                                ->latest()
+                                ->limit(5)
+                                ->pluck('id')
+                                ->all();
+                        })
+                    )
                     ->with('pelanggan')
                     ->latest()
-                    ->limit(5)
             )
             ->columns([
                 TextColumn::make('id')

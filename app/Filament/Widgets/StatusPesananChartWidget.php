@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Pesanan;
+use App\Support\DashboardCache;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ class StatusPesananChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        return Cache::remember('dashboard_chart_status_pesanan', 60 * 10, function () {
+        return Cache::remember(DashboardCache::STATUS_PESANAN_CHART, 60 * 10, function () {
             $statuses = Pesanan::select('status', DB::raw('COUNT(*) as total'))
                 ->groupBy('status')
                 ->pluck('total', 'status')
