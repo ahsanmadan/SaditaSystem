@@ -5,7 +5,8 @@
         $productName = request('product', 'Sadita Exclusive Product');
         $productPrice = request('price', 'Rp 0');
         $productImg = request('img', '/images/dekorasi-1.jpg');
-        // Convert 'Rp 150.000' to just '150.000' or similar if needed, or just display as is.
+        // Convert 'Rp 150.000' to clean integer
+        $rawPrice = (int) preg_replace('/[^0-9]/', '', $productPrice);
     @endphp
 
     <div class="min-h-screen bg-white mt-8 md:h-[100svh] flex flex-col md:flex-row pt-[72px] font-sans">
@@ -35,7 +36,12 @@
             <div class="border-t border-gray-200 pt-6 mt-auto">
                 <div class="flex justify-between items-center mb-3">
                     <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Subtotal</span>
-                    <span class="text-xs font-bold text-[#2D1E1E] uppercase">{{ $productPrice }}</span>
+                    <span class="text-xs font-bold text-[#2D1E1E] uppercase" id="displaySubtotal">{{ $productPrice }}</span>
+                </div>
+                <!-- Discount Row -->
+                <div class="flex justify-between items-center mb-3 hidden text-[#7A1F2B]" id="discountRow">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Diskon (<span id="displayDiscountCode"></span>)</span>
+                    <span class="text-xs font-bold uppercase" id="displayDiscountAmount">- Rp 0</span>
                 </div>
                 <div class="flex justify-between items-center mb-6">
                     <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Pengiriman</span>
@@ -43,7 +49,7 @@
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm font-bold text-[#2D1E1E] uppercase tracking-wider">Total</span>
-                    <span class="text-base font-bold text-[#2D1E1E] uppercase">{{ $productPrice }}</span>
+                    <span class="text-base font-bold text-[#2D1E1E] uppercase" id="displayTotal">{{ $productPrice }}</span>
                 </div>
             </div>
         </div>
@@ -54,8 +60,11 @@
                 class="p-6 md:p-12 lg:p-16 max-w-xl mx-auto min-h-full flex flex-col pb-24 md:pb-16">
                 @csrf
 
-                <!-- Hidden input for WhatsApp text generation -->
+                <!-- Hidden inputs for order details -->
                 <input type="hidden" name="text" id="waText" value="">
+                <input type="hidden" name="diskon_id" id="hiddenDiskonId" value="">
+                <input type="hidden" name="kode_diskon" id="hiddenPromoCode" value="">
+                <input type="hidden" name="potongan_diskon" id="hiddenDiscountAmount" value="0">
 
                 <!-- 01 Informasi Pengirim -->
                 <div class="mb-10">
@@ -112,7 +121,7 @@
                 </div>
 
                 <!-- 03 Personalisasi & Jadwal -->
-                <div class="mb-10 flex-1">
+                <div class="mb-10">
                     <div class="flex items-center gap-3 mb-6">
                         <span class="bg-black text-white text-[10px] font-bold px-2 py-1 tracking-widest">03</span>
                         <h3 class="text-xs font-bold text-[#2D1E1E] uppercase tracking-[0.2em]">Personalisasi & Jadwal</h3>
@@ -159,6 +168,29 @@
                     </div>
                 </div>
 
+                <!-- 04 Kode Promo / Diskon -->
+                <div class="mb-10 flex-1">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="bg-black text-white text-[10px] font-bold px-2 py-1 tracking-widest">04</span>
+                        <h3 class="text-xs font-bold text-[#2D1E1E] uppercase tracking-[0.2em]">Kode Promo (Opsional)</h3>
+                    </div>
+
+                    <div class="flex gap-4 items-end">
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-semibold text-gray-500 uppercase tracking-widest mb-2">Masukkan Kode Promo</label>
+                            <input type="text" id="promoCodeInput"
+                                class="w-full bg-transparent border-b border-gray-300 px-0 py-2 text-sm text-[#2D1E1E] focus:outline-none focus:border-black transition-colors uppercase"
+                                placeholder="Contoh: SADITA10">
+                        </div>
+                        <button type="button" id="applyPromoBtn"
+                            class="px-5 py-2.5 bg-[#2D1E1E] text-white text-xs font-bold uppercase tracking-widest rounded-xl hover:bg-black transition-all duration-300">
+                            Terapkan
+                        </button>
+                    </div>
+                    <p class="text-xs mt-2 text-red-600 hidden font-semibold" id="promoError"></p>
+                    <p class="text-xs mt-2 text-green-600 hidden font-semibold" id="promoSuccess"></p>
+                </div>
+
                 <!-- Submit Button -->
                 <div class="mt-auto pt-6">
                     <button type="submit"
@@ -180,10 +212,134 @@
     </div>
 
     <script>
+        // Discount check & apply script
+        const rawPrice = {{ $rawPrice }};
+        let currentDiscount = 0;
+        let appliedCode = '';
+        let appliedId = null;
+
+        const promoCodeInput = document.getElementById('promoCodeInput');
+        const applyPromoBtn = document.getElementById('applyPromoBtn');
+        const promoError = document.getElementById('promoError');
+        const promoSuccess = document.getElementById('promoSuccess');
+
+        const discountRow = document.getElementById('discountRow');
+        const displayDiscountCode = document.getElementById('displayDiscountCode');
+        const displayDiscountAmount = document.getElementById('displayDiscountAmount');
+        const displayTotal = document.getElementById('displayTotal');
+
+        const hiddenDiskonId = document.getElementById('hiddenDiskonId');
+        const hiddenPromoCode = document.getElementById('hiddenPromoCode');
+        const hiddenDiscountAmount = document.getElementById('hiddenDiscountAmount');
+
+        applyPromoBtn.addEventListener('click', function() {
+            if (appliedCode) {
+                removePromo();
+                return;
+            }
+
+            const code = promoCodeInput.value.trim();
+            if (!code) {
+                showError('Silakan masukkan kode promo terlebih dahulu.');
+                return;
+            }
+
+            applyPromoBtn.disabled = true;
+            applyPromoBtn.innerText = 'Memproses...';
+            
+            fetch('{{ route('discount.apply') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    code: code,
+                    subtotal: rawPrice
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server error');
+                }
+                return response.json();
+            })
+            .then(data => {
+                applyPromoBtn.disabled = false;
+                if (data.success) {
+                    applyPromo(data);
+                } else {
+                    showError(data.message);
+                }
+            })
+            .catch(error => {
+                applyPromoBtn.disabled = false;
+                showError('Terjadi kesalahan koneksi. Silakan coba lagi.');
+                console.error(error);
+            });
+        });
+
+        function applyPromo(data) {
+            appliedCode = data.kode;
+            appliedId = data.id;
+            currentDiscount = data.potongan;
+
+            // Update display summary
+            displayDiscountCode.innerText = data.kode;
+            displayDiscountAmount.innerText = '- ' + data.formatted_potongan;
+            discountRow.classList.remove('hidden');
+            displayTotal.innerText = data.formatted_grand_total;
+
+            // Update hidden inputs
+            hiddenDiskonId.value = data.id;
+            hiddenPromoCode.value = data.kode;
+            hiddenDiscountAmount.value = data.potongan;
+
+            // Update input and button state
+            promoCodeInput.disabled = true;
+            applyPromoBtn.innerText = 'Hapus';
+            applyPromoBtn.classList.remove('bg-[#2D1E1E]', 'hover:bg-black');
+            applyPromoBtn.classList.add('bg-[#7A1F2B]', 'hover:bg-[#5e1721]');
+            
+            promoError.classList.add('hidden');
+            promoSuccess.innerText = `Kode promo "${data.kode}" berhasil diterapkan. Potongan: ${data.formatted_potongan}`;
+            promoSuccess.classList.remove('hidden');
+        }
+
+        function removePromo() {
+            appliedCode = '';
+            appliedId = null;
+            currentDiscount = 0;
+
+            // Reset display summary
+            discountRow.classList.add('hidden');
+            displayTotal.innerText = '{{ $productPrice }}';
+
+            // Reset hidden inputs
+            hiddenDiskonId.value = '';
+            hiddenPromoCode.value = '';
+            hiddenDiscountAmount.value = '0';
+
+            // Reset input and button state
+            promoCodeInput.value = '';
+            promoCodeInput.disabled = false;
+            applyPromoBtn.innerText = 'Terapkan';
+            applyPromoBtn.classList.remove('bg-[#7A1F2B]', 'hover:bg-[#5e1721]');
+            applyPromoBtn.classList.add('bg-[#2D1E1E]', 'hover:bg-black');
+
+            promoSuccess.classList.add('hidden');
+            promoError.classList.add('hidden');
+        }
+
+        function showError(msg) {
+            promoSuccess.classList.add('hidden');
+            promoError.innerText = msg;
+            promoError.classList.remove('hidden');
+        }
+
+        // Original submit behavior
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
-            // Payment gateway flow will go here later
             alert('Akan diteruskan ke sistem Payment Gateway & Database. (Alur masih dalam tahap pengembangan)');
         });
     </script>

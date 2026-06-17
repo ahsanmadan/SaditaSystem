@@ -51,5 +51,26 @@ class MasterSeeder extends Seeder {
                 ]);
             }
         }
+
+        // Seed some demo discounts
+        \App\Models\Diskon::create([
+            'kode' => 'SADITA10',
+            'nama' => 'Diskon Grand Opening 10%',
+            'tipe' => 'persen',
+            'nilai' => 10,
+            'minimal_pembelian' => 100000,
+            'kuota' => 100,
+            'is_aktif' => true,
+        ]);
+
+        \App\Models\Diskon::create([
+            'kode' => 'CASHBACK50K',
+            'nama' => 'Potongan Langsung 50 Ribu',
+            'tipe' => 'nominal',
+            'nilai' => 50000,
+            'minimal_pembelian' => 300000,
+            'kuota' => 50,
+            'is_aktif' => true,
+        ]);
     }
 }

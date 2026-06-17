@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Ulasans\Tables;
 
 use App\Models\Ulasan;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -24,14 +24,17 @@ class UlasansTable
                 Ulasan::query()->with(['produk:id,nama', 'pesanan:id,kode_pesanan'])
             )
             ->columns([
-                // Rating visual bintang
                 TextColumn::make('rating')
                     ->label('Rating')
-                    ->formatStateUsing(fn ($state) => str_repeat('★', $state) . str_repeat('☆', 5 - $state))
+                    ->formatStateUsing(function ($state): string {
+                        $rating = max(0, min(5, (int) $state));
+
+                        return str_repeat('*', $rating) . str_repeat('-', 5 - $rating) . " ({$rating}/5)";
+                    })
                     ->color(fn ($state) => match (true) {
-                        $state >= 4 => 'success',
-                        $state === 3 => 'warning',
-                        default      => 'danger',
+                        (int) $state >= 4 => 'success',
+                        (int) $state === 3 => 'warning',
+                        default => 'danger',
                     })
                     ->sortable(),
 
@@ -87,11 +90,11 @@ class UlasansTable
                 SelectFilter::make('rating')
                     ->label('Rating')
                     ->options([
-                        '5' => '★★★★★ (5)',
-                        '4' => '★★★★☆ (4)',
-                        '3' => '★★★☆☆ (3)',
-                        '2' => '★★☆☆☆ (2)',
-                        '1' => '★☆☆☆☆ (1)',
+                        '5' => '5 bintang',
+                        '4' => '4 bintang',
+                        '3' => '3 bintang',
+                        '2' => '2 bintang',
+                        '1' => '1 bintang',
                     ]),
 
                 Filter::make('tampil')
@@ -107,9 +110,8 @@ class UlasansTable
                     ->query(fn (Builder $q) => $q->whereNotNull('foto_ulasan')),
             ])
             ->recordActions([
-                // Toggle tampil/sembunyikan — 1 klik
                 Action::make('toggle_tampil')
-                    ->label(fn (Ulasan $record) => $record->is_tampil ? '👁 Sembunyikan' : '✓ Tampilkan')
+                    ->label(fn (Ulasan $record) => $record->is_tampil ? 'Sembunyikan' : 'Tampilkan')
                     ->color(fn (Ulasan $record) => $record->is_tampil ? 'danger' : 'success')
                     ->icon(fn (Ulasan $record) => $record->is_tampil
                         ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
@@ -120,7 +122,7 @@ class UlasansTable
                         ? 'Ulasan tidak akan terlihat di halaman publik.'
                         : 'Ulasan akan tampil kembali di halaman publik.')
                     ->action(fn (Ulasan $record) => $record->update([
-                        'is_tampil' => !$record->is_tampil,
+                        'is_tampil' => ! $record->is_tampil,
                     ])),
             ])
             ->toolbarActions([

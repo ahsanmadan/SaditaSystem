@@ -28,9 +28,25 @@ class Pesanan extends Model
         'waktu_selesai' => 'datetime',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->kode_pesanan)) {
+                $model->kode_pesanan = 'ORD-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(5));
+            }
+        });
+    }
+
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'pelanggan_id', 'id');
+    }
+
+    public function diskon()
+    {
+        return $this->belongsTo(Diskon::class, 'diskon_id', 'id');
     }
 
     public function detailItems()
