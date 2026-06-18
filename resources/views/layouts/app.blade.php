@@ -81,10 +81,11 @@
                 const navbar = document.getElementById('main-navbar');
                 const hamburgerBtn = document.getElementById('hamburger-btn');
                 const mobileMenu = document.getElementById('mobile-menu');
+                const navbarAlwaysSolid = navbar.classList.contains('navbar-solid');
                 let menuOpen = false;
 
                 function updateNavbar() {
-                    if (window.scrollY > 50) {
+                    if (navbarAlwaysSolid || window.scrollY > 50) {
                         navbar.classList.add('navbar-scrolled');
                     } else {
                         navbar.classList.remove('navbar-scrolled');

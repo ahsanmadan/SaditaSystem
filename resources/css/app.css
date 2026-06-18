@@ -126,34 +126,47 @@ h3 {
     box-shadow: 0 1px 0 rgba(122, 31, 43, 0.08), 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
-#main-navbar.navbar-scrolled .navbar-logo {
+#main-navbar.navbar-solid {
+    background: rgba(255, 253, 251, 0.97);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 1px 0 rgba(122, 31, 43, 0.08), 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+#main-navbar.navbar-scrolled .navbar-logo,
+#main-navbar.navbar-solid .navbar-logo {
     color: #7A1F2B;
     text-shadow: none;
 }
 
-#main-navbar.navbar-scrolled .nav-link {
+#main-navbar.navbar-scrolled .nav-link,
+#main-navbar.navbar-solid .nav-link {
     color: #52403A;
 }
 
-#main-navbar.navbar-scrolled .nav-link:hover {
+#main-navbar.navbar-scrolled .nav-link:hover,
+#main-navbar.navbar-solid .nav-link:hover {
     color: #7A1F2B;
 }
 
-#main-navbar.navbar-scrolled .nav-link::after {
+#main-navbar.navbar-scrolled .nav-link::after,
+#main-navbar.navbar-solid .nav-link::after {
     background: #7A1F2B;
 }
 
-#main-navbar.navbar-scrolled .nav-cta-btn {
+#main-navbar.navbar-scrolled .nav-cta-btn,
+#main-navbar.navbar-solid .nav-cta-btn {
     background: #7A1F2B;
     color: #fff;
     border-color: #7A1F2B;
 }
 
-#main-navbar.navbar-scrolled .nav-cta-btn:hover {
+#main-navbar.navbar-scrolled .nav-cta-btn:hover,
+#main-navbar.navbar-solid .nav-cta-btn:hover {
     background: #5e1721;
 }
 
-#main-navbar.navbar-scrolled .hamburger-line {
+#main-navbar.navbar-scrolled .hamburger-line,
+#main-navbar.navbar-solid .hamburger-line {
     background: #7A1F2B;
 }
 
