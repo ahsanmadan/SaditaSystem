@@ -155,21 +155,21 @@
                             'Mulai Rp 85rb',
                             'Standing board & mirror elegan untuk momen berharga',
                             '/images/cat-papan-ucapan.jpg',
-                            '#greeting-board',
+                            '#kategori-papan-ucapan',
                         ],
                         [
                             'Hantaran',
                             'Mulai Rp 30rb',
                             'Seserahan & gift box premium dengan detail cantik',
                             '/images/cat-hantaran.jpg',
-                            '#hantaran',
+                            '#kategori-hantaran',
                         ],
                         [
                             'Dekorasi',
                             'Mulai Rp 500rb',
                             'Wujudkan dekorasi impian untuk hari bahagia Anda',
                             '/images/cat-dekorasi.jpg',
-                            '#dekorasi',
+                            '#kategori-dekorasi',
                         ],
                     ];
                 @endphp
@@ -270,8 +270,14 @@
                                 <div
                                     class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                 </div>
-                                <span
-                                    class="absolute top-2 left-2 z-10 px-2.5 py-0.5 bg-white/95 backdrop-blur-sm text-[#7A1F2B] text-[9px] sm:text-[10px] font-bold rounded-full shadow-sm">{{ $kategori->nama }}</span>
+                                <div class="absolute top-2 left-2 z-10 flex gap-1 flex-wrap">
+                                    <span
+                                        class="px-2.5 py-0.5 bg-white/95 backdrop-blur-sm text-[#7A1F2B] text-[9px] sm:text-[10px] font-bold rounded-full shadow-sm">{{ $kategori->nama }}</span>
+                                    <span
+                                        class="px-2 py-0.5 bg-[#7A1F2B]/95 backdrop-blur-sm text-[#E8C87A] text-[9px] sm:text-[10px] font-bold rounded-full shadow-sm">
+                                        {{ $produk->is_sewa ? 'Sewa' : 'Jasa' }}
+                                    </span>
+                                </div>
                             </div>
                             <div class="p-3 sm:p-4 flex flex-col flex-1 bg-white relative z-10">
                                 <div class="flex text-[#C9A84C] text-[10px] mb-1 tracking-widest">
