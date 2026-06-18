@@ -121,6 +121,7 @@ Catatan: akun ini hanya untuk development lokal. Ganti untuk environment lain.
 ## Catatan Pengembangan
 
 - database utama untuk perilaku lokal dan production adalah MySQL / MariaDB
+- default session dan cache yang direkomendasikan untuk tim adalah `database`
 - pelanggan tidak diwajibkan login
 - scope project tidak mencakup florist / buket
 - tracking pesanan masih dikembangkan bertahap setelah create-order flow stabil

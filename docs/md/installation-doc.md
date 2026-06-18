@@ -54,6 +54,9 @@ DB_PORT=3306
 DB_DATABASE=sadita_system
 DB_USERNAME=root
 DB_PASSWORD=
+SESSION_DRIVER=database
+CACHE_STORE=database
+FILAMENT_SPA_MODE=true
 ```
 
 ## 5. Jalankan Migration
@@ -67,6 +70,8 @@ Jika ingin mengisi data awal:
 ```bash
 php artisan db:seed
 ```
+
+Pastikan juga tabel `sessions` dan `cache` sudah ikut termigrate karena keduanya dipakai sebagai mode default yang direkomendasikan untuk tim.
 
 ## 6. Jalankan Project
 
@@ -102,6 +107,8 @@ composer run optimize-local
 ## Catatan Penting
 
 - untuk local development tim, database utama project ini adalah MySQL / MariaDB
+- mode yang direkomendasikan untuk session dan cache adalah `database`
+- mode `file` hanya dipakai sementara jika tabel `sessions` atau `cache` belum siap
 - jika memakai XAMPP, pastikan Apache dan MySQL berjalan
 - jika ada masalah akses asset upload, jalankan:
 
@@ -134,4 +141,5 @@ Setelah edit `php.ini`, restart Apache.
 Catatan tambahan:
 
 - repo ini mendukung SPA mode Filament lewat `FILAMENT_SPA_MODE=true`
+- setelah migration, cek bahwa tabel `sessions` dan `cache` memang ada
 - jika ingin melihat panduan optimasi lebih lengkap, baca [performance doc](./performance-doc.md)

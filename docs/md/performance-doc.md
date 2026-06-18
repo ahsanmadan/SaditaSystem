@@ -12,6 +12,7 @@ Dokumen ini merangkum langkah optimasi lokal yang paling relevan untuk SaditaSys
   - bootstrap Laravel + Filament berat di Windows
   - cache Laravel belum dipanaskan
   - OPcache PHP belum aktif
+  - session file locking jika `SESSION_DRIVER=file`
   - perpindahan menu admin masih full reload jika SPA mode belum aktif
 
 ## optimasi yang sudah diterapkan di repo
@@ -20,6 +21,9 @@ Dokumen ini merangkum langkah optimasi lokal yang paling relevan untuk SaditaSys
 - widget info bawaan Filament dihapus dari dashboard agar beban awal lebih ringan
 - tabel resource utama memakai `deferLoading()`
 - cache key dashboard dirapikan agar invalidasi konsisten
+- mode default yang direkomendasikan untuk tim adalah:
+  - `SESSION_DRIVER=database`
+  - `CACHE_STORE=database`
 - tersedia script:
 
 ```bash
@@ -37,7 +41,27 @@ php artisan view:cache
 
 ## langkah yang wajib dilakukan di lokal
 
-### 1. panaskan cache Laravel
+### 1. pastikan session dan cache memakai database
+
+Untuk tim, gunakan mode default berikut:
+
+```env
+SESSION_DRIVER=database
+CACHE_STORE=database
+FILAMENT_SPA_MODE=true
+```
+
+Mode `file` hanya dipakai sementara untuk debugging lokal jika tabel `sessions` atau `cache` belum siap. Jangan jadikan itu default tim karena bisa memicu session file locking pada request Livewire admin.
+
+### 2. jalankan migration dan verifikasi tabel
+
+```bash
+php artisan migrate
+```
+
+Verifikasi bahwa tabel `sessions` dan `cache` sudah tersedia di database lokal.
+
+### 3. panaskan cache Laravel
 
 ```bash
 composer run optimize-local
@@ -49,7 +73,7 @@ Jika sedang debugging perubahan route/config/view, bersihkan dulu:
 php artisan optimize:clear
 ```
 
-### 2. aktifkan OPcache di XAMPP / PHP
+### 4. aktifkan OPcache di XAMPP / PHP
 
 Cari file `php.ini`, lalu pastikan konfigurasi berikut aktif:
 
@@ -69,7 +93,7 @@ Catatan:
 - kalau `zend_extension=opcache` sudah ada tapi dikomentari, cukup hapus `;`
 - di beberapa instalasi XAMPP, OPcache sudah tersedia tapi belum aktif
 
-### 3. cek mode SPA Filament
+### 5. cek mode SPA Filament
 
 Secara default repo sekarang memakai:
 
@@ -113,8 +137,19 @@ php artisan optimize:clear
 
 ## urutan optimasi yang disarankan untuk tim
 
-1. jalankan `composer run optimize-local`
-2. aktifkan OPcache dan restart Apache
-3. pastikan `FILAMENT_SPA_MODE=true`
-4. baru ukur ulang login -> dashboard -> menu resource
-5. jika masih lambat, profiling query SQL dan response time per resource
+1. pakai `SESSION_DRIVER=database` dan `CACHE_STORE=database`
+2. jalankan `php artisan migrate`
+3. jalankan `composer run optimize-local`
+4. aktifkan OPcache dan restart Apache
+5. pastikan `FILAMENT_SPA_MODE=true`
+6. baru ukur ulang login -> dashboard -> menu resource
+7. jika masih lambat, profiling query SQL dan response time per resource
+
+## analisis singkat pasca QA
+
+- bottleneck kode yang sudah berhasil ditekan:
+  - full reload antar menu admin
+  - eager table load pada resource utama
+- bottleneck environment yang tetap harus dihindari:
+  - session file locking di Windows/XAMPP saat `SESSION_DRIVER=file`
+  - OPcache belum aktif
