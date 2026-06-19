@@ -43,17 +43,41 @@ class KodePromosTable
 
                 TextColumn::make('kuota_info')
                     ->label('Dipakai / Kuota')
-                    ->state(fn ($record) => $record->dipakai.' / '.($record->kuota ?? '∞')),
+                    ->state(fn ($record) => $record->dipakai.' / '.($record->kuota ?? 'Tak terbatas')),
+
+                TextColumn::make('status_promo')
+                    ->label('Status')
+                    ->badge()
+                    ->state(function ($record) {
+                        return match (true) {
+                            ! $record->is_aktif => 'Nonaktif',
+                            $record->isExpired() => 'Expired',
+                            $record->isNotStarted() => 'Belum mulai',
+                            $record->isQuotaExceeded() => 'Kuota habis',
+                            default => 'Aktif',
+                        };
+                    })
+                    ->color(function ($record) {
+                        return match (true) {
+                            $record->isExpired() => 'danger',
+                            ! $record->is_aktif => 'gray',
+                            $record->isNotStarted() => 'warning',
+                            $record->isQuotaExceeded() => 'warning',
+                            default => 'success',
+                        };
+                    }),
 
                 TextColumn::make('tanggal_berakhir')
                     ->label('Berakhir')
                     ->date('d M Y')
                     ->placeholder('Tidak dibatasi')
-                    ->color(fn ($record) => $record->isExpired() ? 'danger' : null),
+                    ->color(fn ($record) => $record->isExpired() ? 'danger' : null)
+                    ->description(fn ($record) => $record->isExpired() ? 'Masa berlaku sudah lewat' : null),
 
                 IconColumn::make('is_aktif')
                     ->label('Aktif')
-                    ->boolean(),
+                    ->boolean()
+                    ->state(fn ($record) => $record->is_aktif && ! $record->isExpired()),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
