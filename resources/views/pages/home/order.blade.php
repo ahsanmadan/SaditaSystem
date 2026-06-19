@@ -190,6 +190,37 @@
                             </div>
                         </section>
 
+                        <section class="rounded-[28px] border border-[#7A1F2B]/10 bg-white p-6 md:p-8 shadow-sm">
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#7A1F2B] text-sm font-bold text-white shadow-[0_10px_24px_rgba(122,31,43,0.24)]">
+                                    4
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-[#2D1E1E]"
+                                        style="font-family: 'Playfair Display', serif;">
+                                        Kode promo
+                                    </h2>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 space-y-3">
+                                <div>
+                                    <label class="mb-2 block text-sm font-semibold text-[#2D1E1E]">
+                                        Masukkan kode promo
+                                    </label>
+                                    <input type="text" id="promoCode" name="promo_code"
+                                        value="{{ old('promo_code') }}"
+                                        class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm uppercase tracking-[0.2em] text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all"
+                                        placeholder="Contoh: SADITA10">
+                                </div>
+
+                                @error('promo_code')
+                                    <p class="text-sm font-semibold text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </section>
+
                         <section class="rounded-[28px] border border-[#7A1F2B]/10 bg-[#2D1E1E] p-6 md:p-8 text-white shadow-[0_24px_50px_rgba(45,30,30,0.18)]">
                             <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                 <div>

@@ -46,6 +46,18 @@ class PesananForm
                             ->numeric()
                             ->prefix('Rp'),
 
+                        TextInput::make('kode_promo_snapshot')
+                            ->label('Kode Promo')
+                            ->disabled()
+                            ->dehydrated(false),
+
+                        TextInput::make('diskon')
+                            ->label('Diskon (Rp)')
+                            ->numeric()
+                            ->prefix('Rp')
+                            ->disabled()
+                            ->dehydrated(false),
+
                         TextInput::make('grand_total')
                             ->label('Grand Total (Rp)')
                             ->numeric()

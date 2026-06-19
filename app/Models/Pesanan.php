@@ -28,6 +28,11 @@ class Pesanan extends Model
         'waktu_selesai' => 'datetime',
     ];
 
+    public function kodePromo()
+    {
+        return $this->belongsTo(KodePromo::class, 'kode_promo_id', 'id');
+    }
+
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'pelanggan_id', 'id');
