@@ -30,3 +30,6 @@ Thumbs.db
 /skills
 /scratch
 /docs
+/.agents
+/.codex
+skills-lock.json

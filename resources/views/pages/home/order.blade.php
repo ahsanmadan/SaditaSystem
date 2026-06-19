@@ -11,7 +11,7 @@
     <div class="bg-[#FFFDFB] pt-[108px] pb-16 md:pb-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
-                <div class="min-w-0">
+                <div class="order-2 min-w-0 xl:order-1">
                     <a href="/#kategori"
                         class="inline-flex items-center gap-2 text-sm font-semibold text-[#7A1F2B]/70 hover:text-[#7A1F2B] transition-colors group">
                         <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none"
@@ -23,54 +23,25 @@
                     </a>
 
                     <div class="mt-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                        <div class="max-w-2xl">
-                            <div
-                                class="inline-flex items-center gap-2 rounded-full bg-[#7A1F2B]/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#7A1F2B]">
-                                Checkout Sadita
-                            </div>
+                        <div class="max-w-xl">
                             <h1 class="mt-4 text-4xl md:text-5xl font-bold leading-[1.05] text-[#2D1E1E]"
                                 style="font-family: 'Playfair Display', serif;">
                                 Isi detail pesanan tanpa ribet.
                             </h1>
-                            <p class="mt-4 max-w-xl text-sm md:text-base leading-7 text-[#6B625F]">
-                                Kami pecah form ini jadi 3 langkah singkat supaya Anda lebih cepat selesai. Setelah dikirim,
-                                tim Sadita akan konfirmasi pesanan dan pembayaran melalui WhatsApp.
-                            </p>
                         </div>
 
                         <div
-                            class="rounded-2xl border border-green-200 bg-white px-4 py-3 text-sm text-[#3F4A43] shadow-sm lg:min-w-[320px]">
+                            class="rounded-2xl border border-green-200 bg-white px-4 py-3 text-sm text-[#3F4A43] shadow-sm lg:min-w-[300px]">
                             <div class="flex items-start gap-3">
                                 <span class="mt-1 inline-flex h-3 w-3 rounded-full bg-green-500 shadow-[0_0_0_4px_rgba(34,197,94,0.15)]"></span>
                                 <div>
                                     <div class="font-semibold text-[#2D1E1E]">Slot pemesanan tersedia</div>
-                                    <p class="mt-1 text-[13px] leading-6 text-[#6B625F]">
-                                        Pengiriman masih bisa diproses. Isi data sekarang agar tim bisa cepat follow up.
-                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-8 grid gap-3 sm:grid-cols-3">
-                        <div class="rounded-2xl border border-[#7A1F2B]/10 bg-white px-4 py-4 shadow-sm">
-                            <div class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#7A1F2B]/70">Langkah 1</div>
-                            <div class="mt-2 text-sm font-semibold text-[#2D1E1E]">Data pemesan</div>
-                            <p class="mt-1 text-xs leading-5 text-[#7A726F]">Nama dan WhatsApp untuk konfirmasi order.</p>
-                        </div>
-                        <div class="rounded-2xl border border-[#7A1F2B]/10 bg-white px-4 py-4 shadow-sm">
-                            <div class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#7A1F2B]/70">Langkah 2</div>
-                            <div class="mt-2 text-sm font-semibold text-[#2D1E1E]">Tujuan kirim</div>
-                            <p class="mt-1 text-xs leading-5 text-[#7A726F]">Pastikan penerima dan alamat mudah ditemukan.</p>
-                        </div>
-                        <div class="rounded-2xl border border-[#7A1F2B]/10 bg-white px-4 py-4 shadow-sm">
-                            <div class="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#7A1F2B]/70">Langkah 3</div>
-                            <div class="mt-2 text-sm font-semibold text-[#2D1E1E]">Jadwal & catatan</div>
-                            <p class="mt-1 text-xs leading-5 text-[#7A726F]">Tentukan waktu kirim dan pesan yang ingin ditulis.</p>
-                        </div>
-                    </div>
-
-                    <form action="{{ route('order.store') }}" method="POST" id="orderForm" class="mt-8 space-y-6">
+                    <form action="{{ route('order.store') }}" method="POST" id="orderForm" class="mt-6 space-y-6">
                         @csrf
                         <input type="hidden" name="product_name" value="{{ $productName }}">
                         <input type="hidden" name="price" value="{{ $productPrice }}">
@@ -88,9 +59,6 @@
                                             style="font-family: 'Playfair Display', serif;">
                                             Informasi pemesan
                                         </h2>
-                                        <p class="mt-1 text-sm leading-6 text-[#7A726F]">
-                                            Data ini dipakai tim Sadita untuk menghubungi Anda jika ada konfirmasi detail atau revisi pesanan.
-                                        </p>
                                     </div>
                                 </div>
                                 <div class="rounded-full bg-[#FAF5F0] px-3 py-1 text-[11px] font-semibold text-[#7A1F2B]">
@@ -119,7 +87,6 @@
                                             class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] py-3.5 pl-12 pr-4 text-sm text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all"
                                             placeholder="81234567890">
                                     </div>
-                                    <p class="mt-2 text-xs text-[#8A807B]">Gunakan nomor aktif agar konfirmasi tidak tertunda.</p>
                                 </div>
                             </div>
                         </section>
@@ -135,9 +102,6 @@
                                         style="font-family: 'Playfair Display', serif;">
                                         Tujuan pengiriman
                                     </h2>
-                                    <p class="mt-1 text-sm leading-6 text-[#7A726F]">
-                                        Isi data penerima dan alamat sedetail mungkin supaya kurir tidak kesulitan saat antar.
-                                    </p>
                                 </div>
                             </div>
 
@@ -168,9 +132,6 @@
                                 <textarea id="address" name="address" required rows="4"
                                     class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm leading-6 text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all resize-none"
                                     placeholder="Tuliskan alamat lengkap, nama gedung/jalan, patokan lokasi, dan catatan akses jika perlu."></textarea>
-                                <p class="mt-2 text-xs text-[#8A807B]">
-                                    Semakin detail alamatnya, semakin kecil risiko kurir salah lokasi atau telat antar.
-                                </p>
                             </div>
                         </section>
 
@@ -185,9 +146,6 @@
                                         style="font-family: 'Playfair Display', serif;">
                                         Jadwal dan personalisasi
                                     </h2>
-                                    <p class="mt-1 text-sm leading-6 text-[#7A726F]">
-                                        Pilih waktu pengiriman yang paling aman dan tambahkan isi pesan supaya produk terasa lebih personal.
-                                    </p>
                                 </div>
                             </div>
 
@@ -239,11 +197,8 @@
                                         Langkah terakhir
                                     </div>
                                     <h2 class="mt-2 text-2xl font-bold" style="font-family: 'Playfair Display', serif;">
-                                        Kirim pesanan untuk konfirmasi admin
+                                        Lanjut ke pembayaran
                                     </h2>
-                                    <p class="mt-2 max-w-2xl text-sm leading-6 text-white/70">
-                                        Setelah Anda klik tombol di bawah, sistem akan menyimpan detail pesanan dan mengarahkan ke tahap pembayaran.
-                                    </p>
                                 </div>
                                 <div class="rounded-2xl bg-white/8 px-4 py-3 text-sm">
                                     <div class="text-white/60">Estimasi total</div>
@@ -253,16 +208,16 @@
 
                             <div class="mt-6 grid gap-3 md:grid-cols-3">
                                 <div class="rounded-2xl border border-white/10 bg-white/6 px-4 py-4">
-                                    <div class="text-xs uppercase tracking-[0.18em] text-white/50">Respon admin</div>
-                                    <div class="mt-2 text-sm font-semibold">Konfirmasi via WhatsApp</div>
+                                    <div class="text-xs uppercase tracking-[0.18em] text-white/50">Admin</div>
+                                    <div class="mt-2 text-sm font-semibold">Konfirmasi WhatsApp</div>
                                 </div>
                                 <div class="rounded-2xl border border-white/10 bg-white/6 px-4 py-4">
-                                    <div class="text-xs uppercase tracking-[0.18em] text-white/50">Pembayaran</div>
-                                    <div class="mt-2 text-sm font-semibold">Lanjut ke pembayaran aman</div>
+                                    <div class="text-xs uppercase tracking-[0.18em] text-white/50">Bayar</div>
+                                    <div class="mt-2 text-sm font-semibold">Pembayaran aman</div>
                                 </div>
                                 <div class="rounded-2xl border border-white/10 bg-white/6 px-4 py-4">
-                                    <div class="text-xs uppercase tracking-[0.18em] text-white/50">Keamanan data</div>
-                                    <div class="mt-2 text-sm font-semibold">Data pesanan tersimpan aman</div>
+                                    <div class="text-xs uppercase tracking-[0.18em] text-white/50">Data</div>
+                                    <div class="mt-2 text-sm font-semibold">Tersimpan aman</div>
                                 </div>
                             </div>
 
@@ -275,15 +230,11 @@
                                 </svg>
                                 Lanjutkan ke pembayaran aman
                             </button>
-
-                            <div class="mt-4 text-center text-xs text-white/55">
-                                Dengan melanjutkan, Anda menyetujui proses konfirmasi pesanan oleh tim Sadita.
-                            </div>
                         </section>
                     </form>
                 </div>
 
-                <aside class="xl:pt-16">
+                <aside class="order-1 xl:order-2 xl:pt-16">
                     <div class="xl:sticky xl:top-[116px] space-y-5">
                         <div class="overflow-hidden rounded-[30px] border border-[#7A1F2B]/10 bg-white shadow-sm">
                             <div class="relative aspect-[4/3] overflow-hidden bg-[#F7F1EB]">
@@ -297,16 +248,10 @@
                             </div>
 
                             <div class="p-6">
-                                <div class="text-xs font-semibold uppercase tracking-[0.22em] text-[#7A1F2B]/65">
-                                    Ringkasan pesanan
-                                </div>
                                 <h2 class="mt-3 text-2xl font-bold leading-tight text-[#2D1E1E]"
                                     style="font-family: 'Playfair Display', serif;">
                                     {{ $productName }}
                                 </h2>
-                                <p class="mt-3 text-sm leading-6 text-[#726864]">
-                                    Pesanan ini akan diproses oleh tim Sadita setelah data pengiriman lengkap dan pembayaran terkonfirmasi.
-                                </p>
 
                                 <div class="mt-5 rounded-2xl bg-[#FAF5F0] p-4">
                                     <div class="flex items-center justify-between gap-4">
@@ -320,49 +265,27 @@
                                     </div>
                                 </div>
 
-                                <div class="mt-5 space-y-3">
-                                    <div class="flex items-start gap-3 rounded-2xl border border-[#EEE7E0] px-4 py-3">
-                                        <div class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-green-50 text-green-600">
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-semibold text-[#2D1E1E]">Kualitas premium</div>
-                                            <p class="mt-1 text-xs leading-5 text-[#7A726F]">Dikerjakan rapi dan disesuaikan untuk momen penting Anda.</p>
-                                        </div>
+                                <div class="mt-5 grid gap-2 text-sm text-[#6F6560]">
+                                    <div class="flex items-center gap-2">
+                                        <span class="h-2 w-2 rounded-full bg-green-500"></span>
+                                        Kualitas premium
                                     </div>
-
-                                    <div class="flex items-start gap-3 rounded-2xl border border-[#EEE7E0] px-4 py-3">
-                                        <div class="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8c-1.657 0-3 1.343-3 3v1H8a2 2 0 00-2 2v4a2 2 0 002 2h8a2 2 0 002-2v-4a2 2 0 00-2-2h-1v-1c0-1.657-1.343-3-3-3z"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-semibold text-[#2D1E1E]">Pembayaran aman</div>
-                                            <p class="mt-1 text-xs leading-5 text-[#7A726F]">Setelah submit, Anda diarahkan ke proses pembayaran yang lebih aman.</p>
-                                        </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="h-2 w-2 rounded-full bg-[#7A1F2B]"></span>
+                                        Konfirmasi via WhatsApp
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                                        Pembayaran aman
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="rounded-[28px] border border-[#7A1F2B]/10 bg-[#2D1E1E] p-6 text-white shadow-sm">
-                            <div class="text-xs font-semibold uppercase tracking-[0.22em] text-[#E8C87A]">
-                                Butuh bantuan cepat?
-                            </div>
-                            <h3 class="mt-3 text-xl font-bold" style="font-family: 'Playfair Display', serif;">
-                                Tim Sadita siap bantu sebelum Anda checkout.
-                            </h3>
-                            <p class="mt-3 text-sm leading-6 text-white/70">
-                                Jika masih bingung soal ukuran, jadwal, atau isi tulisan, Anda bisa konsultasi dulu lewat WhatsApp.
-                            </p>
+                        <div class="rounded-[28px] border border-[#7A1F2B]/10 bg-[#2D1E1E] p-5 text-white shadow-sm">
                             <a href="https://wa.me/62812616155335?text=Halo%20Sadita%2C%20saya%20ingin%20bertanya%20sebelum%20melanjutkan%20pemesanan."
                                 target="_blank" rel="noopener noreferrer"
-                                class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-[#7A1F2B] transition hover:bg-[#FAF5F0]">
+                                class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-[#7A1F2B] transition hover:bg-[#FAF5F0]">
                                 Konsultasi via WhatsApp
                             </a>
                         </div>

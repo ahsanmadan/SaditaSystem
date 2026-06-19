@@ -83,14 +83,14 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
                 <div class="max-w-2xl mx-auto text-center">
                     <span
-                        class="inline-block text-[10px] sm:text-sm uppercase tracking-[0.25em] sm:tracking-[0.3em] text-[#E8C87A] font-medium mb-3 sm:mb-4 reveal-on-scroll">Papan Bunga, Hantaran & Dekorasi - Padang</span>
-                    <h1 class="text-3xl sm:text-5xl lg:text-7xl xl:text-8xl font-bold text-white leading-[1.1] sm:leading-[1.05] reveal-on-scroll"
+                        class="inline-block text-[10px] sm:text-sm uppercase tracking-[0.25em] sm:tracking-[0.3em] text-[#E8C87A] font-medium mb-3 sm:mb-4 reveal-on-scroll">Papan Ucapan, Hantaran & Dekorasi - Padang</span>
+                    <h1 class="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.08] sm:leading-[1.03] reveal-on-scroll"
                         style="font-family:'Playfair Display',serif; text-shadow: 0 2px 20px rgba(0,0,0,0.6);">
-                        Papan Bunga,<br>Hantaran &amp; <em class="italic text-[#E8C87A]">Dekorasi</em>
+                        Papan Ucapan,<br>Hantaran &amp; <em class="italic text-[#E8C87A]">Dekorasi</em>
                     </h1>
                     <p class="mt-3 sm:mt-5 text-sm sm:text-base lg:text-lg text-white/70 leading-relaxed max-w-sm sm:max-w-lg mx-auto reveal-on-scroll"
                         style="text-shadow: 0 1px 8px rgba(0,0,0,0.5);">
-                        Sadita menyediakan papan bunga, hantaran, dan dekorasi untuk berbagai acara di Padang.
+                        Sadita melayani papan ucapan, hantaran, dan dekorasi untuk berbagai momen spesial di Padang.
                     </p>
                     <div class="mt-6 sm:mt-8 flex flex-wrap justify-center gap-3 sm:gap-4 reveal-on-scroll">
                         <a href="#kategori"
@@ -959,4 +959,3 @@
         }
     </style>
 @endsection
-
