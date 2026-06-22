@@ -2,10 +2,11 @@
 
 @section('content')
     @php
-        $productName = request('product', 'Sadita Exclusive Product');
-        $productPrice = request('price', 'Rp 0');
-        $productImg = request('img', '/images/dekorasi-lamaran.jpg');
-        $productType = request('jenis', 'Layanan Sadita');
+        $productName = $productName ?? request('product', 'Sadita Exclusive Product');
+        $productPrice = $productPrice ?? request('price', 'Rp 0');
+        $productImg = $productImg ?? request('img', '/images/dekorasi-lamaran.jpg');
+        $productType = $productType ?? request('jenis', 'Layanan Sadita');
+        $formValues = $formValues ?? [];
     @endphp
 
     <div class="bg-[#FFFDFB] pt-[108px] pb-16 md:pb-24">
@@ -43,6 +44,9 @@
 
                     <form action="{{ route('order.store') }}" method="POST" id="orderForm" class="mt-6 space-y-6">
                         @csrf
+                        @if (!empty($existingOrder))
+                            <input type="hidden" name="order_id" value="{{ $existingOrder->kode_pesanan }}">
+                        @endif
                         <input type="hidden" name="product_name" value="{{ $productName }}">
                         <input type="hidden" name="price" value="{{ $productPrice }}">
                         <input type="hidden" name="jenis" value="{{ $productType }}">
@@ -72,6 +76,7 @@
                                         Nama lengkap <span class="text-red-500">*</span>
                                     </label>
                                     <input type="text" id="senderName" name="sender_name" required
+                                        value="{{ $formValues['sender_name'] ?? '' }}"
                                         class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all"
                                         placeholder="Contoh: Ahsan Ramadan">
                                 </div>
@@ -84,6 +89,7 @@
                                         <span
                                             class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#7A726F]">+62</span>
                                         <input type="tel" id="senderPhone" name="sender_phone" required
+                                            value="{{ $formValues['sender_phone'] ?? '' }}"
                                             class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] py-3.5 pl-12 pr-4 text-sm text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all"
                                             placeholder="81234567890">
                                     </div>
@@ -111,6 +117,7 @@
                                         Penerima di lokasi <span class="text-red-500">*</span>
                                     </label>
                                     <input type="text" id="receiverName" name="receiver_name" required
+                                        value="{{ $formValues['receiver_name'] ?? '' }}"
                                         class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all"
                                         placeholder="Nama penerima atau PIC">
                                 </div>
@@ -119,7 +126,7 @@
                                     <label class="mb-2 block text-sm font-semibold text-[#2D1E1E]">
                                         Ditujukan kepada
                                     </label>
-                                    <input type="text" id="untuk" name="untuk" value="{{ request('untuk', '') }}"
+                                    <input type="text" id="untuk" name="untuk" value="{{ $formValues['untuk'] ?? '' }}"
                                         class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all"
                                         placeholder="Contoh: Bpk Budi / PT Merdeka">
                                 </div>
@@ -131,7 +138,7 @@
                                 </label>
                                 <textarea id="address" name="address" required rows="4"
                                     class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm leading-6 text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all resize-none"
-                                    placeholder="Tuliskan alamat lengkap, nama gedung/jalan, patokan lokasi, dan catatan akses jika perlu."></textarea>
+                                    placeholder="Tuliskan alamat lengkap, nama gedung/jalan, patokan lokasi, dan catatan akses jika perlu.">{{ $formValues['address'] ?? '' }}</textarea>
                             </div>
                         </section>
 
@@ -155,6 +162,7 @@
                                         Tanggal pengiriman <span class="text-red-500">*</span>
                                     </label>
                                     <input type="date" id="deliveryDate" name="delivery_date" required
+                                        value="{{ $formValues['delivery_date'] ?? '' }}"
                                         class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm text-[#2D1E1E] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all">
                                 </div>
 
@@ -164,9 +172,9 @@
                                     </label>
                                     <select id="deliveryTime" name="delivery_time"
                                         class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm text-[#2D1E1E] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all appearance-none">
-                                        <option value="09:00:00">Pagi (08:00 - 12:00)</option>
-                                        <option value="13:00:00">Siang (12:00 - 16:00)</option>
-                                        <option value="17:00:00">Sore (16:00 - 20:00)</option>
+                                        <option value="09:00:00" @selected(($formValues['delivery_time'] ?? '') === '09:00:00')>Pagi (08:00 - 12:00)</option>
+                                        <option value="13:00:00" @selected(($formValues['delivery_time'] ?? '') === '13:00:00')>Siang (12:00 - 16:00)</option>
+                                        <option value="17:00:00" @selected(($formValues['delivery_time'] ?? '') === '17:00:00')>Sore (16:00 - 20:00)</option>
                                     </select>
                                 </div>
                             </div>
@@ -177,7 +185,7 @@
                                 </label>
                                 <textarea id="greetingMsg" name="greeting_msg" rows="4"
                                     class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm leading-6 text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all resize-none"
-                                    placeholder="Contoh: Turut berduka cita atas berpulangnya almarhumah ibunda kami. Dari keluarga besar PT Merdeka."></textarea>
+                                    placeholder="Contoh: Turut berduka cita atas berpulangnya almarhumah ibunda kami. Dari keluarga besar PT Merdeka.">{{ $formValues['greeting_msg'] ?? '' }}</textarea>
                             </div>
 
                             <div class="mt-5">
@@ -185,39 +193,9 @@
                                     Instruksi khusus
                                 </label>
                                 <input type="text" id="specialInstruction" name="special_instruction"
+                                    value="{{ $formValues['special_instruction'] ?? '' }}"
                                     class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all"
                                     placeholder="Contoh: Tolong hubungi satpam dulu sebelum masuk area gedung.">
-                            </div>
-                        </section>
-
-                        <section class="rounded-[28px] border border-[#7A1F2B]/10 bg-white p-6 md:p-8 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div
-                                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#7A1F2B] text-sm font-bold text-white shadow-[0_10px_24px_rgba(122,31,43,0.24)]">
-                                    4
-                                </div>
-                                <div>
-                                    <h2 class="text-xl font-bold text-[#2D1E1E]"
-                                        style="font-family: 'Playfair Display', serif;">
-                                        Kode promo
-                                    </h2>
-                                </div>
-                            </div>
-
-                            <div class="mt-6 space-y-3">
-                                <div>
-                                    <label class="mb-2 block text-sm font-semibold text-[#2D1E1E]">
-                                        Masukkan kode promo
-                                    </label>
-                                    <input type="text" id="promoCode" name="promo_code"
-                                        value="{{ old('promo_code') }}"
-                                        class="w-full rounded-2xl border border-[#D9D3CE] bg-[#FCFAF8] px-4 py-3.5 text-sm uppercase tracking-[0.2em] text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10 transition-all"
-                                        placeholder="Contoh: SADITA10">
-                                </div>
-
-                                @error('promo_code')
-                                    <p class="text-sm font-semibold text-red-600">{{ $message }}</p>
-                                @enderror
                             </div>
                         </section>
 
@@ -259,7 +237,7 @@
                                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
                                     </path>
                                 </svg>
-                                Lanjutkan ke pembayaran aman
+                                Lanjut ke checkout pembayaran
                             </button>
                         </section>
                     </form>

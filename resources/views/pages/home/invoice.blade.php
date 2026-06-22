@@ -1,176 +1,202 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="min-h-screen bg-[#1a1a1a] pt-[100px] pb-20 flex flex-col items-center justify-center relative font-mono">
+    @php
+        $latestPayment = $order->pembayaranTerakhir;
+        $paymentPending = $order->status === 'menunggu_pembayaran';
+        $selectedMethod = old('payment_method', 'ALL');
+        $detailItem = $order->detailItems->first();
+        $product = $detailItem?->produk;
+        $productImage = $product?->fotoUtamaUrl() ?? asset('images/logo-sadita.png');
+        $productType = $product?->is_sewa ? 'Sewa' : 'Layanan Sadita';
+    @endphp
 
-        <!-- Top Right Button -->
-        <div class="absolute top-24 right-4 md:right-10 print:hidden">
-            <button onclick="window.print()"
-                class="bg-black border border-gray-700 text-white text-[10px] px-4 py-2 hover:bg-gray-800 transition-colors uppercase tracking-widest flex items-center gap-2">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                </svg>
-                Unduh PDF
-            </button>
-        </div>
-
-        <!-- Receipt Container -->
-        <div class="bg-white w-[92%] sm:w-full max-w-[380px] p-6 sm:p-8 shadow-2xl relative mt-4">
-            <!-- Jagged top border effect (optional, css pseudo element) -->
-
-            <!-- Header -->
-            <div class="text-center mb-8">
-                <div class="text-[10px] tracking-widest uppercase mb-2 text-gray-500">Sadita Decoration</div>
-                <h1 class="text-3xl font-bold uppercase tracking-widest text-black mb-2"
-                    style="font-family: 'Playfair Display', serif;">SADITA</h1>
-                <div class="text-[9px] tracking-[0.2em] uppercase text-gray-500">Premium Essential Goods</div>
+    <div class="bg-[#F7F3EE] pt-[108px] pb-16 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                    <div class="text-xs font-semibold uppercase tracking-[0.24em] text-[#7A1F2B]/60">Checkout Sadita</div>
+                    <h1 class="mt-2 text-4xl font-bold text-[#2D1E1E]" style="font-family: 'Playfair Display', serif;">
+                        Pilih pembayaran
+                    </h1>
+                </div>
+                <a href="{{ route('order.edit', ['order_id' => $order->kode_pesanan]) }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#7A1F2B]/20 bg-white px-4 py-3 text-sm font-semibold text-[#7A1F2B] shadow-sm transition hover:border-[#7A1F2B]/40 hover:bg-[#FFF9F5]">
+                    Kembali ke pengisian data
+                </a>
             </div>
 
-            <!-- Metadata -->
-            <div class="mb-6 space-y-1">
-                <div class="flex justify-between text-xs">
-                    <span class="text-gray-500">PESANAN:</span>
-                    <span class="font-bold">{{ $order->kode_pesanan }}</span>
+            @if (session('success'))
+                <div class="mb-5 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                    {{ session('success') }}
                 </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-gray-500">TANGGAL:</span>
-                    <span class="font-bold">{{ $order->created_at->format('d M Y H:i') }}</span>
-                </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-gray-500">PELANGGAN:</span>
-                    <span class="font-bold uppercase">{{ $order->pelanggan->nama_lengkap ?? 'Umum' }}</span>
-                </div>
-            </div>
+            @endif
 
-            <div class="border-t border-dashed border-gray-300 my-6"></div>
+            @if (session('error'))
+                <div class="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {{ session('error') }}
+                </div>
+            @endif
 
-            <!-- Items -->
-            <div class="mb-6 space-y-4">
-                @foreach($order->detailItems as $detail)
-                <div class="flex justify-between items-start text-xs">
-                    <div>
-                        <div class="font-bold uppercase pr-4">{{ $detail->nama_produk_snapshot }}</div>
-                        <div class="text-gray-500">{{ $detail->kuantitas }}x</div>
+            @if (session('info'))
+                <div class="mb-5 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                    {{ session('info') }}
+                </div>
+            @endif
+
+            <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
+                <div class="space-y-5">
+                    <section class="rounded-[28px] border border-[#7A1F2B]/10 bg-white p-6 shadow-sm">
+                        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                            <div>
+                                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-[#7A1F2B]/60">Alamat pengiriman</div>
+                                <div class="mt-3 text-xl font-bold text-[#2D1E1E]">{{ $order->pengiriman?->nama_penerima }}</div>
+                                <div class="mt-2 text-sm leading-6 text-[#6F6560]">
+                                    {{ $order->pengiriman?->alamat_lengkap }}
+                                </div>
+                                @if ($order->pengiriman?->patokan_lokasi)
+                                    <div class="mt-2 text-sm text-[#7A1F2B]/80">Ditujukan kepada: {{ $order->pengiriman->patokan_lokasi }}</div>
+                                @endif
+                            </div>
+                            <div class="rounded-2xl bg-[#FAF5F0] px-4 py-3 text-sm text-[#6F6560]">
+                                <div>Tanggal kirim</div>
+                                <div class="mt-1 font-semibold text-[#2D1E1E]">
+                                    {{ optional($order->pengiriman?->tanggal_pengiriman)->format('d M Y') ?? '-' }}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="rounded-[28px] border border-[#7A1F2B]/10 bg-white p-6 shadow-sm">
+                        <div class="flex gap-4">
+                            <div class="h-28 w-28 shrink-0 overflow-hidden rounded-2xl bg-[#F7F1EB]">
+                                <img src="{{ $productImage }}" alt="{{ $detailItem?->nama_produk_snapshot }}"
+                                    class="h-full w-full object-cover">
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="inline-flex rounded-full bg-[#FAF5F0] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7A1F2B]">
+                                    {{ $productType }}
+                                </div>
+                                <h2 class="mt-3 text-2xl font-bold leading-tight text-[#2D1E1E]"
+                                    style="font-family: 'Playfair Display', serif;">
+                                    {{ $detailItem?->nama_produk_snapshot }}
+                                </h2>
+                                <div class="mt-2 text-sm text-[#6F6560]">
+                                    {{ $detailItem?->kuantitas ?? 1 }} item
+                                </div>
+                                @if ($detailItem?->teks_ucapan)
+                                    <div class="mt-4 rounded-2xl bg-[#FAF5F0] px-4 py-3 text-sm leading-6 text-[#6F6560]">
+                                        <div class="font-semibold text-[#2D1E1E]">Pesan/Tulisan</div>
+                                        <div class="mt-1">{{ $detailItem->teks_ucapan }}</div>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-[#6F6560]">Subtotal</div>
+                                <div class="mt-2 text-2xl font-bold text-[#7A1F2B]">
+                                    Rp {{ number_format($detailItem?->subtotal ?? $order->grand_total, 0, ',', '.') }}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <aside class="xl:sticky xl:top-[116px] h-fit">
+                    <div class="rounded-[30px] border border-[#7A1F2B]/10 bg-white p-6 shadow-sm">
+                        <div class="text-2xl font-bold text-[#2D1E1E]" style="font-family: 'Playfair Display', serif;">
+                            Metode pembayaran
+                        </div>
+
+                        <form action="{{ route('order.apply-promo', ['order_id' => $order->kode_pesanan]) }}" method="POST"
+                            class="mt-5 rounded-2xl border border-[#7A1F2B]/10 bg-[#FCFAF8] p-4">
+                            @csrf
+                            <label class="block text-sm font-semibold text-[#2D1E1E]">Kode voucher / promo</label>
+                            <div class="mt-3 flex gap-3">
+                                <input type="text" name="promo_code" value="{{ old('promo_code', $order->kode_promo_snapshot) }}"
+                                    class="min-w-0 flex-1 rounded-2xl border border-[#D9D3CE] bg-white px-4 py-3 text-sm uppercase tracking-[0.18em] text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10"
+                                    placeholder="SADITA10">
+                                <button type="submit"
+                                    class="rounded-2xl bg-[#7A1F2B] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#5e1721]">
+                                    Pakai
+                                </button>
+                            </div>
+                            @error('promo_code')
+                                <div class="mt-2 text-sm font-semibold text-red-600">{{ $message }}</div>
+                            @enderror
+                        </form>
+
+                        <form action="{{ route('doku.checkout', ['order_id' => $order->kode_pesanan]) }}" method="POST"
+                            class="mt-5 space-y-4">
+                            @csrf
+                            <div class="max-h-[360px] space-y-3 overflow-y-auto pr-1">
+                                @foreach ($paymentMethods as $method)
+                                    <label
+                                        class="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#7A1F2B]/10 px-4 py-4 transition hover:border-[#7A1F2B]/30 hover:bg-[#FFF9F5]">
+                                        <input type="radio" name="payment_method" value="{{ $method['code'] }}"
+                                            class="mt-1 h-4 w-4 border-[#7A1F2B]/30 text-[#7A1F2B] focus:ring-[#7A1F2B]"
+                                            @checked($selectedMethod === $method['code'])>
+                                        <div class="min-w-0">
+                                            <div class="text-sm font-semibold text-[#2D1E1E]">{{ $method['label'] }}</div>
+                                            <div class="mt-1 text-sm leading-5 text-[#6F6560]">{{ $method['description'] }}</div>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            <div class="rounded-2xl bg-[#FAF5F0] p-4">
+                                <div class="flex items-center justify-between text-sm text-[#6F6560]">
+                                    <span>Total harga</span>
+                                    <span>Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
+                                </div>
+                                @if ($order->diskon > 0)
+                                    <div class="mt-2 flex items-center justify-between text-sm text-green-700">
+                                        <span>Voucher {{ $order->kode_promo_snapshot }}</span>
+                                        <span>-Rp {{ number_format($order->diskon, 0, ',', '.') }}</span>
+                                    </div>
+                                @endif
+                                <div class="mt-2 flex items-center justify-between text-sm text-[#6F6560]">
+                                    <span>Pengiriman</span>
+                                    <span>Rp {{ number_format($order->biaya_ongkir, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="mt-4 border-t border-[#7A1F2B]/10 pt-4">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-base font-semibold text-[#2D1E1E]">Total tagihan</span>
+                                        <span class="text-2xl font-bold text-[#7A1F2B]">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if ($paymentPending)
+                                <div class="space-y-3">
+                                    <button type="submit"
+                                        class="flex w-full items-center justify-center gap-3 rounded-2xl bg-[#E8C87A] px-6 py-4 text-sm font-bold tracking-wide text-[#4A1C24] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#dfbc64] hover:shadow-[0_14px_28px_rgba(232,200,122,0.28)]">
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                        Bayar sekarang
+                                    </button>
+                                </div>
+                            @else
+                                <div class="rounded-2xl bg-green-700 px-6 py-4 text-center text-sm font-bold tracking-wide text-white">
+                                    LUNAS
+                                </div>
+                            @endif
+                        </form>
+
+                        @if ($paymentPending && $latestPayment?->metode === \App\Models\Pembayaran::METODE_DOKU_CHECKOUT)
+                            <form action="{{ route('doku.refresh', ['order_id' => $order->kode_pesanan]) }}" method="POST"
+                                class="mt-3">
+                                @csrf
+                                <button type="submit"
+                                    class="flex w-full items-center justify-center gap-2 rounded-2xl border border-[#7A1F2B]/15 bg-white px-5 py-3 text-sm font-semibold text-[#7A1F2B] transition hover:border-[#7A1F2B]/35 hover:bg-[#FFF9F5]">
+                                    Cek status pembayaran
+                                </button>
+                            </form>
+                        @endif
                     </div>
-                    <div class="font-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</div>
-                </div>
-                @endforeach
+                </aside>
             </div>
-
-            <div class="border-t border-dashed border-gray-300 my-6"></div>
-
-            <!-- Summary -->
-            <div class="mb-6 space-y-2">
-                <div class="flex justify-between text-xs">
-                    <span class="text-gray-500">SUBTOTAL</span>
-                    <span class="font-bold">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
-                </div>
-                @if($order->diskon > 0)
-                <div class="flex justify-between text-xs text-green-700">
-                    <span class="text-gray-500">PROMO {{ $order->kode_promo_snapshot ?? $order->kodePromo?->kode }}</span>
-                    <span class="font-bold">-Rp {{ number_format($order->diskon, 0, ',', '.') }}</span>
-                </div>
-                @endif
-                <div class="flex justify-between text-xs">
-                    <span class="text-gray-500">PENGIRIMAN</span>
-                    <span class="font-bold">Rp {{ number_format($order->biaya_ongkir, 0, ',', '.') }}</span>
-                </div>
-            </div>
-
-            <div class="border-t border-dashed border-gray-300 my-6"></div>
-
-            <!-- Total -->
-            <div class="flex justify-between items-center mb-8">
-                <span class="text-lg font-bold">TOTAL</span>
-                <span class="text-lg font-bold">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</span>
-            </div>
-
-            <div class="border-t border-dashed border-gray-300 my-6"></div>
-
-            <!-- Verification/QR Placeholder -->
-            <div class="flex flex-col items-center justify-center mb-8">
-                <div class="w-16 h-16 bg-gray-200 mb-3 grid grid-cols-3 grid-rows-3 border border-black p-1">
-                    <div class="bg-black"></div>
-                    <div class="bg-white"></div>
-                    <div class="bg-black"></div>
-                    <div class="bg-white"></div>
-                    <div class="bg-black"></div>
-                    <div class="bg-white"></div>
-                    <div class="bg-black"></div>
-                    <div class="bg-white"></div>
-                    <div class="bg-black"></div>
-                </div>
-                <div class="text-[8px] tracking-widest text-gray-500 mb-1">KODE VERIFIKASI</div>
-                <div class="bg-gray-100 px-3 py-1 text-xs font-bold font-mono tracking-widest border border-gray-200">
-                    {{ substr(md5($order->kode_pesanan), 0, 10) }}
-                </div>
-            </div>
-
-            <!-- Footer Message -->
-            <div class="text-center text-[7px] leading-relaxed text-gray-400 tracking-widest uppercase mb-6">
-                Terima kasih atas pesanan Anda.<br>
-                Barang yang sudah dibeli tidak dapat dikembalikan.<br>
-                Kunjungi sadita.com/support
-            </div>
-
-            <!-- Pay Button (if UNPAID) -->
-            <div
-                class="w-full bg-green-800 text-white py-3 mt-4 text-xs font-bold tracking-[0.2em] uppercase text-center print:hidden">
-                {{ $order->status === 'menunggu_pembayaran' ? 'MENUNGGU PEMBAYARAN' : 'LUNAS' }}
-            </div>
-
         </div>
     </div>
-
-    <style>
-        /* Styling for jagged edges to make it look like a receipt */
-        .bg-white.w-full::before {
-            content: "";
-            position: absolute;
-            top: -4px;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background-size: 8px 100%;
-            background-image: linear-gradient(135deg, white 25%, transparent 25%), linear-gradient(225deg, white 25%, transparent 25%);
-            background-position: 0 0, 4px 0;
-        }
-
-        .bg-white.w-full::after {
-            content: "";
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background-size: 8px 100%;
-            background-image: linear-gradient(135deg, transparent 75%, white 75%), linear-gradient(225deg, transparent 75%, white 75%);
-            background-position: 0 0, 4px 0;
-        }
-
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-
-            .bg-white.w-full,
-            .bg-white.w-full * {
-                visibility: visible;
-            }
-
-            .bg-white.w-full {
-                position: absolute;
-                left: 0;
-                top: 0;
-                margin: 0;
-                padding: 0;
-                box-shadow: none;
-            }
-
-            .print\:hidden {
-                display: none !important;
-            }
-        }
-    </style>
 @endsection
