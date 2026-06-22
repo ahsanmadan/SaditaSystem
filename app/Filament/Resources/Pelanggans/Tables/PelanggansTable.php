@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Pelanggans\Tables;
 
 use App\Models\Pelanggan;
 use Carbon\Carbon;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
@@ -113,6 +115,11 @@ class PelanggansTable
             ->recordActions([
                 ViewAction::make()->label('Lihat'),
                 EditAction::make()->label('Edit')->color('gray'),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()->label('Hapus Dipilih'),
+                ]),
             ]);
     }
 }

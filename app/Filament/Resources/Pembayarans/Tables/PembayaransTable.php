@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Pembayarans\Tables;
 use App\Models\Pembayaran;
 use App\Services\ActivityLogger;
 use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\BadgeColumn;
@@ -36,7 +38,15 @@ class PembayaransTable
 
                 BadgeColumn::make('metode')
                     ->label('Metode')
-                    ->color('info'),
+                    ->color('info')
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        Pembayaran::METODE_DOKU_CHECKOUT => 'DOKU Checkout',
+                        'transfer_bank' => 'Transfer Bank',
+                        'cash' => 'Cash',
+                        'qris' => 'QRIS',
+                        'cod' => 'COD',
+                        default => $state,
+                    }),
 
                 TextColumn::make('jumlah_dibayar')
                     ->label('Jumlah')
@@ -89,6 +99,7 @@ class PembayaransTable
                 SelectFilter::make('metode')
                     ->label('Metode Bayar')
                     ->options([
+                        Pembayaran::METODE_DOKU_CHECKOUT => 'DOKU Checkout',
                         'transfer_bank' => 'Transfer Bank',
                         'cash' => 'Cash',
                         'qris' => 'QRIS',
@@ -150,6 +161,11 @@ class PembayaransTable
                     }),
 
                 EditAction::make()->label('Edit')->color('gray')->icon('heroicon-o-pencil'),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()->label('Hapus Dipilih'),
+                ]),
             ]);
     }
 }

@@ -16,6 +16,8 @@ class Pembayaran extends Model
 
     const STATUS_DITOLAK = 'ditolak';
 
+    const METODE_DOKU_CHECKOUT = 'doku_checkout';
+
     protected $table = 'pembayaran';
 
     protected $guarded = ['id'];
@@ -23,6 +25,9 @@ class Pembayaran extends Model
     protected $casts = [
         'waktu_dibayar' => 'datetime',
         'waktu_diverifikasi' => 'datetime',
+        'expires_at' => 'datetime',
+        'gateway_payload' => 'array',
+        'gateway_response' => 'array',
     ];
 
     public function pesanan()
