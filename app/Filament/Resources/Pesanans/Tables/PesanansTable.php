@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Pesanans\Tables;
 
 use App\Models\Pembayaran;
 use App\Models\Pesanan;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
@@ -125,6 +127,11 @@ class PesanansTable
             ->recordActions([
                 ViewAction::make()->label('Lihat'),
                 EditAction::make()->label('Edit')->color('gray'),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()->label('Hapus Dipilih'),
+                ]),
             ]);
     }
 }
