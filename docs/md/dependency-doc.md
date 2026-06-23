@@ -1,6 +1,6 @@
 # Dependency Doc - SaditaSystem
 
-Dokumen ini berisi dependency utama yang digunakan atau disiapkan dalam project SaditaSystem.
+Dokumen ini berisi dependency utama yang benar-benar terdaftar di `composer.json` dan `package.json` project SaditaSystem.
 
 ## Dependency Backend
 
@@ -21,9 +21,9 @@ Dokumen ini berisi dependency utama yang digunakan atau disiapkan dalam project 
 
 ### 3. midtrans/midtrans-php
 
-- fungsi: integrasi payment gateway Midtrans
-- alasan dipakai: menyiapkan flow pembayaran digital untuk pesanan
-- lokasi penggunaan: flow invoice dan pembayaran
+- fungsi: SDK payment gateway Midtrans
+- alasan dipakai: menyiapkan integrasi pembayaran digital berbasis package Composer
+- catatan: package ini masih tercatat sebagai dependency backend aktif di repo
 
 ### 4. simplesoftwareio/simple-qrcode
 
@@ -108,3 +108,4 @@ Dokumen ini berisi dependency utama yang digunakan atau disiapkan dalam project 
 
 - detail versi dependency bisa dilihat langsung di `composer.json` dan `package.json`
 - dependency doc ini dipisahkan dari README agar dokumentasi utama tetap ringkas
+- `context7` bukan dependency project, melainkan skill bantu dokumentasi untuk membaca referensi library/framework saat dibutuhkan

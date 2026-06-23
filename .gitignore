@@ -1,5 +1,7 @@
 *.log
 .DS_Store
+
+# Environment dan secret lokal
 .env
 .env.backup
 .env.production
@@ -7,6 +9,8 @@
 !.env.example
 .phpactor.json
 .phpunit.result.cache
+
+# Asset internal / lokal
 ERD_*.png
 /.cursor/
 /.idea
@@ -27,9 +31,14 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /public/robots.txt
+
+# Skill dan konfigurasi agent lokal
 /skills
+/skills-lock.json
+/skill-lock.json
 /scratch
-/docs
 /.agents
 /.codex
-skills-lock.json
+
+# Dokumen internal lokal
+/docs

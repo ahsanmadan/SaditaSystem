@@ -15,14 +15,41 @@ Project ini dibangun dengan Laravel untuk backend, Filament untuk admin panel, d
 
 ## Stack Utama
 
-- PHP 8.3
-- Laravel 13
-- Filament 5.6
+- PHP `^8.3`
+- Laravel `^13.0`
+- Filament `^5.6`
 - MySQL / MariaDB
-- Vite 8
-- Tailwind CSS 4
-- Midtrans PHP
-- Simple QrCode
+- Vite `^8.0.0`
+- Tailwind CSS `^4.0.0`
+
+## Dependency Project
+
+### Backend
+
+- `laravel/framework` `^13.0`
+- `filament/filament` `^5.6`
+- `laravel/tinker` `^3.0`
+- `midtrans/midtrans-php` `^2.6`
+- `simplesoftwareio/simple-qrcode` `^4.2`
+
+### Development Backend
+
+- `fakerphp/faker` `^1.23`
+- `laravel/pail` `^1.2.5`
+- `laravel/pint` `^1.27`
+- `mockery/mockery` `^1.6`
+- `nunomaduro/collision` `^8.6`
+- `phpunit/phpunit` `^12.5.12`
+
+### Frontend / Tooling
+
+- `vite` `^8.0.0`
+- `laravel-vite-plugin` `^3.0.0`
+- `tailwindcss` `^4.0.0`
+- `@tailwindcss/vite` `^4.0.0`
+- `concurrently` `^9.0.1`
+- `prettier` `^3.8.3`
+- `prettier-plugin-blade` `^3.1.4`
 
 ## Fitur Inti
 
@@ -126,6 +153,7 @@ Catatan: akun ini hanya untuk development lokal. Ganti untuk environment lain.
 - scope project tidak mencakup florist / buket
 - tracking pesanan masih dikembangkan bertahap setelah create-order flow stabil
 - untuk optimasi lokal admin panel, jalankan `composer run optimize-local`
+- `context7` tidak mengikat otomatis ke semua dependency, tetapi siap dipakai on-demand untuk dokumentasi library/framework seperti Laravel, Filament, Tailwind, dan Vite saat dibutuhkan
 
 ## Deployment
 
