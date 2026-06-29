@@ -57,25 +57,6 @@ Dependency runtime backend adalah package yang dibutuhkan saat aplikasi Laravel 
 - lisensi: `MIT`
 - status penggunaan: aktif sebagai alat bantu runtime/development
 
-### 2.4 `midtrans/midtrans-php`
-
-- versi: `2.6.2`
-- jenis: runtime backend
-- fungsi: SDK Midtrans untuk payment gateway
-- sumber: `https://github.com/Midtrans/midtrans-php.git`
-- lisensi: `MIT`
-- status penggunaan: terdaftar di dependency, tetapi tidak terlihat sebagai integrasi aktif utama pada kode saat ini
-- catatan: payment flow yang terlihat aktif pada project saat ini lebih mengarah ke integrasi DOKU
-
-### 2.5 `simplesoftwareio/simple-qrcode`
-
-- versi: `4.2.0`
-- jenis: runtime backend
-- fungsi: generator QR code
-- sumber: `https://github.com/SimpleSoftwareIO/simple-qrcode.git`
-- lisensi: `MIT`
-- status penggunaan: tersedia di project, namun belum terlihat sebagai bagian utama flow publik saat ini
-
 ## 3. Dependency Development Backend
 
 Dependency development backend dipakai saat proses pengembangan, testing, formatting, dan debugging.
