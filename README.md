@@ -129,11 +129,6 @@ Seeder default membuat akun admin demo:
 
 ![homepage public](./docs/pic/homepage-public.png)
 
-## Deployment
-
-Deploy production saat ini diarahkan ke Railway dengan konfigurasi utama di:
-
-- `nixpacks.toml`
 
 ## Lisensi
 
