@@ -35,10 +35,14 @@
 
 <body class="w-full bg-[#FFFDFB] text-gray-900 overflow-x-hidden">
     {{-- Preloader --}}
-    <div id="preloader" class="fixed inset-0 z-[100] bg-[#FFFDFB] flex items-center justify-center transition-opacity duration-500">
-        <div class="flex flex-col items-center gap-4">
-            <div class="text-3xl font-bold text-[#7A1F2B]" style="font-family:'Playfair Display',serif">Sadita</div>
-            <div class="preloader-spinner"></div>
+    <div id="preloader"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-[#FFFDFB] transition-opacity duration-500">
+        <div class="preloader-orb"></div>
+        <div class="preloader-panel">
+            <div class="preloader-brand">Sadita</div>
+            <div class="preloader-spinner-wrap">
+                <div class="preloader-spinner"></div>
+            </div>
         </div>
     </div>
 
