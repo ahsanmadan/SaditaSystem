@@ -45,12 +45,55 @@ h3 {
    PRELOADER
    ═══════════════════════════════════════════ */
 .preloader-spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid rgba(122, 31, 43, 0.15);
+    width: 36px;
+    height: 36px;
+    border: 2.5px solid rgba(122, 31, 43, 0.12);
     border-top-color: #7A1F2B;
     border-radius: 50%;
-    animation: spin 0.7s linear infinite;
+    animation: spin 0.85s linear infinite;
+}
+
+.preloader-orb {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 18rem;
+    height: 18rem;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(122, 31, 43, 0.09) 0%, rgba(122, 31, 43, 0.03) 38%, rgba(255, 253, 251, 0) 72%);
+    transform: translate(-50%, -50%);
+    filter: blur(8px);
+    pointer-events: none;
+}
+
+.preloader-panel {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 2rem 2.4rem;
+    text-align: center;
+}
+
+.preloader-brand {
+    color: #7A1F2B;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.35rem, 4vw, 3rem);
+    font-style: italic;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1;
+}
+
+.preloader-spinner-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.25rem;
+    height: 4.25rem;
+    border-radius: 999px;
 }
 
 @keyframes spin {
@@ -301,12 +344,76 @@ h3 {
 }
 
 .btn-track {
-    transition: all 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        background-color 0.3s ease,
+        color 0.3s ease;
 }
 
 .btn-track:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(232, 200, 122, 0.5);
+}
+
+.tracking-shell {
+    position: relative;
+}
+
+.tracking-field {
+    position: relative;
+}
+
+.tracking-field::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+    pointer-events: none;
+}
+
+.tracking-field input {
+    position: relative;
+    z-index: 1;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    transition:
+        border-color 0.28s ease,
+        background-color 0.28s ease,
+        box-shadow 0.28s ease,
+        transform 0.28s ease;
+}
+
+.tracking-field input:focus {
+    background-color: rgba(255, 255, 255, 0.16);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 0 3px rgba(232, 200, 122, 0.16);
+}
+
+.tracking-submit {
+    min-width: 190px;
+}
+
+.tracking-submit:hover {
+    background-color: #f6df98;
+    color: #2D1E1E;
+}
+
+.tracking-submit:focus-visible,
+.tracking-field input:focus-visible {
+    outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tracking-field input,
+    .tracking-submit {
+        transition: none;
+    }
+
+    .tracking-submit:hover {
+        transform: none;
+    }
 }
 
 /* ═══════════════════════════════════════════
@@ -430,13 +537,63 @@ h3 {
    REASON CARDS
    ═══════════════════════════════════════════ */
 .reason-card {
-    transition: all 0.4s ease;
+    transition:
+        transform 0.32s ease,
+        border-color 0.32s ease,
+        box-shadow 0.32s ease,
+        background-color 0.32s ease;
+    transform-origin: center center;
 }
 
 .reason-card:hover {
-    transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(232, 200, 122, 0.3);
+    transform: translateY(-3px);
+    background-color: #fffaf6;
+    border-color: rgba(122, 31, 43, 0.18);
+    box-shadow: 0 12px 28px rgba(80, 44, 33, 0.08);
+}
+
+.reason-card-title,
+.reason-card-meta,
+.reason-card-icon {
+    transition:
+        transform 0.32s ease,
+        color 0.32s ease,
+        opacity 0.32s ease,
+        filter 0.32s ease;
+}
+
+.reason-card:hover .reason-card-title {
+    color: #7A1F2B;
+}
+
+.reason-card:hover .reason-card-meta {
+    color: rgba(122, 31, 43, 0.88);
+}
+
+.reason-card:hover .reason-card-icon {
+    transform: translateY(-2px);
+    filter: saturate(1.05);
+}
+
+.reason-card:focus-within {
+    transform: translateY(-3px);
+    border-color: rgba(122, 31, 43, 0.24);
+    box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reason-card,
+    .reason-card-title,
+    .reason-card-meta,
+    .reason-card-icon {
+        transition: none;
+    }
+
+    .reason-card:hover,
+    .reason-card:focus-within,
+    .reason-card:hover .reason-card-icon {
+        transform: none;
+    }
 }
 
 /* ═══════════════════════════════════════════
@@ -451,15 +608,79 @@ h3 {
     box-shadow: 0 10px 30px rgba(122, 31, 43, 0.1);
 }
 
+.step-card-icon {
+    align-self: center;
+}
+
+@media (max-width: 640px) {
+    .step-card-side {
+        width: 4.25rem;
+        gap: 0.75rem;
+    }
+
+    .step-card-icon {
+        width: 4rem;
+        height: 4rem;
+        min-width: 4rem;
+        border-radius: 1.15rem;
+    }
+
+    .step-card-icon img {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
 /* ═══════════════════════════════════════════
    CONTACT CARD
    ═══════════════════════════════════════════ */
 .contact-card {
-    transition: all 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        background-color 0.3s ease;
 }
 
 .contact-card:hover {
-    transform: translateX(4px);
+    transform: translateY(-2px);
+    border-color: rgba(122, 31, 43, 0.16);
+    background-color: #fff;
+    box-shadow: 0 14px 28px rgba(80, 44, 33, 0.08);
+}
+
+.mini-marquee {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.mini-marquee-track {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-width: max-content;
+    animation: mini-marquee-scroll 24s linear infinite;
+}
+
+.mini-marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0 1.4rem;
+    color: rgba(232, 200, 122, 0.95);
+}
+
+@keyframes mini-marquee-scroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-33.3333%);
+    }
 }
 
 /* ═══════════════════════════════════════════
@@ -672,6 +893,10 @@ h3 {
         font-size: 2.25rem;
         line-height: 1.15;
     }
+
+    .mini-marquee-item {
+        padding: 0 1rem;
+    }
 }
 
 /* ═══════════════════════════════════════════
@@ -716,5 +941,15 @@ h3 {
 @supports (-webkit-overflow-scrolling: touch) {
     .parallax-section {
         background-attachment: scroll;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .preloader-spinner {
+        animation: none;
+    }
+
+    .mini-marquee-track {
+        animation: none;
     }
 }
