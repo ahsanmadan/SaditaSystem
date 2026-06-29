@@ -42,3 +42,8 @@ Thumbs.db
 
 # Dokumen internal lokal
 /docs
+!/docs/
+/docs/*
+!/docs/pic/
+/docs/pic/*
+!/docs/pic/homepage-public.png
