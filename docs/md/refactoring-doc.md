@@ -6,21 +6,27 @@ Dokumen ini berisi area yang sudah atau sedang dirapikan, serta arah refactoring
 
 ### 1.1 Optimasi Admin Panel
 
-Beberapa query admin panel sebelumnya terasa berat, terutama pada dashboard dan tabel yang memuat banyak relasi. Perbaikannya difokuskan pada:
+Beberapa query admin panel sebelumnya terasa berat, terutama pada dashboard yang memuat statistik dan ringkasan data. Perbaikannya difokuskan pada:
 
 - mengurangi beban query statistik dashboard
-- merapikan cache widget
-- mengurangi eager loading yang tidak perlu
+- memisahkan logika KPI ke service khusus
+- menambahkan cache untuk data dashboard
 
-Branch terkait:
+Area kode yang terkait:
 
-- `feature/optimasi-admin-panel`
+- `app/Services/Analytics/DashboardKpiService.php`
+- `app/Support/DashboardCache.php`
+- `app/Filament/Widgets/StatsOverviewWidget.php`
+
+Referensi branch/remote yang masih terlihat:
+
+- `origin/feature/optimasi-cache-dashboard`
 
 ### 1.2 Perbaikan Akses Admin Lokal
 
-Masalah akses menu admin pada local/XAMPP sempat muncul karena kondisi environment dan route create yang belum lengkap. Area ini sudah pernah dirapikan pada branch:
+Area akses admin lokal pernah menjadi perhatian dalam pengembangan, terutama terkait environment lokal dan navigasi/admin resource. Namun, branch spesifik yang mendokumentasikan perbaikan ini tidak terlihat lagi pada daftar branch aktif saat ini.
 
-- `feature/perbaikan-admin-xampp`
+Karena itu, bagian ini sebaiknya dipahami sebagai riwayat perbaikan yang pernah dilakukan, bukan referensi branch aktif yang masih tersedia.
 
 ### 1.3 Perbaikan Flow Order
 
@@ -29,37 +35,44 @@ Flow order publik sebelumnya gagal ketika input waktu pengiriman dari UI langsun
 - membuat value dropdown menjadi format waktu valid
 - menambah normalizer waktu di controller agar request lama tetap aman
 
-Branch terkait:
+Area kode yang terkait:
 
-- `feature/perbaikan-flow-order`
+- `app/Http/Controllers/OrderController.php`
+- `resources/views/pages/home/order.blade.php`
 
 ## 2. Area yang Masih Perlu Refactoring
 
 ### 2.1 Invoice Status
 
-Saat ini invoice masih memiliki indikasi status yang belum sepenuhnya dinamis. Area ini perlu dirapikan agar tampilan invoice konsisten dengan status pesanan dan pembayaran.
+Tampilan invoice saat ini sudah memiliki logika dasar untuk membaca status pesanan dan pembayaran. Namun, area ini masih dapat disempurnakan agar seluruh tampilan status, label pembayaran, dan aksi lanjutan benar-benar konsisten pada semua kondisi pesanan.
 
 ### 2.2 Seeder
 
-Seeder masih perlu dirapikan karena:
+Seeder masih perlu dirapikan, terutama pada bagian data transaksi, karena:
 
-- belum sepenuhnya idempotent
-- ada potensi inkonsistensi antar file seeder
+- `DatabaseSeeder` dan `KatalogSeeder` sudah cukup aman untuk dijalankan ulang karena memakai pola `updateOrCreate` atau `updateOrInsert`
+- `TransactionSeeder` masih menghasilkan data baru setiap kali dijalankan, sehingga tidak bersifat idempotent
+- pemisahan tanggung jawab antar seeder masih bisa dibuat lebih jelas agar maintenance lebih mudah
 
-### 2.3 Copy dan Encoding Public UI
+### 2.3 Copy Public UI
 
 Beberapa tampilan public masih memiliki:
 
-- copy lama yang belum sinkron dengan scope sekarang
-- karakter mojibake / encoding rusak
+- copy lama yang belum sepenuhnya sinkron dengan scope bisnis SaditaSystem saat ini
+- wording yang masih bisa dipoles agar lebih konsisten antara landing page, order flow, dan dokumentasi fitur
 
 ### 2.4 Testing Flow
 
-Feature test belum sepenuhnya stabil karena environment testing belum sinkron dengan kebutuhan migration tertentu.
+Flow testing masih perlu diperhatikan karena environment test dan environment CI belum sepenuhnya identik. Saat ini:
+
+- `phpunit.xml` menggunakan SQLite in-memory
+- workflow GitHub Actions menggunakan file SQLite fisik di `database/database.sqlite`
+
+Perbedaan ini dapat memunculkan perilaku test yang berbeda pada kondisi tertentu, terutama ketika migration atau seed data berkembang.
 
 ## 3. Prinsip Refactoring yang Dipakai
 
 - perubahan dibuat sekecil mungkin tapi tetap menyelesaikan masalah inti
 - hindari refactor besar yang menyentuh area tidak relevan
-- utamakan alur bisnis utama: create order, admin review, dan pembayaran
+- utamakan alur bisnis utama: create order, admin review, pembayaran, dan dashboard operasional
 - verifikasi dilakukan lewat build, route check, atau browser test jika memungkinkan

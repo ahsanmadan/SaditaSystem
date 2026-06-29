@@ -19,6 +19,25 @@ cd SaditaSystem
 
 ## 2. Install Dependency Backend dan Frontend
 
+### Opsi cepat yang direkomendasikan
+
+Repository ini sudah menyediakan script setup bawaan dari `composer.json`:
+
+```bash
+composer run setup
+```
+
+Script ini akan menjalankan:
+
+- `composer install`
+- membuat `.env` jika belum ada
+- `php artisan key:generate`
+- `php artisan migrate --force`
+- `npm install --ignore-scripts`
+- `npm run build`
+
+### Opsi manual
+
 ```bash
 composer install
 npm install
@@ -28,6 +47,13 @@ npm install
 
 ```bash
 copy .env.example .env
+php artisan key:generate
+```
+
+Jika memakai shell Linux/macOS, gunakan:
+
+```bash
+cp .env.example .env
 php artisan key:generate
 ```
 
@@ -46,7 +72,7 @@ Contoh `.env`:
 ```env
 APP_ENV=local
 APP_DEBUG=true
-APP_URL=http://127.0.0.1:8000
+APP_URL=http://localhost:8000
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -96,8 +122,8 @@ composer run optimize-local
 
 ## 7. Akses Aplikasi
 
-- web publik: `http://127.0.0.1:8000`
-- admin panel: `http://127.0.0.1:8000/admin`
+- web publik: `http://localhost:8000`
+- admin panel: `http://localhost:8000/admin`
 
 ## 8. Akun Demo Admin
 
@@ -110,6 +136,8 @@ composer run optimize-local
 - mode yang direkomendasikan untuk session dan cache adalah `database`
 - mode `file` hanya dipakai sementara jika tabel `sessions` atau `cache` belum siap
 - jika memakai XAMPP, pastikan Apache dan MySQL berjalan
+- jika ingin memakai integrasi pembayaran DOKU, isi variabel `DOKU_*` pada `.env`
+- jika ingin memakai fitur chatbot / AI, isi variabel `GROQ_API_KEY` dan `GROQ_MODEL`
 - jika ada masalah akses asset upload, jalankan:
 
 ```bash
