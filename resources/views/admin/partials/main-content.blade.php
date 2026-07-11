@@ -1,12 +1,12 @@
                     @if ($focus === 'dashboard')
-                        <section class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_390px] xl:items-start">
-                            <div class="space-y-6">
+                        <section class="mt-6 grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_390px] xl:items-start">
+                            <div class="min-w-0 space-y-6">
                                 <x-ui.card
-                                    class="overflow-hidden border-[#e6ddd5] shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
+                                    x-data="{ range: '{{ $defaultOmzetRange ?? '30d' }}', showScale: false }"
+                                    class="relative overflow-hidden border-[#e6ddd5] shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
                                     <x-ui.card-header
-                                        x-data="{ range: '{{ $defaultOmzetRange ?? '30d' }}' }"
-                                        class="flex flex-col gap-4 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
-                                        <div>
+                                        class="flex flex-col gap-3 border-b border-slate-100 px-4 pb-3 pt-4 pr-14 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:pb-4 sm:pt-6">
+                                        <div class="min-w-0">
                                             <x-ui.card-title class="text-lg font-semibold text-slate-900">
                                                 Pergerakan pendapatan
                                             </x-ui.card-title>
@@ -16,7 +16,7 @@
                                         </div>
 
                                         <div
-                                            class="flex flex-wrap items-center gap-1 rounded-lg border border-slate-200/60 bg-slate-100 p-1">
+                                            class="hidden items-center gap-1 rounded-xl border border-slate-200/60 bg-slate-100 p-1 sm:inline-flex">
                                             @foreach ([
                                                 '30d' => '30 Hari',
                                                 '6m' => '6 Bulan',
@@ -29,16 +29,67 @@
                                                     @click="range = '{{ $rangeKey }}'; $dispatch('filter-chart', '{{ $rangeKey }}')"
                                                     :class="range === '{{ $rangeKey }}' ? 'bg-white text-slate-900 shadow-sm' :
                                                         'text-slate-600 hover:text-slate-900'"
-                                                    class="rounded-md px-2.5 py-1 text-xs font-medium transition duration-150">
+                                                    class="rounded-lg px-2.5 py-1 text-xs font-medium transition duration-150">
                                                     {{ $rangeLabel }}
                                                 </button>
                                             @endforeach
                                         </div>
                                     </x-ui.card-header>
 
-                                    <x-ui.card-content class="pt-6">
-                                        <div id="revenue-line-chart" class="min-h-[320px] w-full"
-                                            aria-label="Grafik tren omzet operasional"></div>
+                                    <x-ui.button type="button" variant="outline" size="icon"
+                                        @click="showScale = !showScale; $dispatch('toggle-chart-scale', showScale)"
+                                        x-bind:aria-expanded="showScale.toString()"
+                                        x-bind:aria-label="showScale ? 'Sembunyikan skala omzet' : 'Tampilkan skala omzet'"
+                                        class="absolute right-3 top-3 z-20 h-8 w-8 rounded-lg border-slate-200 bg-white/95 shadow-sm sm:hidden">
+                                        <svg x-show="!showScale" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" aria-hidden="true">
+                                            <path d="m9 18 6-6-6-6" />
+                                        </svg>
+                                        <svg x-cloak x-show="showScale" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" aria-hidden="true">
+                                            <path d="m15 18-6-6 6-6" />
+                                        </svg>
+                                    </x-ui.button>
+
+                                    <x-ui.card-content class="px-3 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-6">
+                                        <div class="relative">
+                                            <aside x-cloak x-show="showScale"
+                                                x-transition:enter="transition ease-out duration-200"
+                                                x-transition:enter-start="translate-x-3 opacity-0"
+                                                x-transition:enter-end="translate-x-0 opacity-100"
+                                                x-transition:leave="transition ease-in duration-150"
+                                                x-transition:leave-start="translate-x-0 opacity-100"
+                                                x-transition:leave-end="translate-x-3 opacity-0"
+                                                class="pointer-events-none absolute inset-y-2 right-0 z-0 w-[68px] border-l border-slate-100 bg-white/90 backdrop-blur-sm">
+                                                <span class="absolute right-2 top-2 text-[9px] font-semibold text-slate-400">RP</span>
+                                            </aside>
+                                            <div id="revenue-line-chart"
+                                                class="relative z-10 min-h-[286px] w-full sm:min-h-[320px]"
+                                                aria-label="Grafik tren omzet operasional"></div>
+                                        </div>
+
+                                        <div class="mt-3 sm:hidden">
+                                            <div class="grid w-full grid-cols-6 items-center gap-1 rounded-xl border border-slate-200/60 bg-slate-100 p-1">
+                                                @foreach ([
+                                                    '30d' => '30H',
+                                                    '6m' => '6B',
+                                                    '1y' => '1T',
+                                                    'ytd' => 'YTD',
+                                                    '5y' => '5T',
+                                                    'all' => 'All',
+                                                ] as $rangeKey => $rangeLabel)
+                                                    <button type="button"
+                                                        @click="range = '{{ $rangeKey }}'; $dispatch('filter-chart', '{{ $rangeKey }}')"
+                                                        :class="range === '{{ $rangeKey }}' ? 'bg-white text-slate-900 shadow-sm' :
+                                                            'text-slate-600 hover:text-slate-900'"
+                                                        class="min-w-0 rounded-lg px-1 py-1.5 text-[10px] font-medium transition duration-150">
+                                                        {{ $rangeLabel }}
+                                                    </button>
+                                                @endforeach
+                                            </div>
+                                        </div>
 
                                         @unless ($hasOmzetData)
                                             <div
@@ -100,7 +151,7 @@
 
                             </div>
 
-                            <aside class="space-y-6">
+                            <aside class="min-w-0 space-y-6">
                                 <x-ui.card
                                     class="overflow-hidden border-[#e6ddd5] text-[#241818] shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
                                     <x-ui.card-header class="flex flex-row items-end justify-between gap-4">
