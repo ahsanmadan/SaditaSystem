@@ -238,9 +238,9 @@
     </a>
 
     <div class="min-h-screen px-0 pb-12 lg:px-6 lg:py-6 lg:pb-12">
-        <div class="mx-auto max-w-[1760px] lg:grid lg:grid-cols-[290px_minmax(0,1fr)] lg:gap-6">
+        <div id="admin-layout" class="mx-auto max-w-[1760px] lg:grid lg:grid-cols-[290px_minmax(0,1fr)] lg:gap-6 lg:transition-[grid-template-columns,gap] lg:duration-150 lg:ease-out">
             <aside id="admin-sidebar"
-                class="fixed inset-y-0 left-0 z-[80] w-[min(84vw,290px)] -translate-x-full overflow-y-auto bg-[#35191d] px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] text-white shadow-[0_24px_70px_rgba(44,20,24,0.32)] transition-transform duration-300 ease-out lg:sticky lg:top-6 lg:block lg:h-[calc(100dvh-3rem)] lg:w-auto lg:translate-x-0 lg:overflow-hidden lg:rounded-[28px] lg:border lg:border-[#ffffff10] lg:bg-[#35191d] lg:px-5 lg:py-5 lg:shadow-[0_20px_48px_rgba(62,27,35,0.18)]"
+                class="fixed inset-y-0 left-0 z-[80] w-[min(84vw,290px)] -translate-x-full overflow-y-auto bg-[#35191d] px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] text-white shadow-[0_24px_70px_rgba(44,20,24,0.32)] transition-transform duration-300 ease-out lg:sticky lg:top-6 lg:block lg:h-[calc(100dvh-3rem)] lg:min-w-0 lg:w-auto lg:translate-x-0 lg:overflow-hidden lg:rounded-[28px] lg:border lg:border-[#ffffff10] lg:bg-[#35191d] lg:px-5 lg:py-5 lg:shadow-[0_20px_48px_rgba(62,27,35,0.18)] lg:transition-[opacity,transform] lg:duration-150 lg:ease-out"
                 aria-label="Navigasi panel admin Sadita">
                 <div class="flex h-full flex-col">
                     <div class="relative flex items-center justify-center pb-5 pt-1">
@@ -566,6 +566,14 @@
                     <div class="hidden px-4 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 lg:block lg:px-0">
                         <div
                             class="flex items-center gap-3 rounded-[24px] border border-[#e4dbd3] bg-[rgba(255,252,249,0.92)] px-4 py-3 shadow-[0_14px_30px_rgba(56,35,27,0.06)] backdrop-blur-md">
+                            <x-ui.button type="button" id="admin-open-desktop" variant="outline" size="icon"
+                                class="hidden h-11 w-11 shrink-0 rounded-2xl border-[#e6ddd5] bg-white text-[#56353a] shadow-sm hover:border-[#d3c3b7] hover:bg-[#fbf7f3] focus-visible:ring-[#7A1F2B] lg:inline-flex"
+                                aria-controls="admin-sidebar" aria-expanded="true" aria-label="Tutup sidebar">
+                                <svg class="h-4.5 w-4.5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                    <path d="M4 6H16M4 10H16M4 14H12" stroke="currentColor" stroke-width="1.8"
+                                        stroke-linecap="round" />
+                                </svg>
+                            </x-ui.button>
                             @if ($isDashboardView)
                                 <div class="min-w-0 flex-1 lg:max-w-lg">
                                     <x-admin.search-form :action="route('admin.search')" input-id="module-search" :value="request('q')" />
@@ -1073,8 +1081,10 @@
                 const defaultOmzetRange = @json($defaultOmzetRange ?? '30d');
                 const openButton = document.getElementById('admin-open');
                 const closeButton = document.getElementById('admin-close');
+                const openDesktopButton = document.getElementById('admin-open-desktop');
                 const sidebar = document.getElementById('admin-sidebar');
                 const backdrop = document.getElementById('admin-backdrop');
+                const adminLayout = document.getElementById('admin-layout');
                 const errorSummary = document.getElementById('admin-error-summary');
                 const editorForm = document.querySelector('[data-admin-editor-form="true"]');
                 const chartElement = document.getElementById('revenue-line-chart');
@@ -1087,13 +1097,59 @@
                 const validationErrors = @json($validationErrors ?? []);
                 let pendingDeleteForm = null;
                 let omzetChart = null;
+                let activeOmzetRange = defaultOmzetRange;
+                let showMobileChartScale = false;
+                const desktopSidebarStorageKey = 'sadita-desktop-sidebar-open';
+                let isDesktopSidebarOpen = window.localStorage.getItem(desktopSidebarStorageKey) !== 'false';
 
                 const parseChartDate = (value) => {
                     const date = new Date(value);
                     return Number.isNaN(date.getTime()) ? null : date;
                 };
 
+                const isCompactChartViewport = () => window.innerWidth < 640;
+                const getChartHeight = () => isCompactChartViewport() ? 286 : 320;
+                const getChartTickAmount = (range = '30d') => range === '30d'
+                    ? (isCompactChartViewport() ? 4 : 6)
+                    : (isCompactChartViewport() ? 4 : 7);
+                const getChartGridPadding = () => isCompactChartViewport() ? {
+                    left: 0,
+                    right: 0,
+                    top: 2,
+                    bottom: 8,
+                } : {
+                    left: 4,
+                    right: 10,
+                    top: 8,
+                    bottom: 0,
+                };
                 const formatCurrency = (value) => `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
+                const formatCompactCurrency = (value) => {
+                    const amount = Number(value ?? 0);
+
+                    if (amount >= 1000000) {
+                        return `Rp ${Math.round(amount / 1000000)}jt`;
+                    }
+
+                    if (amount >= 1000) {
+                        return `Rp ${Math.round(amount / 1000)}rb`;
+                    }
+
+                    return `Rp ${Math.round(amount)}`;
+                };
+                const getChartYAxisOptions = () => ({
+                    opposite: isCompactChartViewport() && showMobileChartScale,
+                    forceNiceScale: true,
+                    tickAmount: isCompactChartViewport() ? 5 : 6,
+                    labels: {
+                        show: !isCompactChartViewport() || showMobileChartScale,
+                        style: {
+                            colors: '#8b746d',
+                            fontSize: isCompactChartViewport() ? '9px' : '11px',
+                        },
+                        formatter: isCompactChartViewport() ? formatCompactCurrency : formatCurrency,
+                    },
+                });
 
                 const formatChartLabel = (point, range) => {
                     const parsedDate = parseChartDate(point.raw_date ?? point.date);
@@ -1216,12 +1272,12 @@
                     omzetChart = new ApexCharts(chartElement, {
                         chart: {
                             type: 'line',
-                            height: 320,
+                            height: getChartHeight(),
                             toolbar: {
                                 show: false,
                             },
                             dropShadow: {
-                                enabled: true,
+                                enabled: !isCompactChartViewport(),
                                 color: '#7A1F2B',
                                 top: 3,
                                 left: 1,
@@ -1245,7 +1301,7 @@
                         },
                         stroke: {
                             curve: 'smooth',
-                            width: 3,
+                            width: isCompactChartViewport() ? 2.5 : 3,
                         },
                         markers: {
                             size: 0,
@@ -1255,13 +1311,8 @@
                         },
                         grid: {
                             borderColor: '#eadfd6',
-                            strokeDashArray: 4,
-                            padding: {
-                                left: 4,
-                                right: 10,
-                                top: 8,
-                                bottom: 0,
-                            },
+                            strokeDashArray: isCompactChartViewport() ? 3 : 4,
+                            padding: getChartGridPadding(),
                         },
                         xaxis: {
                             type: 'datetime',
@@ -1273,14 +1324,14 @@
                             axisTicks: {
                                 show: false,
                             },
-                            tickAmount: 6,
+                            tickAmount: getChartTickAmount(defaultOmzetRange),
                             labels: {
                                 rotate: 0,
                                 hideOverlappingLabels: true,
                                 trim: true,
                                 style: {
                                     colors: '#8b746d',
-                                    fontSize: '11px',
+                                    fontSize: isCompactChartViewport() ? '10px' : '11px',
                                 },
                                 formatter: (_value, timestamp) => {
                                     if (!timestamp) {
@@ -1289,21 +1340,18 @@
 
                                     const date = new Date(timestamp);
                                     return new Intl.DateTimeFormat('id-ID', {
-                                        day: '2-digit',
-                                        month: 'short',
+                                        ...(isCompactChartViewport() ? {
+                                            day: '2-digit',
+                                            month: 'short',
+                                        } : {
+                                            day: '2-digit',
+                                            month: 'short',
+                                        }),
                                     }).format(date);
                                 },
                             },
                         },
-                        yaxis: {
-                            labels: {
-                                style: {
-                                    colors: '#8b746d',
-                                    fontSize: '11px',
-                                },
-                                formatter: (value) => `Rp ${new Intl.NumberFormat('id-ID').format(value)}`,
-                            },
-                        },
+                        yaxis: getChartYAxisOptions(),
                         tooltip: {
                             x: {
                                 formatter: (_value, context) => {
@@ -1339,6 +1387,7 @@
 
                     document.addEventListener('filter-chart', (event) => {
                         const range = typeof event.detail === 'string' ? event.detail : '30d';
+                        activeOmzetRange = range;
                         const filteredPoints = getFilteredOmzetPoints(range);
                         const today = new Date();
                         today.setHours(0, 0, 0, 0);
@@ -1374,6 +1423,9 @@
                         })();
 
                         omzetChart.updateOptions({
+                            chart: {
+                                height: getChartHeight(),
+                            },
                             series: [{
                                 name: 'Omzet',
                                 data: filteredPoints.map((point) => ({
@@ -1385,8 +1437,9 @@
                                 type: 'datetime',
                                 min: rangeBounds.min,
                                 max: rangeBounds.max,
-                                tickAmount: range === '30d' ? 6 : 7,
+                                tickAmount: getChartTickAmount(range),
                             },
+                            yaxis: getChartYAxisOptions(),
                             tooltip: {
                                 x: {
                                     formatter: (_value, context) => {
@@ -1406,6 +1459,36 @@
                                 },
                             },
                         }, false, true);
+                    });
+
+                    document.addEventListener('toggle-chart-scale', (event) => {
+                        showMobileChartScale = Boolean(event.detail);
+
+                        omzetChart.updateOptions({
+                            yaxis: getChartYAxisOptions(),
+                            grid: {
+                                padding: getChartGridPadding(),
+                            },
+                        }, false, false);
+                    });
+
+                    window.addEventListener('resize', () => {
+                        if (!omzetChart) {
+                            return;
+                        }
+
+                        omzetChart.updateOptions({
+                            chart: {
+                                height: getChartHeight(),
+                            },
+                            xaxis: {
+                                tickAmount: getChartTickAmount(activeOmzetRange),
+                            },
+                            yaxis: getChartYAxisOptions(),
+                            grid: {
+                                padding: getChartGridPadding(),
+                            },
+                        }, false, false);
                     });
                 };
 
@@ -1571,7 +1654,7 @@
                 renderOmzetChart();
                 showSuccessToast();
 
-                if (!openButton || !closeButton || !sidebar || !backdrop) {
+                if (!openButton || !closeButton || !openDesktopButton || !sidebar || !backdrop || !adminLayout) {
                     if (errorSummary) {
                         const invalidField = document.querySelector(
                             '#record-editor [aria-invalid="true"], #record-editor .border-rose-300, #record-editor input:invalid, #record-editor select:invalid, #record-editor textarea:invalid'
@@ -1599,8 +1682,35 @@
                     document.body.classList.remove('overflow-hidden');
                 };
 
+                const syncDesktopSidebar = () => {
+                    const isDesktop = window.innerWidth >= 1024;
+
+                    if (!isDesktop) {
+                        sidebar.classList.remove('lg:opacity-0', 'lg:pointer-events-none');
+                        adminLayout.classList.remove('lg:grid-cols-[0px_minmax(0,1fr)]', 'lg:gap-0');
+                        adminLayout.classList.add('lg:grid-cols-[290px_minmax(0,1fr)]');
+                        return;
+                    }
+
+                    sidebar.classList.toggle('lg:opacity-0', !isDesktopSidebarOpen);
+                    sidebar.classList.toggle('lg:pointer-events-none', !isDesktopSidebarOpen);
+                    adminLayout.classList.toggle('lg:grid-cols-[0px_minmax(0,1fr)]', !isDesktopSidebarOpen);
+                    adminLayout.classList.toggle('lg:gap-0', !isDesktopSidebarOpen);
+                    adminLayout.classList.toggle('lg:grid-cols-[290px_minmax(0,1fr)]', isDesktopSidebarOpen);
+                    openDesktopButton.setAttribute('aria-expanded', isDesktopSidebarOpen.toString());
+                    openDesktopButton.setAttribute('aria-label', isDesktopSidebarOpen ? 'Tutup sidebar' : 'Buka sidebar');
+                    document.body.classList.remove('overflow-hidden');
+                };
+
+                const toggleDesktopSidebar = () => {
+                    isDesktopSidebarOpen = !isDesktopSidebarOpen;
+                    window.localStorage.setItem(desktopSidebarStorageKey, isDesktopSidebarOpen.toString());
+                    syncDesktopSidebar();
+                };
+
                 openButton.addEventListener('click', openMenu);
                 closeButton.addEventListener('click', closeMenu);
+                openDesktopButton.addEventListener('click', toggleDesktopSidebar);
                 backdrop.addEventListener('click', closeMenu);
 
                 window.addEventListener('keydown', (event) => {
@@ -1619,13 +1729,16 @@
                         sidebar.classList.remove('-translate-x-full');
                         backdrop.classList.add('hidden');
                         openButton.setAttribute('aria-expanded', 'false');
-                        document.body.classList.remove('overflow-hidden');
                     } else {
                         sidebar.classList.add('-translate-x-full');
                     }
+
+                    syncDesktopSidebar();
                 }, {
                     passive: true
                 });
+
+                syncDesktopSidebar();
 
                 if (errorSummary) {
                     const invalidField = document.querySelector(
