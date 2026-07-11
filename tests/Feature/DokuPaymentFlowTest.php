@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Kategori;
 use App\Models\Pelanggan;
+use App\Models\Pembayaran;
 use App\Models\Pengiriman;
 use App\Models\Pesanan;
 use App\Models\Produk;
@@ -76,6 +77,43 @@ class DokuPaymentFlowTest extends TestCase
                 'responseCode' => '401',
                 'responseMessage' => 'Invalid signature',
             ]);
+    }
+
+    public function test_notification_stores_actual_doku_channel_as_payment_method(): void
+    {
+        $pesanan = $this->createOrderWithRelations();
+
+        $mock = Mockery::mock(DokuCheckoutService::class);
+        $mock->shouldReceive('verifyNotificationSignature')->once()->andReturn(true);
+        $this->app->instance(DokuCheckoutService::class, $mock);
+
+        $this->postJson(route('doku.notify'), [
+            'order' => [
+                'invoice_number' => $pesanan->kode_pesanan,
+                'amount' => 200000,
+            ],
+            'transaction' => [
+                'status' => 'SUCCESS',
+            ],
+            'channel' => [
+                'id' => 'VIRTUAL_ACCOUNT_BCA',
+            ],
+            'acquirer' => [
+                'id' => 'BCA',
+            ],
+        ], [
+            'Signature' => 'dummy',
+            'Client-Id' => 'dummy',
+            'Request-Id' => 'dummy',
+            'Request-Timestamp' => now()->toIso8601String(),
+        ])->assertOk();
+
+        $payment = Pembayaran::query()->where('pesanan_id', $pesanan->id)->first();
+
+        $this->assertNotNull($payment);
+        $this->assertSame('VIRTUAL_ACCOUNT_BCA', $payment->metode);
+        $this->assertSame(Pembayaran::GATEWAY_DOKU, $payment->gateway_provider);
+        $this->assertSame(Pembayaran::STATUS_LUNAS, $payment->status);
     }
 
     private function createOrderWithRelations(): Pesanan

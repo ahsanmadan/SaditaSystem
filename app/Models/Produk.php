@@ -35,6 +35,8 @@ class Produk extends Model
         $paths = array_filter([
             $this->foto_utama,
             'images/'.$this->slug.'.jpg',
+            $this->kategori?->slug ? 'images/cat-'.$this->kategori->slug.'.jpg' : null,
+            'images/hero-1.jpg',
         ]);
 
         foreach ($paths as $path) {
@@ -53,7 +55,7 @@ class Produk extends Model
             }
         }
 
-        return asset('images/logo-sadita.png');
+        return asset('images/hero-1.jpg');
     }
 
     public function itemTerjual()

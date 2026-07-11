@@ -5,7 +5,7 @@
 
 <header id="main-navbar"
     class="fixed top-0 inset-x-0 z-50 transition-all duration-500 {{ $isHomePage ? '' : 'navbar-solid' }}">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-4">
+    <div class="navbar-inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-4">
         <!-- Logo -->
         <a href="/" class="navbar-logo transition-colors duration-300 hover:opacity-90 italic"
             style="font-family:'Playfair Display',serif">

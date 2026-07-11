@@ -184,7 +184,7 @@
                             @endif
                         </form>
 
-                        @if ($paymentPending && $latestPayment?->metode === \App\Models\Pembayaran::METODE_DOKU_CHECKOUT)
+                        @if ($paymentPending && $latestPayment?->isGatewayDoku())
                             <form action="{{ route('doku.refresh', ['order_id' => $order->kode_pesanan]) }}" method="POST"
                                 class="mt-3">
                                 @csrf

@@ -37,7 +37,7 @@ class DokuPaymentController extends Controller
 
         if (
             $existingPayment &&
-            $existingPayment->metode === Pembayaran::METODE_DOKU_CHECKOUT &&
+            $existingPayment->isGatewayDoku() &&
             $existingPayment->status === Pembayaran::STATUS_MENUNGGU &&
             filled($existingPayment->checkout_url) &&
             (blank($existingPayment->expires_at) || now()->lt($existingPayment->expires_at))
@@ -56,18 +56,19 @@ class DokuPaymentController extends Controller
             return back()->with('error', 'Gagal membuat link pembayaran DOKU: '.$exception->getMessage());
         }
 
-        $payment = $existingPayment && $existingPayment->metode === Pembayaran::METODE_DOKU_CHECKOUT
+        $payment = $existingPayment && $existingPayment->isGatewayDoku()
             ? $existingPayment
             : new Pembayaran([
                 'pesanan_id' => $pesanan->id,
-                'metode' => Pembayaran::METODE_DOKU_CHECKOUT,
+                'metode' => $selectedMethod !== 'ALL' ? $selectedMethod : Pembayaran::METODE_DOKU_CHECKOUT,
             ]);
 
         $payment->fill([
+            'metode' => $selectedMethod !== 'ALL' ? $selectedMethod : ($payment->metode ?: Pembayaran::METODE_DOKU_CHECKOUT),
             'jumlah_dibayar' => $pesanan->grand_total,
             'bukti_transfer' => '',
             'status' => Pembayaran::STATUS_MENUNGGU,
-            'gateway_provider' => 'doku',
+            'gateway_provider' => Pembayaran::GATEWAY_DOKU,
             'gateway_request_id' => $checkout['request_id'],
             'gateway_reference' => $checkout['token_id'],
             'checkout_url' => $checkout['checkout_url'],
@@ -140,17 +141,24 @@ class DokuPaymentController extends Controller
             ?? $pesanan->grand_total
         );
 
-        $payment = Pembayaran::firstOrNew([
-            'pesanan_id' => $pesanan->id,
-            'metode' => Pembayaran::METODE_DOKU_CHECKOUT,
-        ]);
+        $payment = Pembayaran::query()
+            ->where('pesanan_id', $pesanan->id)
+            ->where('gateway_provider', Pembayaran::GATEWAY_DOKU)
+            ->latest('id')
+            ->first()
+            ?? new Pembayaran([
+                'pesanan_id' => $pesanan->id,
+                'metode' => Pembayaran::METODE_DOKU_CHECKOUT,
+                'gateway_provider' => Pembayaran::GATEWAY_DOKU,
+            ]);
         $wasPaid = $payment->exists && $payment->status === Pembayaran::STATUS_LUNAS;
 
         $payment->fill([
+            'metode' => $this->resolveDokuMethod($payload, $payment->metode),
             'jumlah_dibayar' => $amount,
             'bukti_transfer' => $payment->bukti_transfer ?? '',
             'status' => $this->mapInternalPaymentStatus($paymentStatus),
-            'gateway_provider' => 'doku',
+            'gateway_provider' => Pembayaran::GATEWAY_DOKU,
             'gateway_request_id' => (string) $request->header('Request-Id', ''),
             'gateway_reference' => data_get($payload, 'response.payment.token_id')
                 ?? data_get($payload, 'transaction.virtualAccountNo')
@@ -202,6 +210,11 @@ class DokuPaymentController extends Controller
         return in_array($gatewayStatus, ['SUCCESS', 'PAID', '00'], true);
     }
 
+    private function resolveDokuMethod(array $payload, ?string $fallback = null): string
+    {
+        return Pembayaran::extractDokuMethodCode($payload, null, $fallback);
+    }
+
     private function syncPaymentStatus(
         string $order_id,
         DokuCheckoutService $dokuCheckoutService,
@@ -213,7 +226,7 @@ class DokuPaymentController extends Controller
 
         $payment = $pesanan->pembayaranTerakhir;
 
-        if (! $payment || $payment->metode !== Pembayaran::METODE_DOKU_CHECKOUT) {
+        if (! $payment || ! $payment->isGatewayDoku()) {
             return redirect()
                 ->route('invoice.show', ['order_id' => $order_id])
                 ->with('error', 'Data pembayaran DOKU untuk pesanan ini tidak ditemukan.');
@@ -245,6 +258,7 @@ class DokuPaymentController extends Controller
         $gatewayStatus = $statusResult['status'];
 
         $payment->fill([
+            'metode' => $this->resolveDokuMethod($statusResult['response'], $payment->metode),
             'status' => $this->mapInternalPaymentStatus($gatewayStatus),
             'gateway_status' => $gatewayStatus,
             'gateway_response' => $statusResult['response'],

@@ -3,109 +3,122 @@
 @section('content')
     <section id="beranda" class="relative w-full h-[100svh] overflow-hidden bg-[#18181b]">
         <!-- Infinite Horizontal Carousel Background -->
-        <div class="absolute inset-0 z-0 flex items-center overflow-hidden pointer-events-none opacity-40">
+        <div class="hero-bg-carousel absolute inset-0 z-0 flex items-center overflow-hidden pointer-events-none opacity-40">
             <div class="flex flex-row items-center gap-3 sm:gap-5 animate-scroll-horizontal">
                 <!-- Set A (8 Curated Best Photos) -->
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/bridesmaid-gift-box.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/bridesmaid-gift-box.jpg" alt="" class="w-full h-full object-cover"
+                        decoding="async">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
-                    <img src="/images/dekorasi-tunangan.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/dekorasi-tunangan.jpg" alt="" class="w-full h-full object-cover"
+                        decoding="async">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-6">
-                    <img src="/images/set-hantaran-nikah.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/set-hantaran-nikah.jpg" alt="" class="w-full h-full object-cover"
+                        decoding="async">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-3">
-                    <img src="/images/hero-2.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/hero-2.jpg" alt="" class="w-full h-full object-cover" decoding="async">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-2">
-                    <img src="/images/hantaran-premium-wedding.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/hantaran-premium-wedding.jpg" alt="" class="w-full h-full object-cover"
+                        decoding="async">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-6">
-                    <img src="/images/dekorasi-lamaran.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/dekorasi-lamaran.jpg" alt="" class="w-full h-full object-cover"
+                        decoding="async">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/seserahan-adat-minang.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/seserahan-adat-minang.jpg" alt="" class="w-full h-full object-cover"
+                        decoding="async">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
                     <img src="/images/papan-congratulations-eksklusif.jpg" alt=""
-                        class="w-full h-full object-cover">
+                        class="w-full h-full object-cover" decoding="async">
                 </div>
                 <!-- Set B (Duplicate for seamless infinite loop) -->
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/bridesmaid-gift-box.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/bridesmaid-gift-box.jpg" alt="" class="w-full h-full object-cover"
+                        loading="lazy" decoding="async" fetchpriority="low">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
-                    <img src="/images/dekorasi-tunangan.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/dekorasi-tunangan.jpg" alt="" class="w-full h-full object-cover" loading="lazy"
+                        decoding="async" fetchpriority="low">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-6">
-                    <img src="/images/set-hantaran-nikah.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/set-hantaran-nikah.jpg" alt="" class="w-full h-full object-cover" loading="lazy"
+                        decoding="async" fetchpriority="low">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-3">
-                    <img src="/images/hero-2.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/hero-2.jpg" alt="" class="w-full h-full object-cover" loading="lazy"
+                        decoding="async" fetchpriority="low">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-2">
-                    <img src="/images/hantaran-premium-wedding.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/hantaran-premium-wedding.jpg" alt="" class="w-full h-full object-cover"
+                        loading="lazy" decoding="async" fetchpriority="low">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-6">
-                    <img src="/images/dekorasi-lamaran.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/dekorasi-lamaran.jpg" alt="" class="w-full h-full object-cover" loading="lazy"
+                        decoding="async" fetchpriority="low">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/seserahan-adat-minang.jpg" alt="" class="w-full h-full object-cover">
+                    <img src="/images/seserahan-adat-minang.jpg" alt="" class="w-full h-full object-cover"
+                        loading="lazy" decoding="async" fetchpriority="low">
                 </div>
                 <div
                     class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
                     <img src="/images/papan-congratulations-eksklusif.jpg" alt=""
-                        class="w-full h-full object-cover">
+                        class="w-full h-full object-cover" loading="lazy" decoding="async" fetchpriority="low">
                 </div>
             </div>
         </div>
 
         <!-- Dimmed Gradient Overlay - stronger on mobile for readability -->
         <div
-            class="absolute inset-0 bg-gradient-to-b from-[#18181b]/10 via-[#18181b]/50 to-[#18181b]/95 sm:from-transparent sm:via-[#18181b]/40 sm:to-[#18181b]/80 z-10 pointer-events-none">
+            class="hero-mobile-overlay absolute inset-0 bg-gradient-to-b from-[#18181b]/10 via-[#18181b]/50 to-[#18181b]/95 sm:from-transparent sm:via-[#18181b]/40 sm:to-[#18181b]/80 z-10 pointer-events-none">
         </div>
 
         <div class="hero-content relative z-20 h-full flex items-center justify-center pt-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-                <div class="max-w-2xl mx-auto text-center">
+                <div class="hero-content-inner max-w-2xl mx-auto text-center">
                     <span
-                        class="inline-block text-[10px] sm:text-sm uppercase tracking-[0.25em] sm:tracking-[0.3em] text-[#E8C87A] font-medium mb-3 sm:mb-4 reveal-on-scroll">Papan
+                        class="hero-kicker inline-block text-[10px] sm:text-sm uppercase tracking-[0.25em] sm:tracking-[0.3em] text-[#E8C87A] font-medium mb-3 sm:mb-4 reveal-on-scroll">Papan
                         Ucapan, Hantaran & Dekorasi - Padang</span>
                     <h1 class="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.08] sm:leading-[1.03] reveal-on-scroll"
                         style="font-family:'Playfair Display',serif; text-shadow: 0 2px 20px rgba(0,0,0,0.6);">
                         Papan Ucapan,<br>Hantaran &amp; <em class="italic text-[#E8C87A]">Dekorasi</em>
                     </h1>
-                    <p class="mt-3 sm:mt-5 text-sm sm:text-base lg:text-lg text-white/70 leading-relaxed max-w-sm sm:max-w-lg mx-auto reveal-on-scroll"
+                    <p class="hero-summary mt-3 sm:mt-5 text-sm sm:text-base lg:text-lg text-white/70 leading-relaxed max-w-sm sm:max-w-lg mx-auto reveal-on-scroll"
                         style="text-shadow: 0 1px 8px rgba(0,0,0,0.5);">
                         Sadita melayani papan ucapan, hantaran, dan dekorasi untuk berbagai momen spesial di Padang.
                     </p>
-                    <div class="mt-6 sm:mt-8 flex flex-wrap justify-center gap-3 sm:gap-4 reveal-on-scroll">
+                    <div class="hero-cta-group mt-6 sm:mt-8 flex flex-wrap justify-center gap-3 sm:gap-4 reveal-on-scroll">
                         <a href="#kategori"
-                            class="btn-primary px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-[#7A1F2B] text-white text-sm font-semibold tracking-wide">
+                            class="hero-cta-primary btn-primary px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-[#7A1F2B] text-white text-sm font-semibold tracking-wide">
                             Pesan Sekarang
                         </a>
                         <a href="#galeri"
-                            class="btn-outline px-6 sm:px-8 py-3 sm:py-3.5 rounded-full border border-white/30 text-white text-sm font-semibold backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                            class="hero-cta-secondary btn-outline px-6 sm:px-8 py-3 sm:py-3.5 rounded-full border border-white/30 text-white text-sm font-semibold backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
                             Lihat Koleksi
                         </a>
                     </div>
-                    <div class="mt-6 sm:mt-9 reveal-on-scroll">
+                    <div class="hero-quick-links mt-6 sm:mt-9 reveal-on-scroll">
                         <p class="text-xs sm:text-sm text-white/55">
                             Mulai dari layanan yang Anda butuhkan:
                         </p>
@@ -297,7 +310,10 @@
                                 $priceStr = 'Rp ' . number_format($produk->harga_dasar, 0, ',', '.');
                                 $descStr = $produk->deskripsi ?? 'Detail produk ' . $produk->nama;
                             @endphp
-                            <div onclick="openProductModal('{{ addslashes($produk->nama) }}', '{{ $priceStr }}', '{{ $imgUrl }}', '{{ addslashes($descStr) }}', '{{ addslashes($kategori->nama) }}', {{ $isDecor ? 'true' : 'false' }})"
+                            <div data-product-card data-modal-title="{{ e($produk->nama) }}"
+                                data-modal-price="{{ e($priceStr) }}" data-modal-image="{{ e($imgUrl) }}"
+                                data-modal-desc="{{ e($descStr) }}" data-modal-tag="{{ e($kategori->nama) }}"
+                                data-modal-is-decor="{{ $isDecor ? '1' : '0' }}"
                                 class="group product-card cursor-pointer min-w-[160px] sm:min-w-[220px] max-w-[160px] sm:max-w-[220px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-white border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(122,31,43,0.15)] flex flex-col">
                                 <div class="relative h-48 sm:h-60 w-full overflow-hidden flex-shrink-0 bg-gray-50">
                                     <img src="{{ $imgUrl }}" alt="{{ $produk->nama }}"
@@ -328,8 +344,9 @@
                                             @php
                                                 $waText = "Halo Sadita,\n\nSaya ingin konsultasi dekorasi.\n\nJenis Dekorasi: {$produk->nama}\n\nTanggal Acara:\nWaktu Acara:\n\nLokasi Acara:\n\nKonsep / Tema yang diinginkan:\n(Contoh: elegan, rustic, minimalis, dll)\n\nCatatan tambahan:\n(opsional)\n\nTerima kasih.";
                                             @endphp
-                                            <button
-                                                onclick="event.stopPropagation(); window.open('https://wa.me/62812616155335?text={{ rawurlencode($waText) }}', '_blank')"
+                                            <button type="button"
+                                                data-stop-modal
+                                                data-external-url="https://wa.me/62812616155335?text={{ rawurlencode($waText) }}"
                                                 class="w-full py-2 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white text-[10px] sm:text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors">
                                                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                                                     <path
@@ -338,8 +355,9 @@
                                                 Konsultasi
                                             </button>
                                         @else
-                                            <button
-                                                onclick="event.stopPropagation(); window.location.href='{{ route('order') }}?product={{ rawurlencode($produk->nama) }}&price={{ rawurlencode($priceStr) }}&img={{ rawurlencode($imgUrl) }}&jenis={{ rawurlencode($kategori->nama) }}'"
+                                            <button type="button"
+                                                data-stop-modal
+                                                data-order-url="{{ route('order') }}?product={{ rawurlencode($produk->nama) }}&price={{ rawurlencode($priceStr) }}&img={{ rawurlencode($imgUrl) }}&jenis={{ rawurlencode($kategori->nama) }}"
                                                 class="w-full py-2 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white text-[10px] sm:text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors">
                                                 Pesan
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor"
@@ -355,7 +373,7 @@
                         @endforeach
 
                         <div class="group min-w-[160px] sm:min-w-[220px] max-w-[160px] sm:max-w-[220px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-[#7A1F2B] text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(122,31,43,0.3)] flex flex-col justify-center items-center text-center p-4 sm:p-5 cursor-pointer relative"
-                            onclick="window.open('https://wa.me/62812616155335?text=Halo+Sadita%2C+saya+ingin+konsultasi+mengenai+pesanan+saya', '_blank')">
+                            data-external-url="https://wa.me/62812616155335?text=Halo+Sadita%2C+saya+ingin+konsultasi+mengenai+pesanan+saya">
                             <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                             <div
                                 class="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-3 sm:mb-5 group-hover:scale-110 transition-transform duration-300">
@@ -383,8 +401,8 @@
                                 Detail produknya belum dimasukkan ke katalog publik, tapi Anda tetap bisa langsung konsultasi
                                 untuk kebutuhan {{ strtolower($kategori->nama) }}.
                             </p>
-                            <button
-                                onclick="window.open('https://wa.me/62812616155335?text={{ rawurlencode('Halo Sadita, saya ingin konsultasi mengenai ' . $kategori->nama . '.') }}', '_blank')"
+                            <button type="button"
+                                data-external-url="https://wa.me/62812616155335?text={{ rawurlencode('Halo Sadita, saya ingin konsultasi mengenai ' . $kategori->nama . '.') }}"
                                 class="mt-5 inline-flex items-center justify-center rounded-full bg-[#7A1F2B] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8f2734]">
                                 Tanya via WhatsApp
                             </button>
@@ -511,48 +529,6 @@
         </div>
     </section>
 
-    <!-- Vanilla JS for Gallery Filter -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const masonryItems = document.querySelectorAll('.masonry-item');
-
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // Reset all buttons
-                    filterBtns.forEach(b => {
-                        b.classList.remove('bg-[#7A1F2B]', 'text-white', 'active');
-                        b.classList.add('bg-white', 'text-gray-500', 'border',
-                            'border-gray-200', 'hover:bg-gray-50');
-                    });
-
-                    // Activate clicked button
-                    btn.classList.add('bg-[#7A1F2B]', 'text-white', 'active');
-                    btn.classList.remove('bg-white', 'text-gray-500', 'border', 'border-gray-200',
-                        'hover:bg-gray-50');
-
-                    const filterValue = btn.getAttribute('data-filter');
-
-                    masonryItems.forEach(item => {
-                        if (filterValue === 'all' || item.getAttribute('data-category') ===
-                            filterValue) {
-                            item.style.display = 'block';
-                            // Quick hack to re-trigger masonry layout if needed, though pure CSS column masonry handles display:none beautifully
-                            setTimeout(() => {
-                                item.style.opacity = '1';
-                            }, 50);
-                        } else {
-                            item.style.opacity = '0';
-                            setTimeout(() => {
-                                item.style.display = 'none';
-                            }, 300);
-                        }
-                    });
-                });
-            });
-        });
-    </script>
-
     <section id="cara-pesan" class="pt-16 pb-10 sm:pt-20 sm:pb-12 bg-white overflow-hidden">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <div class="grid gap-10 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:items-start">
@@ -678,7 +654,7 @@
                                 class="w-full rounded-full border border-white/18 bg-white/12 px-6 py-4 text-white placeholder-white/42 text-sm focus:outline-none focus:ring-0"
                                 placeholder="Contoh: SDT-20260411-001" autocomplete="off">
                         </div>
-                        <button id="trackingBtn" onclick="trackOrder()"
+                        <button id="trackingBtn" type="button"
                             class="tracking-submit btn-track px-8 py-4 rounded-full bg-[#E8C87A] text-[#2D1E1E] font-bold text-sm shadow-lg flex items-center justify-center gap-2 whitespace-nowrap">
                             <span id="trackingBtnText">Lacak Sekarang</span>
                             <svg id="trackingSpinner" class="animate-spin -ml-1 mr-2 h-4 w-4 text-[#2D1E1E] hidden"
@@ -707,98 +683,6 @@
             </div>
         </div>
     </section>
-
-    <!-- Tracking Logic JS -->
-    <script>
-        function trackOrder() {
-            const input = document.getElementById('trackingInput');
-            const btnText = document.getElementById('trackingBtnText');
-            const spinner = document.getElementById('trackingSpinner');
-            const resultBox = document.getElementById('trackingResult');
-
-            const code = input.value.trim().toUpperCase();
-
-            if (!code) {
-                input.focus();
-                input.classList.add('ring-2', 'ring-red-400');
-                setTimeout(() => input.classList.remove('ring-2', 'ring-red-400'), 1000);
-                return;
-            }
-
-            // Loading state
-            btnText.textContent = "Mencari...";
-            spinner.classList.remove('hidden');
-            resultBox.classList.add('hidden');
-
-            // API Call
-            fetch('/api/track/' + encodeURIComponent(code))
-                .then(response => response.json())
-                .then(data => {
-                    btnText.textContent = "Lacak";
-                    spinner.classList.add('hidden');
-                    resultBox.classList.remove('hidden');
-
-                    if (data.found) {
-                        let statusBadge = '';
-                        if (data.status === 'UNPAID') statusBadge =
-                            '<span class="text-xs font-bold text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">Menunggu Pembayaran</span>';
-                        else if (data.status === 'PAID') statusBadge =
-                            '<span class="text-xs font-bold text-blue-600 bg-blue-100 px-3 py-1 rounded-full">Sedang Diproses</span>';
-                        else if (data.status === 'DELIVERED') statusBadge =
-                            '<span class="text-xs font-bold text-green-600 bg-green-100 px-3 py-1 rounded-full">Terkirim</span>';
-                        else statusBadge =
-                            `<span class="text-xs font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full">${data.status}</span>`;
-
-                        resultBox.innerHTML = `
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-[#2D1E1E] font-bold text-lg">Pesanan Ditemukan</h4>
-                                    <p class="text-xs text-gray-500 font-mono">${data.order_id}</p>
-                                </div>
-                            </div>
-                            <div class="border-t border-gray-100 pt-4 space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-500">Produk</span>
-                                    <span class="text-sm font-semibold text-[#2D1E1E] text-right truncate max-w-[150px]" title="${data.product_name}">${data.product_name}</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-500">Status</span>
-                                    ${statusBadge}
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-500">Jadwal Kirim</span>
-                                    <span class="text-sm font-semibold text-[#2D1E1E]">${data.delivery_date} | ${data.delivery_time}</span>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        resultBox.innerHTML = `
-                            <div class="flex flex-col items-center justify-center py-4 text-center">
-                                <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 mb-3">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </div>
-                                <h4 class="text-[#2D1E1E] font-bold">Kode Tidak Ditemukan</h4>
-                                <p class="text-sm text-gray-500 mt-1">Pastikan Anda memasukkan kode pesanan yang benar (Contoh: SDT-...).</p>
-                            </div>
-                        `;
-                    }
-
-                    // Animate in
-                    setTimeout(() => {
-                        resultBox.classList.add('translate-y-0', 'opacity-100');
-                        resultBox.classList.remove('translate-y-4', 'opacity-0');
-                    }, 50);
-                })
-                .catch(error => {
-                    btnText.textContent = "Lacak";
-                    spinner.classList.add('hidden');
-                    alert('Terjadi kesalahan saat melacak pesanan.');
-                });
-        }
-    </script>
 
     <section id="tentang" class="pt-16 pb-12 sm:pt-20 sm:pb-16 bg-[#FAF5F0]">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
@@ -908,19 +792,18 @@
     </section>
 
     <!-- Product Detail Modal -->
-    <div id="productModal"
-        class="fixed inset-0 z-[100] hidden flex justify-center items-center p-4 sm:p-6 opacity-0 transition-opacity duration-300"
-        onclick="closeProductModal()">
+    <div id="productModal" data-order-url="{{ route('order') }}"
+        class="fixed inset-0 z-[100] hidden flex justify-center items-center p-4 sm:p-6 opacity-0 transition-opacity duration-300">
 
         <!-- Backdrop -->
         <div class="absolute inset-0 bg-[#2D1E1E]/40 backdrop-blur-sm transition-opacity"></div>
 
         <!-- Modal Card (Split Layout on Desktop) -->
-        <div class="bg-white w-[95%] sm:w-full max-w-[360px] md:max-w-[750px] lg:max-w-[850px] rounded-[1.5rem] md:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] transform scale-95 transition-transform duration-300 ease-out relative z-10 flex flex-col md:flex-row overflow-hidden max-h-[90vh]"
-            onclick="event.stopPropagation()">
+        <div data-product-modal-card
+            class="bg-white w-[95%] sm:w-full max-w-[360px] md:max-w-[750px] lg:max-w-[850px] rounded-[1.5rem] md:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] transform scale-95 transition-transform duration-300 ease-out relative z-10 flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
 
             <!-- Close Button -->
-            <button onclick="closeProductModal()"
+            <button type="button" data-product-modal-close
                 class="absolute top-3 right-3 md:top-5 md:right-5 z-20 w-8 h-8 md:w-10 md:h-10 bg-white/80 md:bg-gray-100 backdrop-blur-sm md:backdrop-blur-none rounded-full flex items-center justify-center text-[#2D1E1E] hover:bg-white hover:text-[#7A1F2B] hover:shadow-md transition-all group">
                 <svg class="w-4 h-4 md:w-5 md:h-5 transform group-hover:rotate-90 transition-transform duration-300"
                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1007,73 +890,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        function openProductModal(title, price, img, desc, tag = '', isDecor = false) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalPrice').textContent = price;
-            document.getElementById('modalImg').src = img;
-            document.getElementById('modalDesc').textContent = desc;
-
-            const orderBtn = document.getElementById('modalOrderBtn');
-            const btnText = document.getElementById('modalBtnText');
-            const btnIcon = document.getElementById('modalBtnIcon');
-
-            const encodedTitle = encodeURIComponent(title);
-            const encodedPrice = encodeURIComponent(price);
-            const encodedImg = encodeURIComponent(img);
-            const encodedTag = encodeURIComponent(tag);
-
-            if (isDecor) {
-                btnText.textContent = 'Konsultasi Sekarang';
-                btnIcon.innerHTML =
-                    `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>`;
-                orderBtn.className =
-                    "py-2.5 md:py-3 px-6 md:px-8 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white rounded-xl md:rounded-2xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group";
-            } else {
-                btnText.textContent = 'Pesan';
-                btnIcon.innerHTML =
-                    `<svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
-                orderBtn.className =
-                    "py-2.5 md:py-3 px-6 md:px-8 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white rounded-xl md:rounded-2xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group";
-            }
-
-            const handleOrder = function() {
-                closeProductModal();
-                if (isDecor) {
-                    const waText =
-                        `Halo Sadita,\n\nSaya ingin konsultasi dekorasi.\n\nJenis Dekorasi: ${title}\n\nTanggal Acara:\nWaktu Acara:\n\nLokasi Acara:\n\nKonsep / Tema yang diinginkan:\n(Contoh: elegan, rustic, minimalis, dll)\n\nCatatan tambahan:\n(opsional)\n\nTerima kasih.`;
-                    window.open(`https://wa.me/62812616155335?text=${encodeURIComponent(waText)}`, '_blank');
-                } else {
-                    window.location.href =
-                        `{{ route('order') }}?product=${encodedTitle}&price=${encodedPrice}&img=${encodedImg}&jenis=${encodedTag}`;
-                }
-            };
-
-            orderBtn.onclick = handleOrder;
-
-            const modal = document.getElementById('productModal');
-            modal.classList.remove('hidden');
-
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                const modalContent = modal.querySelector('.bg-white');
-                modalContent.classList.remove('scale-95');
-            }, 20);
-        }
-
-        function closeProductModal() {
-            const modal = document.getElementById('productModal');
-            const modalContent = modal.querySelector('.bg-white');
-
-            modal.classList.add('opacity-0');
-            modalContent.classList.add('scale-95');
-
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
-        }
-    </script>
 
     <style>
         @keyframes scroll-horizontal {

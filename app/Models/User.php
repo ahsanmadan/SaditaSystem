@@ -3,17 +3,15 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'is_admin'])]
+#[Fillable(['name', 'email', 'password', 'role', 'is_admin', 'notifications_seen_at'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -24,15 +22,6 @@ class User extends Authenticatable implements FilamentUser
     const ROLE_ADMIN = 'admin';
 
     const ROLE_STAFF = 'staff';
-
-    /**
-     * Akses panel Filament hanya untuk is_admin=true (owner, admin, atau staff yg diizinkan).
-     * Nanti dikembangkan per-panel jika ada multi-panel.
-     */
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return (bool) $this->is_admin;
-    }
 
     // ─── Role Helpers ─────────────────────────────────────────────────────────
 
@@ -78,6 +67,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
+            'notifications_seen_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
         ];

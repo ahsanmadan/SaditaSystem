@@ -16,6 +16,8 @@ class DashboardCache
 
     public const TOP_PELANGGAN = 'kpi_top_pelanggan';
 
+    public const DASHBOARD_PAYLOAD = 'dashboard_payload_v2';
+
     public static function keys(): array
     {
         return [
@@ -24,6 +26,7 @@ class DashboardCache
             self::STATUS_PESANAN_CHART,
             self::RECENT_ORDER_IDS,
             self::TOP_PELANGGAN,
+            self::DASHBOARD_PAYLOAD,
         ];
     }
 

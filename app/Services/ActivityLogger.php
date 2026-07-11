@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Request;
 /**
  * ActivityLogger Service
  *
- * Dipakai di semua aksi penting di Filament resource untuk audit trail.
+ * Dipakai di aksi penting panel admin untuk audit trail.
  *
  * Usage:
  *   ActivityLogger::log('verifikasi_pembayaran', $pembayaran, [

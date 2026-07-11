@@ -24,9 +24,20 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            if (! $user?->is_admin || ! $user->isAdmin()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Akun ini tidak memiliki akses ke panel admin.',
+                ])->onlyInput('email');
+            }
+
             $request->session()->regenerate();
 
-            // Redirect to filament admin panel since this user is an admin
             return redirect()->intended('/admin');
         }
 

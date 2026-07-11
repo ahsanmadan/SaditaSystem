@@ -12,6 +12,7 @@ class HomeController extends Controller
         $kategoris = Kategori::where('is_aktif', true)
             ->with(['daftarProduk' => function ($q) {
                 $q->where('is_aktif', true)
+                    ->with('kategori:id,slug')
                     ->orderBy('harga_dasar', 'asc');
             }])
             ->orderBy('id')

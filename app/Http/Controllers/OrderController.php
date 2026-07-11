@@ -10,6 +10,7 @@ use App\Models\Pengiriman;
 use App\Models\Pesanan;
 use App\Models\Produk;
 use Carbon\Carbon;
+use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -113,7 +114,7 @@ class OrderController extends Controller
             ]);
             $pengiriman->save();
 
-            if ($existingOrder?->pembayaranTerakhir?->metode === Pembayaran::METODE_DOKU_CHECKOUT) {
+            if ($existingOrder?->pembayaranTerakhir?->isGatewayDoku()) {
                 $existingOrder->pembayaranTerakhir->update([
                     'jumlah_dibayar' => $numericPrice,
                     'checkout_url' => null,
@@ -129,6 +130,15 @@ class OrderController extends Controller
 
             return $pesanan;
         });
+
+        if (blank($request->order_id)) {
+            ActivityLogger::log('pesanan_baru_masuk', $pesanan, [
+                'kode_pesanan' => $pesanan->kode_pesanan,
+                'label' => 'Pesanan "'.$pesanan->kode_pesanan.'"',
+                'nama' => $pesanan->pelanggan?->nama_lengkap ?? $request->sender_name,
+                'grand_total' => $pesanan->grand_total,
+            ]);
+        }
 
         return redirect()
             ->route('invoice.show', ['order_id' => $pesanan->kode_pesanan])
@@ -356,7 +366,7 @@ class OrderController extends Controller
     {
         $payment = $pesanan->pembayaranTerakhir;
 
-        if (! $payment || $payment->metode !== Pembayaran::METODE_DOKU_CHECKOUT || $payment->status === Pembayaran::STATUS_LUNAS) {
+        if (! $payment || ! $payment->isGatewayDoku() || $payment->status === Pembayaran::STATUS_LUNAS) {
             return;
         }
 

@@ -45,6 +45,26 @@ class AuthFlowTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_non_admin_user_cannot_login_to_admin_panel(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'staff@example.test',
+            'password' => Hash::make('password123'),
+            'role' => User::ROLE_STAFF,
+            'is_admin' => false,
+        ]);
+
+        $this->from('/login')
+            ->post('/login', [
+                'email' => $user->email,
+                'password' => 'password123',
+            ])
+            ->assertRedirect('/login')
+            ->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+    }
+
     public function test_forgot_password_sends_reset_status_for_registered_email(): void
     {
         $user = User::factory()->create([
