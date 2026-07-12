@@ -171,6 +171,7 @@ const initRevealAnimations = () => {
 
 const initProductScroll = () => {
     document.querySelectorAll('.product-scroll-container').forEach((container) => {
+        let isPointerDown = false;
         let isDragging = false;
         let startX = 0;
         let startScrollLeft = 0;
@@ -192,35 +193,52 @@ const initProductScroll = () => {
         };
 
         container.addEventListener('pointerdown', (event) => {
-            isDragging = true;
+            if (event.button !== 0) return;
+            isPointerDown = true;
             startX = event.clientX;
             startScrollLeft = container.scrollLeft;
-            pendingScrollLeft = container.scrollLeft;
-            container.classList.add('active-drag');
-            container.setPointerCapture(event.pointerId);
         });
 
         container.addEventListener('pointermove', (event) => {
-            if (!isDragging) {
+            if (!isPointerDown) {
                 return;
             }
 
-            event.preventDefault();
-            const walk = (event.clientX - startX) * 1.5;
-            pendingScrollLeft = startScrollLeft - walk;
-            queueScroll();
+            const x = event.clientX;
+            const walk = (x - startX) * 1.5;
+
+            if (!isDragging && Math.abs(x - startX) > 5) {
+                isDragging = true;
+                container.classList.add('active-drag');
+                container.setPointerCapture(event.pointerId);
+            }
+
+            if (isDragging) {
+                event.preventDefault();
+                pendingScrollLeft = startScrollLeft - walk;
+                queueScroll();
+            }
         });
 
         const stopDragging = (event) => {
-            if (!isDragging) {
+            if (!isPointerDown) {
                 return;
             }
 
-            isDragging = false;
-            container.classList.remove('active-drag');
+            isPointerDown = false;
 
-            if (event?.pointerId !== undefined && container.hasPointerCapture(event.pointerId)) {
-                container.releasePointerCapture(event.pointerId);
+            if (isDragging) {
+                isDragging = false;
+                container.classList.remove('active-drag');
+                if (event?.pointerId !== undefined && container.hasPointerCapture(event.pointerId)) {
+                    container.releasePointerCapture(event.pointerId);
+                }
+
+                const preventClickOnce = (e) => {
+                    e.stopImmediatePropagation();
+                    e.preventDefault();
+                };
+                container.addEventListener('click', preventClickOnce, { capture: true, once: true });
             }
         };
 
@@ -687,7 +705,7 @@ const initProductModal = () => {
                 jenis: tag,
             });
 
-            window.location.href = `${modal.dataset.orderUrl}?${query.toString()}`;
+            window.location.href = `${modal.dataset.baseOrderUrl}?${query.toString()}`;
         };
 
         modal.classList.remove('hidden');
@@ -699,7 +717,7 @@ const initProductModal = () => {
     };
 
     modal.addEventListener('click', (event) => {
-        if (event.target === modal || event.target.matches('[data-product-modal-close]')) {
+        if (event.target === modal || event.target.closest('[data-product-modal-close]')) {
             closeProductModal();
         }
     });
@@ -732,6 +750,10 @@ const initProductModal = () => {
                 window.location.href = url;
             }
 
+            return;
+        }
+
+        if (stopModalTrigger) {
             return;
         }
 
