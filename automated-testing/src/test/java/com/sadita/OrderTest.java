@@ -84,4 +84,37 @@ public class OrderTest extends BaseTest {
         String currentUrl = driver.getCurrentUrl();
         assertTrue(currentUrl.contains("/order"), "Should remain on order page");
     }
+
+    @Test
+    public void testTC11_ApplyPromoCodeInvalid() {
+        driver.get(baseUrl + "/order?product=Papan Bunga&price=Rp 100.000&img=/images/hero-1.jpg&jenis=Papan Bunga");
+        
+        // Fill order form
+        driver.findElement(By.id("senderName")).sendKeys("Ahsan Ramadan");
+        driver.findElement(By.id("senderPhone")).sendKeys("81234567890");
+        driver.findElement(By.id("receiverName")).sendKeys("Bagatio");
+        driver.findElement(By.id("address")).sendKeys("Padang");
+        WebElement datePicker = driver.findElement(By.id("deliveryDate"));
+        datePicker.sendKeys(java.time.LocalDate.now().plusDays(1).toString());
+        driver.findElement(By.id("deliveryTime")).sendKeys("Pagi (08:00 - 12:00)");
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        
+        // Wait redirect to invoice
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        
+        // On invoice page, try to apply a fake promo code
+        WebElement promoInput = driver.findElement(By.name("promo_code"));
+        promoInput.sendKeys("INVALIDCODE");
+        
+        WebElement applyBtn = driver.findElement(By.xpath("//button[contains(text(), 'Pakai')]"));
+        applyBtn.click();
+        
+        // Wait for page reload
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        
+        // Verify validation message
+        WebElement errorEl = driver.findElement(By.xpath("//div[contains(text(), 'tidak ditemukan') or contains(text(), 'tidak aktif')]"));
+        assertNotNull(errorEl, "Validation error message for invalid promo code should be shown");
+    }
 }
+
