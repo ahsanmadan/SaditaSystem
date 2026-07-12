@@ -116,5 +116,75 @@ public class OrderTest extends BaseTest {
         WebElement errorEl = driver.findElement(By.xpath("//div[contains(text(), 'tidak ditemukan') or contains(text(), 'tidak aktif')]"));
         assertNotNull(errorEl, "Validation error message for invalid promo code should be shown");
     }
+
+    @Test
+    public void testTC12_ApplyPromoCodeValid() {
+        driver.get(baseUrl + "/order?product=Papan Bunga&price=Rp 150.000&img=/images/hero-1.jpg&jenis=Papan Bunga");
+        
+        // Fill order form
+        driver.findElement(By.id("senderName")).sendKeys("Ahsan Promo");
+        driver.findElement(By.id("senderPhone")).sendKeys("81234567891");
+        driver.findElement(By.id("receiverName")).sendKeys("Bagatio Promo");
+        driver.findElement(By.id("address")).sendKeys("Padang Baru");
+        WebElement datePicker = driver.findElement(By.id("deliveryDate"));
+        datePicker.sendKeys(java.time.LocalDate.now().plusDays(2).toString());
+        driver.findElement(By.id("deliveryTime")).sendKeys("Pagi (08:00 - 12:00)");
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        
+        // Wait redirect to invoice
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        
+        // Apply valid promo code
+        WebElement promoInput = driver.findElement(By.name("promo_code"));
+        promoInput.sendKeys("SADITA10");
+        
+        WebElement applyBtn = driver.findElement(By.xpath("//button[contains(text(), 'Pakai')]"));
+        applyBtn.click();
+        
+        // Wait for page reload
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        
+        // Verify discount applies
+        WebElement discountLabel = driver.findElement(By.xpath("//span[contains(text(), 'SADITA10') or contains(text(), 'Voucher')]"));
+        assertNotNull(discountLabel, "Discount label for applied promo code should be visible");
+    }
+
+    @Test
+    public void testTC13_PlaceOrderDokuRedirect() {
+        driver.get(baseUrl + "/order?product=Papan Bunga&price=Rp 100.000&img=/images/hero-1.jpg&jenis=Papan Bunga");
+        
+        // Fill order form
+        driver.findElement(By.id("senderName")).sendKeys("Doku User");
+        driver.findElement(By.id("senderPhone")).sendKeys("81234567892");
+        driver.findElement(By.id("receiverName")).sendKeys("Doku Receiver");
+        driver.findElement(By.id("address")).sendKeys("Padang Doku");
+        WebElement datePicker = driver.findElement(By.id("deliveryDate"));
+        datePicker.sendKeys(java.time.LocalDate.now().plusDays(3).toString());
+        driver.findElement(By.id("deliveryTime")).sendKeys("Pagi (08:00 - 12:00)");
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        
+        // Wait redirect to invoice
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        
+        // Select payment method radio button if present, then click pay
+        try {
+            WebElement methodRadio = driver.findElement(By.cssSelector("input[type='radio'][name='payment_method']"));
+            if (!methodRadio.isSelected()) {
+                methodRadio.click();
+            }
+        } catch (Exception e) {}
+        
+        WebElement payBtn = driver.findElement(By.xpath("//button[contains(text(), 'Bayar sekarang')]"));
+        payBtn.click();
+        
+        // Wait for redirect to DOKU sandbox page
+        try { Thread.sleep(5000); } catch (InterruptedException e) {}
+        
+        // Assert redirect to DOKU sandbox happened
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("doku") || currentUrl.contains("sandbox") || currentUrl.contains("jokul"), 
+                "Should redirect to DOKU sandbox payment gateway, got: " + currentUrl);
+    }
 }
+
 
