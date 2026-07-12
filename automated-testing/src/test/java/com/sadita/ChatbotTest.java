@@ -8,55 +8,64 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ChatbotTest extends BaseTest {
 
     @Test
-    public void testTC12_ToggleChatbot() {
+    public void testTC25A_ToggleChatbot() {
         driver.get(baseUrl + "/");
         
-        // Find toggle button
-        WebElement toggleBtn = driver.findElement(By.id("chatbot-toggle"));
-        assertNotNull(toggleBtn, "Chatbot toggle button should exist");
+        // Wait for floating button to load
+        WebElement chatbotBtn = waitForElementClickable(By.id("chatbot-toggle"), 5);
+        chatbotBtn.click();
         
-        // Click to open
-        toggleBtn.click();
+        // Modal panel should be visible
+        WebElement chatbotPanel = waitForElementVisible(By.id("chatbot-panel"), 5);
+        assertTrue(chatbotPanel.isDisplayed(), "Chatbot modal panel should open");
         
-        try { Thread.sleep(1000); } catch (InterruptedException e) {}
-        
-        // Verify modal is open
-        WebElement modal = driver.findElement(By.id("chatbot-modal"));
-        String modalClass = modal.getAttribute("class");
-        assertTrue(modalClass.contains("opacity-100") || !modalClass.contains("opacity-0"), "Chatbot modal should be visible after toggle click");
-        
-        // Click close
-        WebElement closeBtn = driver.findElement(By.id("chatbot-close-btn"));
+        // Close modal
+        WebElement closeBtn = waitForElementClickable(By.id("chatbot-close"), 5);
         closeBtn.click();
         
-        try { Thread.sleep(1000); } catch (InterruptedException e) {}
-        
-        // Verify modal is closed
-        modalClass = modal.getAttribute("class");
-        assertTrue(modalClass.contains("opacity-0") || modalClass.contains("scale-0"), "Chatbot modal should be hidden after close click");
+        // Wait and assert that it becomes hidden
+        try { Thread.sleep(800); } catch (InterruptedException e) {}
+        assertFalse(chatbotPanel.isDisplayed(), "Chatbot panel should be hidden after clicking close");
     }
 
     @Test
-    public void testTC13_ChatbotSendMessage() {
+    public void testTC26A_SendMessageValid() {
         driver.get(baseUrl + "/");
         
-        // Open chat
-        driver.findElement(By.id("chatbot-toggle")).click();
-        try { Thread.sleep(1000); } catch (InterruptedException e) {}
+        // Open chatbot
+        waitForElementClickable(By.id("chatbot-toggle"), 5).click();
         
-        // Find input textarea
-        WebElement textarea = driver.findElement(By.id("chatbot-input"));
-        textarea.sendKeys("Halo Sadita AI, apakah produk dekorasi tersedia?");
+        // Fill input query
+        WebElement chatInput = waitForElementVisible(By.id("chatbot-input"), 5);
+        WebElement sendBtn = waitForElementClickable(By.id("chatbot-send"), 5);
         
-        // Click send
-        driver.findElement(By.id("chatbot-send")).click();
+        chatInput.sendKeys("apakah dekorasi pelaminan tersedia?");
+        sendBtn.click();
         
-        // Wait for bot typing animation and Groq response
-        try { Thread.sleep(5000); } catch (InterruptedException e) {}
+        // Verify message bubble appears in message container
+        WebElement userBubble = waitForElementVisible(By.xpath("//div[contains(text(), 'apakah dekorasi pelaminan tersedia')]"), 5);
+        assertNotNull(userBubble, "User message bubble should appear in container");
         
-        // Verify messages list has bot response
-        WebElement msgContainer = driver.findElement(By.id("chatbot-messages"));
-        String messagesText = msgContainer.getText();
-        assertTrue(messagesText.length() > 20, "Chatbot messages should contain the conversation history");
+        // Wait up to 10 seconds for Groq API response to complete typing animation and return reply
+        WebElement responseBubble = waitForElementVisible(By.xpath("//div[contains(@class, 'bg-white') and not(contains(text(), 'apakah dekorasi'))]"), 12);
+        assertNotNull(responseBubble, "AI chatbot response bubble should appear");
+        assertTrue(responseBubble.getText().length() > 0, "Response content should not be empty");
+    }
+
+    @Test
+    public void testTC27B_SendMessageEmpty() {
+        driver.get(baseUrl + "/");
+        
+        // Open chatbot
+        waitForElementClickable(By.id("chatbot-toggle"), 5).click();
+        
+        WebElement chatInput = waitForElementVisible(By.id("chatbot-input"), 5);
+        WebElement sendBtn = waitForElementClickable(By.id("chatbot-send"), 5);
+        
+        chatInput.clear();
+        
+        // Verify submit/send button is disabled or not clickable when empty
+        String isDisabled = sendBtn.getAttribute("disabled");
+        assertTrue(isDisabled != null || !sendBtn.isEnabled(), "Send button should be disabled when input is empty");
     }
 }

@@ -8,13 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LoginTest extends BaseTest {
 
     @Test
-    public void testTC01_LoginSuccess() {
+    public void testTC01A_LoginSuccess() {
         driver.get(baseUrl + "/login");
         
-        WebElement emailInput = driver.findElement(By.id("email"));
-        WebElement passwordInput = driver.findElement(By.id("password"));
-        WebElement botCheckbox = driver.findElement(By.id("verify_bot"));
-        WebElement submitBtn = driver.findElement(By.cssSelector("button[type='submit']"));
+        // Use explicit waits to make sure fields are ready before typing
+        WebElement emailInput = waitForElementVisible(By.id("email"), 5);
+        WebElement passwordInput = waitForElementVisible(By.id("password"), 5);
+        WebElement botCheckbox = waitForElementClickable(By.id("verify_bot"), 5);
+        WebElement submitBtn = waitForElementClickable(By.cssSelector("button[type='submit']"), 5);
         
         // Enter valid credentials
         emailInput.clear();
@@ -30,18 +31,17 @@ public class LoginTest extends BaseTest {
         submitBtn.click();
         
         // Wait and check if redirected to admin page
-        String currentUrl = driver.getCurrentUrl();
-        assertTrue(currentUrl.contains("/admin"), "Should redirect to admin dashboard, but got: " + currentUrl);
+        assertTrue(waitForUrlContains("/admin", 5), "Should redirect to admin dashboard");
     }
 
     @Test
-    public void testTC02_LoginWrongCredentials() {
+    public void testTC01B_LoginWrongCredentials() {
         driver.get(baseUrl + "/login");
         
-        WebElement emailInput = driver.findElement(By.id("email"));
-        WebElement passwordInput = driver.findElement(By.id("password"));
-        WebElement botCheckbox = driver.findElement(By.id("verify_bot"));
-        WebElement submitBtn = driver.findElement(By.cssSelector("button[type='submit']"));
+        WebElement emailInput = waitForElementVisible(By.id("email"), 5);
+        WebElement passwordInput = waitForElementVisible(By.id("password"), 5);
+        WebElement botCheckbox = waitForElementClickable(By.id("verify_bot"), 5);
+        WebElement submitBtn = waitForElementClickable(By.cssSelector("button[type='submit']"), 5);
         
         emailInput.clear();
         emailInput.sendKeys("wrongadmin");
@@ -55,21 +55,20 @@ public class LoginTest extends BaseTest {
         submitBtn.click();
         
         // Should stay on login page and display error
-        String currentUrl = driver.getCurrentUrl();
-        assertTrue(currentUrl.contains("/login") || currentUrl.endsWith("/login"), "Should stay on login page");
+        assertTrue(driver.getCurrentUrl().contains("/login"), "Should stay on login page");
         
         // Check for validation error messages
-        WebElement errorMsg = driver.findElement(By.xpath("//*[contains(text(), 'tidak cocok dengan catatan kami') or contains(text(), 'Credentials')]"));
+        WebElement errorMsg = waitForElementVisible(By.xpath("//*[contains(text(), 'tidak cocok dengan catatan kami') or contains(text(), 'Credentials')]"), 5);
         assertNotNull(errorMsg, "Error message should be shown");
     }
 
     @Test
-    public void testTC03_LoginEmptyFields() {
+    public void testTC01C_LoginEmptyFields() {
         driver.get(baseUrl + "/login");
         
-        WebElement emailInput = driver.findElement(By.id("email"));
-        WebElement passwordInput = driver.findElement(By.id("password"));
-        WebElement submitBtn = driver.findElement(By.cssSelector("button[type='submit']"));
+        WebElement emailInput = waitForElementVisible(By.id("email"), 5);
+        WebElement passwordInput = waitForElementVisible(By.id("password"), 5);
+        WebElement submitBtn = waitForElementClickable(By.cssSelector("button[type='submit']"), 5);
         
         emailInput.clear();
         passwordInput.clear();
@@ -78,17 +77,16 @@ public class LoginTest extends BaseTest {
         submitBtn.click();
         
         // Url should remain same
-        String currentUrl = driver.getCurrentUrl();
-        assertTrue(currentUrl.contains("/login"), "Should stay on login page");
+        assertTrue(driver.getCurrentUrl().contains("/login"), "Should stay on login page");
     }
 
     @Test
-    public void testTC04_LoginWithoutBotCheck() {
+    public void testTC01D_LoginWithoutBotCheck() {
         driver.get(baseUrl + "/login");
         
-        WebElement emailInput = driver.findElement(By.id("email"));
-        WebElement passwordInput = driver.findElement(By.id("password"));
-        WebElement submitBtn = driver.findElement(By.cssSelector("button[type='submit']"));
+        WebElement emailInput = waitForElementVisible(By.id("email"), 5);
+        WebElement passwordInput = waitForElementVisible(By.id("password"), 5);
+        WebElement submitBtn = waitForElementClickable(By.cssSelector("button[type='submit']"), 5);
         
         emailInput.clear();
         emailInput.sendKeys("admin");
@@ -99,7 +97,6 @@ public class LoginTest extends BaseTest {
         submitBtn.click();
         
         // HTML5 validation requires the checkbox to be checked. URL stays the same.
-        String currentUrl = driver.getCurrentUrl();
-        assertTrue(currentUrl.contains("/login"), "Should not submit form and stay on login page");
+        assertTrue(driver.getCurrentUrl().contains("/login"), "Should not submit form and stay on login page");
     }
 }

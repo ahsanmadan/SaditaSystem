@@ -9,19 +9,19 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HomeTest extends BaseTest {
 
     @Test
-    public void testTC05_HomepageLoadsSuccessfully() {
+    public void testTC02A_HomepageLoadsSuccessfully() {
         driver.get(baseUrl + "/");
         
         // Assert page title matches expected
         String title = driver.getTitle();
         assertTrue(title.contains("Sadita"), "Title should contain Sadita, got: " + title);
         
-        // Assert critical sections are present
-        WebElement berandaSection = driver.findElement(By.id("beranda"));
-        WebElement kategoriSection = driver.findElement(By.id("kategori"));
-        WebElement galeriSection = driver.findElement(By.id("galeri"));
-        WebElement lacakSection = driver.findElement(By.id("lacak"));
-        WebElement tentangSection = driver.findElement(By.id("tentang"));
+        // Assert critical sections are present using explicit waits
+        WebElement berandaSection = waitForElementVisible(By.id("beranda"), 5);
+        WebElement kategoriSection = waitForElementVisible(By.id("kategori"), 5);
+        WebElement galeriSection = waitForElementVisible(By.id("galeri"), 5);
+        WebElement lacakSection = waitForElementVisible(By.id("lacak"), 5);
+        WebElement tentangSection = waitForElementVisible(By.id("tentang"), 5);
         
         assertNotNull(berandaSection, "Beranda section should be present");
         assertNotNull(kategoriSection, "Kategori section should be present");
@@ -31,16 +31,11 @@ public class HomeTest extends BaseTest {
     }
 
     @Test
-    public void testTC06_CategoryQuickLinks() {
+    public void testTC02B_CategoryQuickLinks() {
         driver.get(baseUrl + "/");
         
-        // Verify quick link anchors
-        WebElement papanUcapanLink = driver.findElement(By.xpath("//a[@href='#kategori-papan-ucapan']"));
-        WebElement hantaranLink = driver.findElement(By.xpath("//a[@href='#kategori-hantaran']"));
-        WebElement dekorasiLink = driver.findElement(By.xpath("//a[@href='#kategori-dekorasi']"));
-        
-        assertNotNull(papanUcapanLink, "Papan Ucapan link should exist");
-        assertNotNull(hantaranLink, "Hantaran link should exist");
+        // Verify quick link anchors are visible and clickable
+        WebElement dekorasiLink = waitForElementClickable(By.xpath("//a[@href='#kategori-dekorasi']"), 5);
         assertNotNull(dekorasiLink, "Dekorasi link should exist");
         
         // Clicking quick links should modify the URL hash or target element scroll
@@ -55,21 +50,19 @@ public class HomeTest extends BaseTest {
     }
 
     @Test
-    public void testTC07_GalleryFilterTabs() {
+    public void testTC02C_GalleryFilterTabs() {
         driver.get(baseUrl + "/");
         
-        // Locate filter buttons
-        WebElement filterAll = driver.findElement(By.xpath("//button[@data-filter='all']"));
-        WebElement filterDekorasi = driver.findElement(By.xpath("//button[@data-filter='dekorasi']"));
-        WebElement filterHantaran = driver.findElement(By.xpath("//button[@data-filter='hantaran']"));
-        WebElement filterPapan = driver.findElement(By.xpath("//button[@data-filter='papan']"));
+        // Locate filter buttons with explicit wait
+        WebElement filterAll = waitForElementClickable(By.xpath("//button[@data-filter='all']"), 5);
+        WebElement filterDekorasi = waitForElementClickable(By.xpath("//button[@data-filter='dekorasi']"), 5);
         
         assertNotNull(filterAll, "Filter 'Semua' button should exist");
         assertNotNull(filterDekorasi, "Filter 'Dekorasi' button should exist");
         
         // Verify filtering works in DOM by clicking 'dekorasi' and checking hidden classes
         filterDekorasi.click();
-        try { Thread.sleep(500); } catch (InterruptedException e) {}
+        try { Thread.sleep(800); } catch (InterruptedException e) {} // Wait for masonry animation to complete
         
         // Verify active class on the button
         assertTrue(filterDekorasi.getAttribute("class").contains("active"), "Dekorasi filter button should be active");

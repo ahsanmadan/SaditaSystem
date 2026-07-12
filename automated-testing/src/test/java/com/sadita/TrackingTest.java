@@ -8,33 +8,24 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TrackingTest extends BaseTest {
 
     @Test
-    public void testTC11_TrackOrderSuccess() {
-        driver.get(baseUrl + "/");
-        
-        WebElement input = driver.findElement(By.id("trackingInput"));
-        WebElement button = driver.findElement(By.id("trackingBtn"));
-        
-        // Enter a valid seeded order code
-        // Based on seeders, let's try to track using a placeholder or we can create an order first
-        // But since this is a clean test, let's enter a dummy valid-format order that is handled or seeded.
-        // Wait, does the seeder seed transaction data? Yes, transaction seeder creates random orders.
-        // Let's create an order first, get its code from the invoice page, and then track it!
-        // This is a beautiful way to write a self-contained integration test!
-        
+    public void testTC17A_TrackOrderSuccess() {
+        // Create an order first, get its code from the invoice page, and then track it!
         driver.get(baseUrl + "/order?product=Hantaran&price=Rp 50.000&img=/images/hero-1.jpg&jenis=Hantaran");
-        driver.findElement(By.id("senderName")).sendKeys("Tracking Buyer");
-        driver.findElement(By.id("senderPhone")).sendKeys("89653090248");
-        driver.findElement(By.id("receiverName")).sendKeys("Tracking Receiver");
-        driver.findElement(By.id("address")).sendKeys("Jalan A Yani Padang");
         
-        WebElement datePicker = driver.findElement(By.id("deliveryDate"));
+        waitForElementVisible(By.id("senderName"), 5).sendKeys("Tracking Buyer");
+        waitForElementVisible(By.id("senderPhone"), 5).sendKeys("89653090248");
+        waitForElementVisible(By.id("receiverName"), 5).sendKeys("Tracking Receiver");
+        waitForElementVisible(By.id("address"), 5).sendKeys("Jalan A Yani Padang");
+        
+        WebElement datePicker = waitForElementVisible(By.id("deliveryDate"), 5);
         java.time.LocalDate tomorrow = java.time.LocalDate.now().plusDays(2);
         datePicker.sendKeys(tomorrow.toString());
-        driver.findElement(By.id("deliveryTime")).sendKeys("Siang (12:00 - 16:00)");
+        waitForElementVisible(By.id("deliveryTime"), 5).sendKeys("Siang (12:00 - 16:00)");
         
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        waitForElementClickable(By.cssSelector("button[type='submit']"), 5).click();
         
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        // Wait redirect to invoice
+        assertTrue(waitForUrlContains("/invoice/", 5), "Should redirect to invoice page");
         
         // We are on invoice page, extract the order ID from URL or page text
         String url = driver.getCurrentUrl();
@@ -43,37 +34,33 @@ public class TrackingTest extends BaseTest {
         // Go back to Homepage and track
         driver.get(baseUrl + "/");
         
-        // Re-locate elements
-        input = driver.findElement(By.id("trackingInput"));
-        button = driver.findElement(By.id("trackingBtn"));
+        // Re-locate elements with explicit waits
+        WebElement input = waitForElementVisible(By.id("trackingInput"), 5);
+        WebElement button = waitForElementClickable(By.id("trackingBtn"), 5);
         
         input.clear();
         input.sendKeys(orderId);
         button.click();
         
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
-        
         // Result should be visible and show matching ID and UNPAID status
-        WebElement resultBox = driver.findElement(By.id("trackingResult"));
+        WebElement resultBox = waitForElementVisible(By.id("trackingResult"), 5);
         assertTrue(resultBox.isDisplayed(), "Tracking result should be visible");
         assertTrue(resultBox.getText().contains("UNPAID") || resultBox.getText().contains("Menunggu Pembayaran"), 
                 "Should show unpaid status for new order");
     }
 
     @Test
-    public void testTC12_TrackOrderNotFound() {
+    public void testTC17B_TrackOrderNotFound() {
         driver.get(baseUrl + "/");
         
-        WebElement input = driver.findElement(By.id("trackingInput"));
-        WebElement button = driver.findElement(By.id("trackingBtn"));
+        WebElement input = waitForElementVisible(By.id("trackingInput"), 5);
+        WebElement button = waitForElementClickable(By.id("trackingBtn"), 5);
         
         input.clear();
         input.sendKeys("SDT-NOTFOUND-999");
         button.click();
         
-        try { Thread.sleep(1500); } catch (InterruptedException e) {}
-        
-        WebElement resultBox = driver.findElement(By.id("trackingResult"));
+        WebElement resultBox = waitForElementVisible(By.id("trackingResult"), 5);
         assertTrue(resultBox.isDisplayed(), "Tracking result should be visible");
         assertTrue(resultBox.getText().contains("Tidak Ditemukan") || resultBox.getText().contains("gagal") || resultBox.getText().contains("found"), 
                 "Should show 'Tidak Ditemukan' message");
