@@ -1,0 +1,553 @@
+LAPORAN SKENARIO PENGUJIAN SOFTWARE
+WHITE BOX TESTING: STATEMENT COVERAGE
+SISTEM INFORMASI MANAJEMEN BISNIS SADITA DECORATION
+Disusun   Oleh :
+Baga tio  Putra  Joandri  (4342201015)  Ahsan  Ramadan (4342201024 ) Jeli   Mayora  (4342201032) Aprilla   Maulida  (4342201041) 
+PROGRAM STUDI D4-TEKNOLOGI REKAYASA PERANGKAT LUNAK
+JURUSAN  TEKNOLOGI INFORMASI
+POLITEKNIK NEGERI  PADANG
+TAHUN AJARAN 2025/2026
+1. PENDAHULUAN
+1.1 Latar Belakang Pengujian
+Pengujian perangkat lunak merupakan bagian integral dari siklus hidup pengembangan sistem informasi guna menjamin mutu, keandalan, dan stabilitas aplikasi sebelum dipublikasikan. Dalam proyek pengembangan Sistem Informasi Manajemen Bisnis Sadita Decoration, yang mencakup layanan Sewa, Jasa, dan Hybrid Hantaran, pengujian yang komprehensif sangat diperlukan. Hal ini disebabkan oleh adanya logika bisnis yang kompleks seperti penanganan guest checkout, perhitungan harga dinamis, dan staged payment untuk hantaran titip belanja.
+Guna melengkapi pengujian fungsionalitas luar (Black Box), tim pengembang mengimplementasikan pengujian White Box (Kotak Putih). Pengujian ini berfokus pada analisis struktur internal, aliran kode, dan percabangan program pada level bahasa pemrograman PHP (Laravel).
+1.2 Metodologi Statement Coverage
+Statement Coverage (Cakupan Pernyataan) adalah salah satu kriteria pengujian White Box paling mendasar, di mana setiap pernyataan executable (baris perintah/statement) di dalam kode program harus dieksekusi minimal satu kali selama proses pengujian. Melalui metodologi ini, tim pengembang merancang data masukan spesifik untuk memaksa jalannya eksekusi melewati berbagai percabangan (if-else), blok kondisional, penanganan fallback, dan pemanggilan query database. Hal ini memastikan tidak ada pernyataan mati (dead code) atau jalur tersembunyi yang berpotensi memicu kegagalan runtime.
+Dokumen ini memuat total 40 skenario pengujian statement coverage yang dibagi rata kepada 4 anggota tim (masing-masing 10 skenario) berdasarkan kontribusi fungsional dan penulisan kode pada modul-modul web yang telah dibangun.
+2. SKENARIO PENGUJIAN WHITE BOX
+2.1 Skenario Pengujian – Bagatio Putra Joandri
+Berikut adalah tabel skenario pengujian White Box Statement Coverage yang menjadi tanggung jawab dan fokus kerja Bagatio Putra Joandri berdasarkan komponen kode terkait.
+[CELL]: No
+No
+[CELL]: ID Skenario
+ID Skenario
+[CELL]: Komponen / Fungsi
+Komponen / Fungsi
+[CELL]: Jalur Pernyataan Teruji (Statement Coverage)
+Jalur Pernyataan Teruji (Statement Coverage)
+[CELL]: Data Masukan (Input Data)
+Data Masukan (Input Data)
+[CELL]: Hasil Diharapkan
+Hasil Diharapkan
+[CELL]: 1
+1
+[CELL]: WB-BPJ-001
+WB-BPJ-001
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 18: pre_replace untuk membersihkan format harga kotor dari simbol mata uang.
+Baris 18: pre_replace untuk membersihkan format harga kotor dari simbol mata uang.
+[CELL]: $request->price = 'Rp 250.000'
+$request->price = 'Rp 250.000'
+[CELL]: $rawPrice = '250000', regex berhasil membuang simbol 'Rp' dan titik pembatas ribuan.
+$rawPrice = '250000', regex berhasil membuang simbol 'Rp' dan titik pembatas ribuan.
+[CELL]: 2
+2
+[CELL]: WB-BPJ-002
+WB-BPJ-002
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 19: Ternary operator pengkondisian harga jika kosong / null.
+Baris 19: Ternary operator pengkondisian harga jika kosong / null.
+[CELL]: $request->price = '' (kosong)
+$request->price = '' (kosong)
+[CELL]: $numericPrice = 0, default fallback nilai integer berhasil dijalankan.
+$numericPrice = 0, default fallback nilai integer berhasil dijalankan.
+[CELL]: 3
+3
+[CELL]: WB-BPJ-003
+WB-BPJ-003
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 24-25: firstOrCreate() mengeksekusi pencarian Pelanggan lama yang terdaftar di database.
+Baris 24-25: firstOrCreate() mengeksekusi pencarian Pelanggan lama yang terdaftar di database.
+[CELL]: $request->sender_phone = '08123456789' (nomor terdaftar)
+$request->sender_phone = '08123456789' (nomor terdaftar)
+[CELL]: firstOrCreate mengembalikan record Pelanggan lama, tidak membuat baris baru di database.
+firstOrCreate mengembalikan record Pelanggan lama, tidak membuat baris baru di database.
+[CELL]: 4
+4
+[CELL]: WB-BPJ-004
+WB-BPJ-004
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 24-30: firstOrCreate() membuat record Pelanggan baru jika nomor belum terdaftar.
+Baris 24-30: firstOrCreate() membuat record Pelanggan baru jika nomor belum terdaftar.
+[CELL]: $request->sender_phone = '0899888777' (nomor baru), $request->sender_name = 'Dewi'
+$request->sender_phone = '0899888777' (nomor baru), $request->sender_name = 'Dewi'
+[CELL]: Record Pelanggan baru tersimpan di database dengan nama 'Dewi' dan email bernilai null.
+Record Pelanggan baru tersimpan di database dengan nama 'Dewi' dan email bernilai null.
+[CELL]: 5
+5
+[CELL]: WB-BPJ-005
+WB-BPJ-005
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 33: Pembentukan string kode_pesanan unik dengan pola prefix  'SDT-'.
+Baris 33: Pembentukan string kode_pesanan unik dengan pola prefix  'SDT-'.
+[CELL]: Data input pemesanan valid
+Data input pemesanan valid
+[CELL]: Variabel $kodePesanan terisi string format SDT-YYYYMMDD-[5  karakter acak] secara dinamis.
+Variabel $kodePesanan terisi string format SDT-YYYYMMDD-[5  karakter acak] secara dinamis.
+[CELL]: 6
+6
+[CELL]: WB-BPJ-006
+WB-BPJ-006
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 34-43: Blok pembuatan record Pesanan (Pesanan::create) dengan total_harga valid.
+Baris 34-43: Blok pembuatan record Pesanan (Pesanan::create) dengan total_harga valid.
+[CELL]: $numericPrice = 300000, $request->special_instruction = 'Kirim pagi'
+$numericPrice = 300000, $request->special_instruction = 'Kirim pagi'
+[CELL]: Record Pesanan sukses tersimpan di database dengan total_harga, biaya_ongkir, grand_total = 300000.
+Record Pesanan sukses tersimpan di database dengan total_harga, biaya_ongkir, grand_total = 300000.
+[CELL]: 7
+7
+[CELL]: WB-BPJ-007
+WB-BPJ-007
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 41: Perhitungan batas_waktu_bayar (menambahkan 24 jam dari sekarang).
+Baris 41: Perhitungan batas_waktu_bayar (menambahkan 24 jam dari sekarang).
+[CELL]: Request pemesanan disubmit
+Request pemesanan disubmit
+[CELL]: Kolom batas_waktu_bayar terisi waktu sekarang + 24 jam dengan presisi menit dan detik.
+Kolom batas_waktu_bayar terisi waktu sekarang + 24 jam dengan presisi menit dan detik.
+[CELL]: 8
+8
+[CELL]: WB-BPJ-008
+WB-BPJ-008
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 42: Penyimpanan instruksi khusus pembeli pada kolom catatan_pembeli.
+Baris 42: Penyimpanan instruksi khusus pembeli pada kolom catatan_pembeli.
+[CELL]: $request->special_instruction = 'Bunga didominasi warna merah'
+$request->special_instruction = 'Bunga didominasi warna merah'
+[CELL]: Kolom catatan_pembeli pada tabel pesanan terisi teks instruksi yang dikirimkan pembeli.
+Kolom catatan_pembeli pada tabel pesanan terisi teks instruksi yang dikirimkan pembeli.
+[CELL]: 9
+9
+[CELL]: WB-BPJ-009
+WB-BPJ-009
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 42: Penyimpanan catatan_pembeli jika tidak ada instruksi khusus dari pembeli.
+Baris 42: Penyimpanan catatan_pembeli jika tidak ada instruksi khusus dari pembeli.
+[CELL]: $request->special_instruction = null
+$request->special_instruction = null
+[CELL]: Kolom catatan_pembeli pada database terisi dengan nilai null secara eksplisit.
+Kolom catatan_pembeli pada database terisi dengan nilai null secara eksplisit.
+[CELL]: 10
+10
+[CELL]: WB-BPJ-010
+WB-BPJ-010
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 37: Inisialisasi status pesanan awal dengan string 'menunggu_pembayaran'.
+Baris 37: Inisialisasi status pesanan awal dengan string 'menunggu_pembayaran'.
+[CELL]: Request pemesanan valid disubmit
+Request pemesanan valid disubmit
+[CELL]: Kolom status pada record pesanan terisi string 'menunggu_pembayaran' sebagai status awal default.
+Kolom status pada record pesanan terisi string 'menunggu_pembayaran' sebagai status awal default.
+2.1 Skenario Pengujian – Ahsan Ramadan
+Berikut adalah tabel skenario pengujian White Box Statement Coverage yang menjadi tanggung jawab dan fokus kerja Ahsan Ramadan berdasarkan komponen kode terkait.
+[CELL]: No
+No
+[CELL]: ID Skenario
+ID Skenario
+[CELL]: Komponen / Fungsi
+Komponen / Fungsi
+[CELL]: Jalur Pernyataan Teruji (Statement Coverage)
+Jalur Pernyataan Teruji (Statement Coverage)
+[CELL]: Data Masukan (Input Data)
+Data Masukan (Input Data)
+[CELL]: Hasil Diharapkan
+Hasil Diharapkan
+[CELL]: 1
+1
+[CELL]: WB-AR-011
+WB-AR-011
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 46: Pencarian produk yang valid dan terdaftar di database.
+Baris 46: Pencarian produk yang valid dan terdaftar di database.
+[CELL]: $request->product_name = 'Papan Bunga Grand Opening'
+$request->product_name = 'Papan Bunga Grand Opening'
+[CELL]: $produk ditemukan (tidak null) dan variabel $produkId diisi dengan ID produk tersebut.
+$produk ditemukan (tidak null) dan variabel $produkId diisi dengan ID produk tersebut.
+[CELL]: 2
+2
+[CELL]: WB-AR-012
+WB-AR-012
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 47: Fallback pencarian produk pertama jika nama produk tidak ditemukan.
+Baris 47: Fallback pencarian produk pertama jika nama produk tidak ditemukan.
+[CELL]: $request->product_name = 'Produk Palsu'
+$request->product_name = 'Produk Palsu'
+[CELL]: $produk bernilai null, $produkId fallback diisi dengan ID dari Produk::first() (atau default 1).
+$produk bernilai null, $produkId fallback diisi dengan ID dari Produk::first() (atau default 1).
+[CELL]: 3
+3
+[CELL]: WB-AR-013
+WB-AR-013
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 50-59: Pembuatan record DetailPesanan dan snapshots data produk.
+Baris 50-59: Pembuatan record DetailPesanan dan snapshots data produk.
+[CELL]: $request->product_name = 'Papan Bunga', $request->greeting_msg = 'Selamat dan Sukses'
+$request->product_name = 'Papan Bunga', $request->greeting_msg = 'Selamat dan Sukses'
+[CELL]: Record DetailPesanan dibuat dengan nama_produk_snapshot = 'Papan Bunga' dan teks_ucapan = 'Selamat dan Sukses'.
+Record DetailPesanan dibuat dengan nama_produk_snapshot = 'Papan Bunga' dan teks_ucapan = 'Selamat dan Sukses'.
+[CELL]: 4
+4
+[CELL]: WB-AR-014
+WB-AR-014
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 53: Fallback nama_produk_snapshot jika parameter nama kosong.
+Baris 53: Fallback nama_produk_snapshot jika parameter nama kosong.
+[CELL]: $request->product_name = null
+$request->product_name = null
+[CELL]: Kolom nama_produk_snapshot terisi string default 'Produk Sadita' agar database tidak error.
+Kolom nama_produk_snapshot terisi string default 'Produk Sadita' agar database tidak error.
+[CELL]: 5
+5
+[CELL]: WB-AR-015
+WB-AR-015
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 67: Pemetaan jam pengiriman untuk opsi label waktu Pagi.
+Baris 67: Pemetaan jam pengiriman untuk opsi label waktu Pagi.
+[CELL]: $request->delivery_time = 'Pagi (08:00 - 12:00)'
+$request->delivery_time = 'Pagi (08:00 - 12:00)'
+[CELL]: Variabel $jamPengiriman terisi nilai '08:00:00' berdasarkan pemetaan  $timeMap.
+Variabel $jamPengiriman terisi nilai '08:00:00' berdasarkan pemetaan  $timeMap.
+[CELL]: 6
+6
+[CELL]: WB-AR-016
+WB-AR-016
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 67: Pemetaan jam pengiriman untuk opsi label waktu Siang.
+Baris 67: Pemetaan jam pengiriman untuk opsi label waktu Siang.
+[CELL]: $request->delivery_time = 'Siang (12:00 - 16:00)'
+$request->delivery_time = 'Siang (12:00 - 16:00)'
+[CELL]: Variabel $jamPengiriman terisi nilai '12:00:00' berdasarkan pemetaan $timeMap.
+Variabel $jamPengiriman terisi nilai '12:00:00' berdasarkan pemetaan $timeMap.
+[CELL]: 7
+7
+[CELL]: WB-AR-017
+WB-AR-017
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 67: Pemetaan jam pengiriman untuk opsi label waktu Sore.
+Baris 67: Pemetaan jam pengiriman untuk opsi label waktu Sore.
+[CELL]: $request->delivery_time = 'Sore (16:00 - 20:00)'
+$request->delivery_time = 'Sore (16:00 - 20:00)'
+[CELL]: Variabel $jamPengiriman terisi nilai '16:00:00' berdasarkan pemetaan $timeMap.
+Variabel $jamPengiriman terisi nilai '16:00:00' berdasarkan pemetaan $timeMap.
+[CELL]: 8
+8
+[CELL]: WB-AR-018
+WB-AR-018
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 71-73: Pembuatan record Pengiriman dengan nama penerima sama dengan nama pengirim jika kosong.
+Baris 71-73: Pembuatan record Pengiriman dengan nama penerima sama dengan nama pengirim jika kosong.
+[CELL]: $request->receiver_name = null, $request->sender_name = 'Ahmad'
+$request->receiver_name = null, $request->sender_name = 'Ahmad'
+[CELL]: Record Pengiriman tersimpan dengan nama_penerima = 'Ahmad' (fallback dari nama pengirim).
+Record Pengiriman tersimpan dengan nama_penerima = 'Ahmad' (fallback dari nama pengirim).
+[CELL]: 9
+9
+[CELL]: WB-AR-019
+WB-AR-019
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 73: Fallback alamat pengiriman jika bernilai kosong/null.
+Baris 73: Fallback alamat pengiriman jika bernilai kosong/null.
+[CELL]: $request->address = null
+$request->address = null
+[CELL]: Kolom alamat_lengkap pada tabel pengirimans bernilai default 'Ambil di Toko'.
+Kolom alamat_lengkap pada tabel pengirimans bernilai default 'Ambil di Toko'.
+[CELL]: 10
+10
+[CELL]: WB-AR-020
+WB-AR-020
+[CELL]: OrderController @store
+OrderController @store
+[CELL]: Baris 80-81: Aksi redirect halaman sukses dengan pengiriman flash data.
+Baris 80-81: Aksi redirect halaman sukses dengan pengiriman flash data.
+[CELL]: Data request disubmit secara lengkap dan valid
+Data request disubmit secara lengkap dan valid
+[CELL]: Redirect ke route 'invoice.show' dengan param order_id kode pesanan baru dan session success.
+Redirect ke route 'invoice.show' dengan param order_id kode pesanan baru dan session success.
+2.1 Skenario Pengujian – Jeli Mayora
+Berikut adalah tabel skenario pengujian White Box Statement Coverage yang menjadi tanggung jawab dan fokus kerja Jeli Mayora berdasarkan komponen kode terkait.
+[CELL]: No
+No
+[CELL]: ID Skenario
+ID Skenario
+[CELL]: Komponen / Fungsi
+Komponen / Fungsi
+[CELL]: Jalur Pernyataan Teruji (Statement Coverage)
+Jalur Pernyataan Teruji (Statement Coverage)
+[CELL]: Data Masukan (Input Data)
+Data Masukan (Input Data)
+[CELL]: Hasil Diharapkan
+Hasil Diharapkan
+[CELL]: 1
+1
+[CELL]: WB-JM-021
+WB-JM-021
+[CELL]: AuthController @showLogin
+AuthController @showLogin
+[CELL]: Baris 12: Pengembalian view login panel admin.
+Baris 12: Pengembalian view login panel admin.
+[CELL]: GET request ke halaman '/login'
+GET request ke halaman '/login'
+[CELL]: Mengembalikan view login, status HTTP 200 berhasil merender antarmuka halaman.
+Mengembalikan view login, status HTTP 200 berhasil merender antarmuka halaman.
+[CELL]: 2
+2
+[CELL]: WB-JM-022
+WB-JM-022
+[CELL]: AuthController @login
+AuthController @login
+[CELL]: Baris 17-20: Validasi field email dan password wajib diisi (required).
+Baris 17-20: Validasi field email dan password wajib diisi (required).
+[CELL]: POST /login dengan email = '' dan password = ''
+POST /login dengan email = '' dan password = ''
+[CELL]: Sistem memicu ValidationException, menolak request dan mengembalikan error input.
+Sistem memicu ValidationException, menolak request dan mengembalikan error input.
+[CELL]: 3
+3
+[CELL]: WB-JM-023
+WB-JM-023
+[CELL]: AuthController @login
+AuthController @login
+[CELL]: Baris 22-26: Login admin sukses dengan kredensial terdaftar & regenerasi session.
+Baris 22-26: Login admin sukses dengan kredensial terdaftar & regenerasi session.
+[CELL]: email = 'admin@sadita.com', password = 'admin123' (valid)
+email = 'admin@sadita.com', password = 'admin123' (valid)
+[CELL]: Auth::attempt sukses, session()->regenerate() dieksekusi, redirect ke halaman '/admin'.
+Auth::attempt sukses, session()->regenerate() dieksekusi, redirect ke halaman '/admin'.
+[CELL]: 4
+4
+[CELL]: WB-JM-024
+WB-JM-024
+[CELL]: AuthController @login
+AuthController @login
+[CELL]: Baris 29-31: Login gagal dengan kredensial tidak cocok dan return error email.
+Baris 29-31: Login gagal dengan kredensial tidak cocok dan return error email.
+[CELL]: email = 'admin@sadita.com', password = 'salahpassword'
+email = 'admin@sadita.com', password = 'salahpassword'
+[CELL]: Auth::attempt gagal, redirect back dengan errors kredensial tidak cocok dan retain input email.
+Auth::attempt gagal, redirect back dengan errors kredensial tidak cocok dan retain input email.
+[CELL]: 5
+5
+[CELL]: WB-JM-025
+WB-JM-025
+[CELL]: AuthController @logout
+AuthController @logout
+[CELL]: Baris 36-41: Logout admin, pembersihan session dan token csrf.
+Baris 36-41: Logout admin, pembersihan session dan token csrf.
+[CELL]: POST /logout dengan status admin terautentikasi
+POST /logout dengan status admin terautentikasi
+[CELL]: Auth::logout() dijalankan, session di-invalidate, token session di-regenerate, redirect ke '/'.
+Auth::logout() dijalankan, session di-invalidate, token session di-regenerate, redirect ke '/'.
+[CELL]: 6
+6
+[CELL]: WB-JM-026
+WB-JM-026
+[CELL]: OrderController @normalizeDeliveryTime
+OrderController @normalizeDeliveryTime
+[CELL]: Baris 133-135: Penanganan parameter deliveryTime jika kosong/null.
+Baris 133-135: Penanganan parameter deliveryTime jika kosong/null.
+[CELL]: $deliveryTime = null
+$deliveryTime = null
+[CELL]: Fungsi langsung mengembalikan string waktu default '09:00:00'.
+Fungsi langsung mengembalikan string waktu default '09:00:00'.
+[CELL]: 7
+7
+[CELL]: WB-JM-027
+WB-JM-027
+[CELL]: OrderController @normalizeDeliveryTime
+OrderController @normalizeDeliveryTime
+[CELL]: Baris 137-139: Pemetaan waktu untuk string label 'Pagi (08:00 - 12:00)'.
+Baris 137-139: Pemetaan waktu untuk string label 'Pagi (08:00 - 12:00)'.
+[CELL]: $deliveryTime = 'Pagi (08:00 - 12:00)'
+$deliveryTime = 'Pagi (08:00 - 12:00)'
+[CELL]: Fungsi mengembalikan string waktu '09:00:00' (mengambil dari array $timeMap).
+Fungsi mengembalikan string waktu '09:00:00' (mengambil dari array $timeMap).
+[CELL]: 8
+8
+[CELL]: WB-JM-028
+WB-JM-028
+[CELL]: OrderController @normalizeDeliveryTime
+OrderController @normalizeDeliveryTime
+[CELL]: Baris 137-139: Pemetaan waktu untuk string label 'Siang (12:00 - 16:00)'.
+Baris 137-139: Pemetaan waktu untuk string label 'Siang (12:00 - 16:00)'.
+[CELL]: $deliveryTime = 'Siang (12:00 - 16:00)'
+$deliveryTime = 'Siang (12:00 - 16:00)'
+[CELL]: Fungsi mengembalikan string waktu '13:00:00' (mengambil dari array $timeMap).
+Fungsi mengembalikan string waktu '13:00:00' (mengambil dari array $timeMap).
+[CELL]: 9
+9
+[CELL]: WB-JM-029
+WB-JM-029
+[CELL]: OrderController @normalizeDeliveryTime
+OrderController @normalizeDeliveryTime
+[CELL]: Baris 141-142: Regex format HH:MM dengan panjang string 5 karakter.
+Baris 141-142: Regex format HH:MM dengan panjang string 5 karakter.
+[CELL]: $deliveryTime = '10:00'
+$deliveryTime = '10:00'
+[CELL]: Regex bernilai true, panjang string 5 karakter, fungsi mengembalikan '10:00:00' (ditambah ':00').
+Regex bernilai true, panjang string 5 karakter, fungsi mengembalikan '10:00:00' (ditambah ':00').
+[CELL]: 10
+10
+[CELL]: WB-JM-030
+WB-JM-030
+[CELL]: OrderController @normalizeDeliveryTime
+OrderController @normalizeDeliveryTime
+[CELL]: Baris 143: Fallback waktu jika string tidak  sesuai format dan label map.
+Baris 143: Fallback waktu jika string tidak  sesuai format dan label map.
+[CELL]: $deliveryTime = 'malam hari'
+$deliveryTime = 'malam hari'
+[CELL]: Regex bernilai false, data tidak ada di map, fungsi mengembalikan  default '09:00:00'.
+Regex bernilai false, data tidak ada di map, fungsi mengembalikan  default '09:00:00'.
+2.1 Skenario Pengujian – Aprilla Maulida
+Berikut adalah tabel skenario pengujian White Box Statement Coverage yang menjadi tanggung jawab dan fokus kerja Aprilla Maulida berdasarkan komponen kode terkait.
+[CELL]: No
+No
+[CELL]: ID Skenario
+ID Skenario
+[CELL]: Komponen / Fungsi
+Komponen / Fungsi
+[CELL]: Jalur Pernyataan Teruji (Statement Coverage)
+Jalur Pernyataan Teruji (Statement Coverage)
+[CELL]: Data Masukan (Input Data)
+Data Masukan (Input Data)
+[CELL]: Hasil Diharapkan
+Hasil Diharapkan
+[CELL]: 1
+1
+[CELL]: WB-AM-031
+WB-AM-031
+[CELL]: HomeController @index
+HomeController @index
+[CELL]: Baris 12: Filter Kategori aktif (where is_aktif = true).
+Baris 12: Filter Kategori aktif (where is_aktif = true).
+[CELL]: Database memiliki kategori aktif dan tidak aktif
+Database memiliki kategori aktif dan tidak aktif
+[CELL]: Hanya record Kategori dengan is_aktif = true yang diambil dari database.
+Hanya record Kategori dengan is_aktif = true yang diambil dari database.
+[CELL]: 2
+2
+[CELL]: WB-AM-032
+WB-AM-032
+[CELL]: HomeController @index
+HomeController @index
+[CELL]: Baris 13-16: Eager load produk aktif dan pengurutan harga terendah.
+Baris 13-16: Eager load produk aktif dan pengurutan harga terendah.
+[CELL]: Kategori terhubung dengan produk aktif dan non-aktif
+Kategori terhubung dengan produk aktif dan non-aktif
+[CELL]: daftarProduk memuat produk aktif (is_aktif = true) yang diurutkan menaik berdasarkan harga_dasar.
+daftarProduk memuat produk aktif (is_aktif = true) yang diurutkan menaik berdasarkan harga_dasar.
+[CELL]: 3
+3
+[CELL]: WB-AM-033
+WB-AM-033
+[CELL]: HomeController @index
+HomeController @index
+[CELL]: Baris 19-22: Pembatasan jumlah produk maksimal 8 item per kategori.
+Baris 19-22: Pembatasan jumlah produk maksimal 8 item per kategori.
+[CELL]: Kategori memiliki 10 produk aktif di database
+Kategori memiliki 10 produk aktif di database
+[CELL]: daftarProduk pada kategori dipotong hingga tersisa maksimal 8 produk saja menggunakan take(8).
+daftarProduk pada kategori dipotong hingga tersisa maksimal 8 produk saja menggunakan take(8).
+[CELL]: 4
+4
+[CELL]: WB-AM-034
+WB-AM-034
+[CELL]: HomeController @index
+HomeController @index
+[CELL]: Baris 24: Aksi return view beranda dengan data kategoris.
+Baris 24: Aksi return view beranda dengan data kategoris.
+[CELL]: GET request ke halaman beranda '/'
+GET request ke halaman beranda '/'
+[CELL]: Mengembalikan view 'pages.home.index' beserta variabel $kategoris.
+Mengembalikan view 'pages.home.index' beserta variabel $kategoris.
+[CELL]: 5
+5
+[CELL]: WB-AM-035
+WB-AM-035
+[CELL]: OrderController @show
+OrderController @show
+[CELL]: Baris 87-89: Eager loading data pelanggan, detailItems, dan pengiriman berdasarkan kode pesanan.
+Baris 87-89: Eager loading data pelanggan, detailItems, dan pengiriman berdasarkan kode pesanan.
+[CELL]: $order_id = 'SDT-20260608-ABCDE' (valid)
+$order_id = 'SDT-20260608-ABCDE' (valid)
+[CELL]: Query memuat detail pesanan dengan relasinya dari database, return view invoice dengan snapToken = null.
+Query memuat detail pesanan dengan relasinya dari database, return view invoice dengan snapToken = null.
+[CELL]: 6
+6
+[CELL]: WB-AM-036
+WB-AM-036
+[CELL]: OrderController @show
+OrderController @show
+[CELL]: Baris 89: firstOrFail() melempar ModelNotFoundException jika kode pesanan tidak terdaftar.
+Baris 89: firstOrFail() melempar ModelNotFoundException jika kode pesanan tidak terdaftar.
+[CELL]: $order_id = 'SDT-INVALID-CODE'
+$order_id = 'SDT-INVALID-CODE'
+[CELL]: firstOrFail melempar ModelNotFoundException, sistem merender halaman error HTTP 404 (Not Found).
+firstOrFail melempar ModelNotFoundException, sistem merender halaman error HTTP 404 (Not Found).
+[CELL]: 7
+7
+[CELL]: WB-AM-037
+WB-AM-037
+[CELL]: OrderController @track
+OrderController @track
+[CELL]: Baris 98: Pencarian pesanan untuk dilacak di database.
+Baris 98: Pencarian pesanan untuk dilacak di database.
+[CELL]: $order_id = 'SDT-20260608-ABCDE' (valid)
+$order_id = 'SDT-20260608-ABCDE' (valid)
+[CELL]: Query database berhasil menemukan pesanan berdasarkan kode pesanan.
+Query database berhasil menemukan pesanan berdasarkan kode pesanan.
+[CELL]: 8
+8
+[CELL]: WB-AM-038
+WB-AM-038
+[CELL]: OrderController @track
+OrderController @track
+[CELL]: Baris 101: Penggabungan nama-nama produk snapshot dengan implode.
+Baris 101: Penggabungan nama-nama produk snapshot dengan implode.
+[CELL]: DetailPesanan memiliki item 'Papan Bunga Pernikahan' dan 'Sewa Box Hantaran'
+DetailPesanan memiliki item 'Papan Bunga Pernikahan' dan 'Sewa Box Hantaran'
+[CELL]: Variabel $productNames terisi string gabungan 'Papan Bunga Pernikahan, Sewa Box Hantaran'.
+Variabel $productNames terisi string gabungan 'Papan Bunga Pernikahan, Sewa Box Hantaran'.
+[CELL]: 9
+9
+[CELL]: WB-AM-039
+WB-AM-039
+[CELL]: OrderController @track
+OrderController @track
+[CELL]: Baris 102-109: Pemetaan status internal database ke status publik.
+Baris 102-109: Pemetaan status internal database ke status publik.
+[CELL]: Pesanan di database berstatus 'menunggu_pembayaran'
+Pesanan di database berstatus 'menunggu_pembayaran'
+[CELL]: Nilai status yang dikembalikan dalam JSON terpetakan menjadi 'UNPAID'.
+Nilai status yang dikembalikan dalam JSON terpetakan menjadi 'UNPAID'.
+[CELL]: 10
+10
+[CELL]: WB-AM-040
+WB-AM-040
+[CELL]: OrderController @track
+OrderController @track
+[CELL]: Baris 122: Pengembalian JSON error jika kode pesanan tidak ditemukan.
+Baris 122: Pengembalian JSON error jika kode pesanan tidak ditemukan.
+[CELL]: $order_id = 'SDT-PALSUS'
+$order_id = 'SDT-PALSUS'
+[CELL]: Mengembalikan response JSON ['found' => false] dengan status kode HTTP 404.
+Mengembalikan response JSON ['found' => false] dengan status kode HTTP 404.

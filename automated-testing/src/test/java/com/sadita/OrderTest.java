@@ -1,0 +1,87 @@
+package com.sadita;
+
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class OrderTest extends BaseTest {
+
+    @Test
+    public void testTC08_OrderPreFillFromQueryString() {
+        // Go directly to order page with query params representing "Papan Standing Mirror Premium"
+        String testProduct = "Papan Standing Mirror Premium";
+        String testPrice = "Rp 150.000";
+        String testImg = "/images/papan-standing-mirror-premium.jpg";
+        String testJenis = "Papan Bunga";
+        
+        driver.get(baseUrl + "/order?product=" + testProduct + "&price=" + testPrice + "&img=" + testImg + "&jenis=" + testJenis);
+        
+        // Assert page header or hidden inputs have these values
+        WebElement productNameInput = driver.findElement(By.name("product_name"));
+        WebElement priceInput = driver.findElement(By.name("price"));
+        WebElement jenisInput = driver.findElement(By.name("jenis"));
+        
+        assertEquals(testProduct, productNameInput.getAttribute("value"), "Product name should be prefilled");
+        assertEquals(testPrice, priceInput.getAttribute("value"), "Price should be prefilled");
+        assertEquals(testJenis, jenisInput.getAttribute("value"), "Product type should be prefilled");
+        
+        // Verify summary on the right shows the price
+        WebElement totalPaymentText = driver.findElement(By.xpath("//span[contains(text(), 'Rp 150.000')]"));
+        assertNotNull(totalPaymentText, "Right sidebar summary should show correct total payment");
+    }
+
+    @Test
+    public void testTC09_PlaceOrderSuccess() {
+        driver.get(baseUrl + "/order?product=Papan Bunga&price=Rp 100.000&img=/images/hero-1.jpg&jenis=Papan Bunga");
+        
+        // Fill order form
+        driver.findElement(By.id("senderName")).sendKeys("Ahsan Ramadan");
+        driver.findElement(By.id("senderPhone")).sendKeys("81234567890"); // note +62 prefix label on UI
+        driver.findElement(By.id("receiverName")).sendKeys("Bagatio Putra Joandri");
+        driver.findElement(By.id("untuk")).sendKeys("Grand Opening Cafe");
+        driver.findElement(By.id("address")).sendKeys("Jalan Sudirman No. 12, Kota Padang");
+        
+        // Select Date (tomorrow to bypass past date constraint)
+        WebElement datePicker = driver.findElement(By.id("deliveryDate"));
+        java.time.LocalDate tomorrow = java.time.LocalDate.now().plusDays(1);
+        datePicker.sendKeys(tomorrow.toString());
+        
+        // Waktu Pengiriman
+        WebElement timeDropdown = driver.findElement(By.id("deliveryTime"));
+        timeDropdown.sendKeys("Pagi (08:00 - 12:00)");
+        
+        // Greeting & Special Instruction
+        driver.findElement(By.id("greetingMsg")).sendKeys("Selamat Sukses!");
+        driver.findElement(By.id("specialInstruction")).sendKeys("Letakkan dekat pintu masuk");
+        
+        // Submit
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        
+        // Wait and assert we get redirected to the invoice/success page
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/invoice"), "Should redirect to invoice page, but got: " + currentUrl);
+        
+        // Check for order code
+        WebElement orderCodeEl = driver.findElement(By.xpath("//div[contains(text(), 'SDT-') or contains(@class, 'order-code') or contains(text(), 'Kode Pesanan')]"));
+        assertNotNull(orderCodeEl, "Invoice page should show the order code");
+    }
+
+    @Test
+    public void testTC10_PlaceOrderMissingRequiredFields() {
+        driver.get(baseUrl + "/order?product=Papan Bunga&price=Rp 100.000&img=/images/hero-1.jpg&jenis=Papan Bunga");
+        
+        // Fill some fields, leave name and phone empty
+        driver.findElement(By.id("receiverName")).sendKeys("Jeli Mayora");
+        driver.findElement(By.id("address")).sendKeys("Jalan Khatib Sulaiman");
+        
+        // Submit
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        
+        // HTML5 validation stops submission. Check that URL stays the same.
+        String currentUrl = driver.getCurrentUrl();
+        assertTrue(currentUrl.contains("/order"), "Should remain on order page");
+    }
+}
