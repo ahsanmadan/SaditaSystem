@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -1849,7 +1850,7 @@ class AdminController extends Controller
             return '-';
         }
 
-        $time = \Illuminate\Support\Carbon::parse($timestamp)->timezone('Asia/Jakarta');
+        $time = Carbon::parse($timestamp)->timezone('Asia/Jakarta');
         $now = now()->timezone('Asia/Jakarta');
         $seconds = max(0, (int) floor((float) $time->diffInSeconds($now)));
 

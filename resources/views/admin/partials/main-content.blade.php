@@ -8,11 +8,8 @@
                                         class="flex flex-col gap-3 border-b border-slate-100 px-4 pb-3 pt-4 pr-14 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:pb-4 sm:pt-6">
                                         <div class="min-w-0">
                                             <x-ui.card-title class="text-lg font-semibold text-slate-900">
-                                                Pergerakan pendapatan
+                                                Penjualan
                                             </x-ui.card-title>
-                                            <x-ui.card-description class="mt-1 text-xs text-slate-500">
-                                                Tren omzet operasional
-                                            </x-ui.card-description>
                                         </div>
 
                                         <div
@@ -39,7 +36,7 @@
                                     <x-ui.button type="button" variant="outline" size="icon"
                                         @click="showScale = !showScale; $dispatch('toggle-chart-scale', showScale)"
                                         x-bind:aria-expanded="showScale.toString()"
-                                        x-bind:aria-label="showScale ? 'Sembunyikan skala omzet' : 'Tampilkan skala omzet'"
+                                        x-bind:aria-label="showScale ? 'Sembunyikan skala penjualan' : 'Tampilkan skala penjualan'"
                                         class="absolute right-3 top-3 z-20 h-8 w-8 rounded-lg border-slate-200 bg-white/95 shadow-sm sm:hidden">
                                         <svg x-show="!showScale" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
                                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -67,7 +64,7 @@
                                             </aside>
                                             <div id="revenue-line-chart"
                                                 class="relative z-10 min-h-[286px] w-full sm:min-h-[320px]"
-                                                aria-label="Grafik tren omzet operasional"></div>
+                                                aria-label="Grafik penjualan"></div>
                                         </div>
 
                                         <div class="mt-3 sm:hidden">
@@ -94,8 +91,7 @@
                                         @unless ($hasOmzetData)
                                             <div
                                                 class="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-4 py-3 text-sm text-slate-500">
-                                                Belum ada omset tercatat. Grafik akan bergerak otomatis setelah transaksi
-                                                masuk.
+                                                Belum ada penjualan.
                                             </div>
                                         @endunless
                                     </x-ui.card-content>
@@ -106,7 +102,7 @@
                                     <x-ui.card-header>
                                         <x-ui.card-title
                                             class="text-[1.35rem] font-semibold tracking-[-0.04em] text-[#2c1d1d]">
-                                            Pelanggan teratas
+                                            Pelanggan langganan
                                         </x-ui.card-title>
                                     </x-ui.card-header>
 
@@ -158,7 +154,7 @@
                                         <div>
                                             <x-ui.card-description
                                                 class="text-xs font-semibold tracking-[0.04em] text-[#7b655e]">
-                                                Pesanan terbaru
+                                                Order baru
                                             </x-ui.card-description>
                                             <x-ui.card-title
                                                 class="mt-2 text-[1.35rem] font-semibold tracking-[-0.04em] text-[#2c1d1d]">
@@ -200,7 +196,7 @@
                                         @empty
                                             <div
                                                 class="rounded-2xl border border-dashed border-[#ddcec1] bg-[#fbf8f5] p-4 text-sm text-[#8b746d]">
-                                                Belum ada pesanan terbaru.
+                                                Belum ada order baru.
                                             </div>
                                         @endforelse
                                     </x-ui.card-content>
@@ -209,9 +205,9 @@
                                 <x-ui.card
                                     class="overflow-hidden border-[#e6ddd5] p-5 shadow-[0_16px_34px_rgba(56,35,27,0.05)] sm:p-6">
                                     <p class="text-xs font-semibold tracking-[0.04em] text-[#7b655e]">
-                                        Distribusi status</p>
+                                        Order</p>
                                     <h2 class="mt-2 text-[1.35rem] font-semibold tracking-[-0.04em] text-[#2c1d1d]">
-                                        Alur pesanan aktif</h2>
+                                        Status order</h2>
 
                                     <div class="mt-5 space-y-4">
                                         @foreach ($statusBreakdown as $status)
@@ -235,7 +231,7 @@
                                                     </div>
                                                 </div>
                                                 <p class="mt-2 text-xs font-medium text-[#7b655e]">
-                                                    {{ $status['percentage'] }}% dari antrean aktif</p>
+                                                    {{ $status['percentage'] }}% dari order</p>
                                             </div>
                                         @endforeach
                                     </div>
@@ -245,39 +241,9 @@
                     @elseif ($focus === 'produk')
                         <section class="mt-6">
                             <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-[1.2fr_0.8fr_0.8fr]">
-                                <article
-                                    class="rounded-[24px] border border-[#e6ddd5] bg-white px-4 py-4 shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                    <p class="text-sm font-semibold text-[#5f4742]">
-                                        {{ $focusMetrics[0]['label'] ?? 'Produk Aktif' }}</p>
-                                    <p
-                                        class="mt-2 text-[2rem] font-semibold tracking-[-0.05em] text-[#2c1d1d] tabular-nums">
-                                        {{ $focusMetrics[0]['value'] ?? '-' }}</p>
-                                    <p class="mt-1 text-[15px] leading-6 text-[#5e4d49]">
-                                        {{ $focusMetrics[0]['hint'] ?? 'Produk yang saat ini tampil di katalog publik.' }}
-                                    </p>
-                                </article>
-                                <article
-                                    class="rounded-[24px] border border-[#e6ddd5] bg-white px-4 py-4 shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                    <p class="text-sm font-semibold text-[#5f4742]">
-                                        {{ $focusMetrics[1]['label'] ?? 'Customizable' }}</p>
-                                    <p
-                                        class="mt-2 text-[1.8rem] font-semibold tracking-[-0.05em] text-[#2c1d1d] tabular-nums">
-                                        {{ $focusMetrics[1]['value'] ?? '-' }}</p>
-                                    <p class="mt-1 text-[15px] leading-6 text-[#5e4d49]">
-                                        {{ $focusMetrics[1]['hint'] ?? 'Produk yang bisa menyesuaikan brief pelanggan.' }}
-                                    </p>
-                                </article>
-                                <article
-                                    class="rounded-[24px] border border-[#e6ddd5] bg-white px-4 py-4 shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                    <p class="text-sm font-semibold text-[#5f4742]">
-                                        {{ $focusMetrics[2]['label'] ?? 'Mode Sewa' }}</p>
-                                    <p
-                                        class="mt-2 text-[1.8rem] font-semibold tracking-[-0.05em] text-[#2c1d1d] tabular-nums">
-                                        {{ $focusMetrics[2]['value'] ?? '-' }}</p>
-                                    <p class="mt-1 text-[15px] leading-6 text-[#5e4d49]">
-                                        {{ $focusMetrics[2]['hint'] ?? 'Item yang berjalan di mode rental atau sewa.' }}
-                                    </p>
-                                </article>
+                                @foreach ($focusMetrics as $metric)
+                                    <x-admin.insight-card :label="$metric['label'] ?? 'Produk'" :value="$metric['value'] ?? '-'" :hint="$metric['hint'] ?? null" />
+                                @endforeach
                             </div>
                         </section>
 
@@ -546,18 +512,7 @@
                             <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                                 <div class="grid gap-2 sm:grid-cols-3 xl:min-w-[620px] xl:flex-1">
                                     @foreach ($focusMetrics as $metric)
-                                        <article
-                                            class="rounded-[22px] border border-[#e6ddd5] bg-white px-4 py-3 shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                            <p class="text-sm font-semibold text-[#5f4742]">
-                                                {{ $metric['label'] }}</p>
-                                            <p
-                                                class="mt-2 text-[1.45rem] font-semibold tracking-[-0.05em] text-[#2c1d1d] tabular-nums">
-                                                {{ is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value'] }}
-                                            </p>
-                                            <p class="mt-1 text-[14px] leading-5 text-[#5e4d49]">
-                                                {{ $metric['hint'] }}
-                                            </p>
-                                        </article>
+                                        <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" class="min-h-[9.5rem] p-4" />
                                     @endforeach
                                 </div>
                             </div>
@@ -696,46 +651,13 @@
                     @elseif ($focus === 'pembayaran')
                         <section class="mt-6">
                             <div class="grid gap-2.5 xl:hidden">
-                                <article
-                                    class="rounded-[22px] border border-[#e6ddd5] bg-white px-4 py-4 text-sm text-[#5e4d49] shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                    <p class="text-sm font-semibold text-[#5f4742]">
-                                        {{ $focusMetrics[0]['label'] ?? '-' }}</p>
-                                    <p
-                                        class="mt-2 text-[1.8rem] font-semibold tracking-[-0.05em] text-[#2c1d1d] tabular-nums">
-                                        {{ isset($focusMetrics[0]['value']) && is_numeric($focusMetrics[0]['value']) ? number_format((float) $focusMetrics[0]['value'], fmod((float) $focusMetrics[0]['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $focusMetrics[0]['value'] ?? '-' }}
-                                    </p>
-                                    <p class="mt-1.5 text-[15px] leading-6 text-[#5e4d49]">
-                                        {{ $focusMetrics[0]['hint'] ?? '-' }}</p>
-                                </article>
-                                <div class="grid grid-cols-2 gap-2.5">
-                                    @foreach (array_slice($focusMetrics, 1, 2) as $metric)
-                                        <article
-                                            class="rounded-[20px] border border-[#e6ddd5] bg-white px-4 py-3.5 text-sm text-[#5e4d49] shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                            <p class="text-sm font-semibold text-[#5f4742]">
-                                                {{ $metric['label'] }}</p>
-                                            <p
-                                                class="mt-1.5 text-[1.55rem] font-semibold tracking-[-0.05em] text-[#2c1d1d] tabular-nums">
-                                                {{ is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value'] }}
-                                            </p>
-                                            <p class="mt-1 text-[14px] leading-5 text-[#5e4d49]">
-                                                {{ $metric['hint'] }}</p>
-                                        </article>
-                                    @endforeach
-                                </div>
+                                @foreach ($focusMetrics as $metric)
+                                    <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" class="min-h-[9.5rem] p-4" />
+                                @endforeach
                             </div>
                             <div class="hidden gap-4 xl:grid xl:grid-cols-3">
                                 @foreach ($focusMetrics as $metric)
-                                    <article
-                                        class="rounded-[24px] border border-[#e6ddd5] bg-white p-5 shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                        <p class="text-sm font-semibold text-[#5f4742]">
-                                            {{ $metric['label'] }}</p>
-                                        <p
-                                            class="mt-4 text-[1.85rem] font-semibold tracking-[-0.05em] text-[#2c1d1d] tabular-nums">
-                                            {{ is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value'] }}
-                                        </p>
-                                        <p class="mt-2 text-[15px] leading-6 text-[#5e4d49]">{{ $metric['hint'] }}
-                                        </p>
-                                    </article>
+                                    <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" />
                                 @endforeach
                             </div>
                         </section>
@@ -838,46 +760,13 @@
                         @php($showTableActions = $focusPreview['actions'] ?? true)
                         <section class="mt-6">
                             <div class="grid gap-2.5 xl:hidden">
-                                <article
-                                    class="rounded-[22px] border border-[#e6ddd5] bg-white px-4 py-4 text-sm text-[#5e4d49] shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                    <p class="text-sm font-semibold text-[#5f4742]">
-                                        {{ $focusMetrics[0]['label'] ?? '-' }}</p>
-                                    <p
-                                        class="mt-2 text-[1.8rem] font-semibold tracking-[-0.05em] text-[#2c1d1d] tabular-nums">
-                                        {{ isset($focusMetrics[0]['value']) && is_numeric($focusMetrics[0]['value']) ? number_format((float) $focusMetrics[0]['value'], fmod((float) $focusMetrics[0]['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $focusMetrics[0]['value'] ?? '-' }}
-                                    </p>
-                                    <p class="mt-1.5 text-[15px] leading-6 text-[#5e4d49]">
-                                        {{ $focusMetrics[0]['hint'] ?? '-' }}</p>
-                                </article>
-                                <div class="grid grid-cols-2 gap-2.5">
-                                    @foreach (array_slice($focusMetrics, 1, 2) as $metric)
-                                        <article
-                                            class="rounded-[20px] border border-[#e6ddd5] bg-white px-4 py-3.5 text-sm text-[#5e4d49] shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                            <p class="text-sm font-semibold text-[#5f4742]">
-                                                {{ $metric['label'] }}</p>
-                                            <p
-                                                class="mt-1.5 text-[1.55rem] font-semibold tracking-[-0.05em] text-[#2c1d1d] tabular-nums">
-                                                {{ is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value'] }}
-                                            </p>
-                                            <p class="mt-1 text-[14px] leading-5 text-[#5e4d49]">
-                                                {{ $metric['hint'] }}</p>
-                                        </article>
-                                    @endforeach
-                                </div>
+                                @foreach ($focusMetrics as $metric)
+                                    <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" class="min-h-[9.5rem] p-4" />
+                                @endforeach
                             </div>
                             <div class="hidden gap-4 xl:grid xl:grid-cols-3">
                                 @foreach ($focusMetrics as $metric)
-                                    <article
-                                        class="rounded-[24px] border border-[#e6ddd5] bg-white p-5 shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                        <p class="text-sm font-semibold text-[#5f4742]">
-                                            {{ $metric['label'] }}</p>
-                                        <p
-                                            class="mt-4 text-[1.85rem] font-semibold tracking-[-0.05em] text-[#2c1d1d] tabular-nums">
-                                            {{ is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value'] }}
-                                        </p>
-                                        <p class="mt-2 text-[15px] leading-6 text-[#5e4d49]">{{ $metric['hint'] }}
-                                        </p>
-                                    </article>
+                                    <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" />
                                 @endforeach
                             </div>
                         </section>

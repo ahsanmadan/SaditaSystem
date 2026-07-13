@@ -4,9 +4,17 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+@font-face {
+    font-family: 'Geist';
+    src: url('../../node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 @theme {
     --font-sans:
-        'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Geist', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
@@ -19,7 +27,9 @@ html {
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+    font-kerning: normal;
+    font-optical-sizing: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -31,7 +41,7 @@ h3 {
 }
 
 .admin-shell {
-    font-family: 'Manrope', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
     background:
         linear-gradient(180deg, #f2ece7 0%, #f7f3ef 18%, #f3eeea 100%);
 }
@@ -39,8 +49,11 @@ h3 {
 .admin-shell h1,
 .admin-shell h2,
 .admin-shell h3 {
-    font-family: 'Manrope', 'Inter', sans-serif;
-    letter-spacing: -0.035em;
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    text-wrap: balance;
 }
 
 .admin-shell nav,
@@ -52,7 +65,17 @@ h3 {
 .admin-shell .status-pill,
 .admin-shell .metric-value,
 .admin-shell .workspace-chip {
-    font-family: 'Manrope', 'Inter', sans-serif;
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+}
+
+.admin-shell p {
+    text-wrap: pretty;
+}
+
+.admin-shell .metric-value,
+.admin-shell .tabular-nums,
+.admin-shell table {
+    font-variant-numeric: tabular-nums;
 }
 
 .admin-module-stage {

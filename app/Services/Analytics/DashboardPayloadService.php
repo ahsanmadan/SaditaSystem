@@ -108,9 +108,9 @@ class DashboardPayloadService
 
         return [
             [
-                'label' => 'Omzet Hari Ini',
+                'label' => 'Penjualan Hari Ini',
                 'value' => $this->rupiah($omzetToday),
-                'description' => 'Nilai pesanan selesai hari ini',
+                'description' => 'Total order selesai hari ini',
                 'context' => $completedOrdersToday > 0
                     ? number_format($completedOrdersToday, 0, ',', '.') . ' pesanan selesai hari ini'
                     : 'Belum ada pesanan selesai hari ini',
@@ -130,10 +130,10 @@ class DashboardPayloadService
             [
                 'label' => 'Profit Kotor Bulan Ini',
                 'value' => $this->rupiah($profitThisMonth),
-                'description' => 'Omzet selesai dikurangi modal',
+                'description' => 'Hasil jualan setelah modal',
                 'context' => $profitThisMonth >= 0
                     ? 'Margin kotor masih terjaga di bulan berjalan'
-                    : 'Modal bulan ini masih lebih besar dari omzet selesai',
+                    : 'Modal masih lebih besar dari hasil jualan',
                 'trend' => $this->comparisonLabel($profitThisMonth, $profitLastMonth, 'dibanding bulan lalu'),
                 'tone' => $profitThisMonth >= 0 ? 'success' : 'danger',
             ],
