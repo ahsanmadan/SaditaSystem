@@ -145,8 +145,12 @@ class OrderController extends Controller
             ->with('success', 'Data pesanan tersimpan. Lanjut pilih pembayaran ya.');
     }
 
-    public function show(string $order_id): View
+    public function show(string $order_id)
     {
+        if (session('print_invoice')) {
+            return redirect()->route('invoice.print', ['order_id' => $order_id])->with('success', session('success'));
+        }
+
         $order = Pesanan::with([
             'pelanggan',
             'detailItems.produk',
@@ -160,6 +164,21 @@ class OrderController extends Controller
         return view('pages.home.invoice', [
             'order' => $order,
             'paymentMethods' => $paymentMethods,
+        ]);
+    }
+
+    public function print(string $order_id): View
+    {
+        $order = Pesanan::with([
+            'pelanggan',
+            'detailItems.produk',
+            'pengiriman',
+            'kodePromo',
+            'pembayaranTerakhir',
+        ])->where('kode_pesanan', $order_id)->firstOrFail();
+
+        return view('pages.home.invoice_print', [
+            'order' => $order,
         ]);
     }
 

@@ -178,10 +178,21 @@
                                     </button>
                                 </div>
                             @else
-                                <div class="rounded-2xl bg-green-700 px-6 py-4 text-center text-sm font-bold tracking-wide text-white">
-                                    LUNAS
+                                <div class="space-y-3">
+                                    <div class="rounded-2xl bg-green-700 px-6 py-4 text-center text-sm font-bold tracking-wide text-white">
+                                        ✓ LUNAS
+                                    </div>
+                                    <a href="{{ route('invoice.print', ['order_id' => $order->kode_pesanan]) }}" target="_blank"
+                                        class="flex w-full items-center justify-center gap-3 rounded-2xl border border-[#7A1F2B]/20 bg-[#FFF9F5] px-6 py-4 text-sm font-bold tracking-wide text-[#7A1F2B] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#FAF5F0] hover:shadow-md">
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                        </svg>
+                                        Cetak Invoice (PDF)
+                                    </a>
                                 </div>
                             @endif
+
                         </form>
 
                         @if ($paymentPending && $latestPayment?->isGatewayDoku())

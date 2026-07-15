@@ -12,6 +12,8 @@ Route::get('/order', [OrderController::class, 'create'])->name('order');
 Route::get('/order/{order_id}/edit', [OrderController::class, 'edit'])->name('order.edit');
 Route::post('/order', [OrderController::class, 'store'])->name('order.store');
 Route::get('/invoice/{order_id}', [OrderController::class, 'show'])->name('invoice.show');
+Route::get('/invoice/{order_id}/print', [OrderController::class, 'print'])->name('invoice.print');
+
 Route::post('/invoice/{order_id}/promo', [OrderController::class, 'applyPromo'])->name('order.apply-promo');
 Route::get('/api/track/{order_id}', [OrderController::class, 'track'])->name('order.track');
 Route::post('/invoice/{order_id}/pay/doku', [DokuPaymentController::class, 'checkout'])->name('doku.checkout');

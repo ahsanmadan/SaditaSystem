@@ -233,9 +233,15 @@ class DokuPaymentController extends Controller
         }
 
         if ($payment->status === Pembayaran::STATUS_LUNAS) {
-            return redirect()
+            $redirect = redirect()
                 ->route('invoice.show', ['order_id' => $order_id])
                 ->with('success', 'Pembayaran sudah terkonfirmasi.');
+
+            if ($fromReturnPage) {
+                $redirect->with('print_invoice', true);
+            }
+
+            return $redirect;
         }
 
         $identifier = $payment->gateway_request_id ?: $pesanan->kode_pesanan;
@@ -273,9 +279,15 @@ class DokuPaymentController extends Controller
                 $pesanan->kodePromo->increment('dipakai');
             }
 
-            return redirect()
+            $redirect = redirect()
                 ->route('invoice.show', ['order_id' => $order_id])
                 ->with('success', 'Pembayaran DOKU berhasil terkonfirmasi.');
+
+            if ($fromReturnPage || ! $previouslyPaid) {
+                $redirect->with('print_invoice', true);
+            }
+
+            return $redirect;
         }
 
         $message = $fromReturnPage
