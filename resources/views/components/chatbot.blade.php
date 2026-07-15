@@ -1,6 +1,25 @@
 {{-- Floating AI Chat Button & Modal --}}
+@php
+    $activeProducts = \App\Models\Produk::with('kategori')->where('is_aktif', true)->get();
+    $activePromos = \App\Models\KodePromo::where('is_aktif', true)->get();
+
+    $productsJson = $activeProducts->map(fn($p) => [
+        'nama' => $p->nama,
+        'kategori' => $p->kategori->nama ?? 'Layanan',
+        'harga' => $p->harga_dasar,
+        'is_sewa' => $p->is_sewa
+    ])->toJson();
+
+    $promosJson = $activePromos->map(fn($p) => [
+        'kode' => $p->kode,
+        'diskon' => $p->diskon
+    ])->toJson();
+@endphp
+
 <div id="chatbot-wrapper" data-groq-api-key="{{ env('GROQ_API_KEY', '') }}"
-    data-groq-model="{{ env('GROQ_MODEL', 'llama-3.3-70b-versatile') }}">
+    data-groq-model="{{ env('GROQ_MODEL', 'llama-3.3-70b-versatile') }}"
+    data-products="{{ $productsJson }}"
+    data-promos="{{ $promosJson }}">
     <button id="chatbot-toggle"
         class="chatbot-toggle-btn fixed bottom-6 right-5 z-[70] h-14 px-5 rounded-full shadow-lg flex items-center justify-center gap-2.5 transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95 group overflow-hidden"
         style="background: linear-gradient(135deg, #7A1F2B, #5e1721);" aria-label="Buka AI Asisten">

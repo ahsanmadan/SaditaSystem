@@ -790,6 +790,24 @@ const initChatbot = () => {
         return;
     }
 
+    // Parse database data for real-time chatbot context
+    let products = [];
+    let promos = [];
+    try {
+        products = JSON.parse(wrapper.dataset.products || '[]');
+        promos = JSON.parse(wrapper.dataset.promos || '[]');
+    } catch (e) {
+        console.error("Failed to parse chatbot products/promos", e);
+    }
+
+    const productsList = products.map(p => 
+        `- **${p.nama}** (${p.kategori} - ${p.is_sewa ? 'Sewa' : 'Jasa'}): Rp ${Number(p.harga).toLocaleString('id-ID')}`
+    ).join('\n');
+
+    const promosList = promos.map(p => 
+        `- **${p.kode}**: Potongan Rp ${Number(p.diskon).toLocaleString('id-ID')}`
+    ).join('\n');
+
     let chatOpen = false;
     let isTyping = false;
     let resizeFrame = null;
@@ -801,15 +819,11 @@ Kamu adalah KONSULTAN, bukan mesin penjual. Tugasmu:
 2. Rekomendasikan produk yang PALING COCOK berdasarkan konteks.
 3. Bimbing customer sampai mereka yakin ingin pesan.
 
-## DATA PRODUK
-- **Papan Ucapan Standard (Outdoor)**: Rp 350.000 - Rp 850.000+ (untuk pembukaan toko, duka cita, pernikahan, dll)
-- **Papan Bunga Mini (Portable/Kado)**: Rp 85.000 - Rp 150.000 (cocok untuk wisuda/hadiah, bahan artificial/akrilik)
-- **Papan Bunga Kertas/Akrilik Custom**: Rp 135.000 - Rp 250.000 (kado estetik & modern)
-- **Sewa Papan Indoor**: mulai dari Rp 100.000 (untuk keperluan foto)
-- **Hantaran (Jasa Hias Saja)**: Rp 30.000 - Rp 50.000 / kotak (jika customer bawa box sendiri)
-- **Hantaran (Paket Sewa Box + Hias)**: Rp 250.000 - Rp 800.000 / paket (isi 5-8 kotak. Pilihan bahan: Akrilik, Kayu Jati, Rotan)
-- **Dekorasi Akad / Intimate (Sederhana)**: Rp 4.000.000 - Rp 10.000.000
-- **Dekorasi Pelaminan (Bagonjong Modern / Mewah)**: Rp 10.000.000 - Rp 30.000.000+ (menyesuaikan bahan bunga segar/artificial dan skala gedung/rumah)
+## DATA PRODUK AKTUAL DARI DATABASE
+${productsList || 'Tidak ada produk terdaftar saat ini.'}
+
+## VOUCHER / PROMO AKTIF
+${promosList || 'Tidak ada promo aktif saat ini.'}
 
 ## INFO LAYANAN
 - Gratis ongkir area Padang
@@ -829,8 +843,9 @@ Kamu adalah KONSULTAN, bukan mesin penjual. Tugasmu:
 6. Gunakan **bold** untuk nama produk dan harga.
 7. Kalau customer mau custom, berikan nomor admin: **089653090248**
 8. Kalau ditanya di luar konteks Sadita, arahkan kembali dengan sopan.
-9. JANGAN pernah memberikan informasi yang tidak ada di data di atas. Jika tidak tahu, bilang "Untuk detail lebih lanjut, bisa langsung hubungi admin kami ya, Kak."
+9. JANGAN pernah memberikan informasi yang tidak ada di data di atas. Jika tidak tahu, bilangkan "Untuk detail lebih lanjut, bisa langsung hubungi admin kami ya, Kak."
 10. Jangan gunakan format tabel markdown. Gunakan list biasa saja dengan bullet point.
+11. Jika ditanya tentang status pesanan tertentu (menggunakan kode SDT-...), gunakan data dari System Info jika tersedia. Jika tidak ada data sistem, beritahu pelanggan bahwa mereka bisa melacak pesanan dengan mengetikkan kode pesanan di fitur Lacak Pesanan pada landing page.
 
 Tolak semua pertanyaan yang tidak berhubungan dengan Sadita dengan menjawab "maaf, kami hanya melayani pertanyaan seputar produk, harga, dan cara pemesanan".`;
 
@@ -1035,6 +1050,29 @@ Tolak semua pertanyaan yang tidak berhubungan dengan Sadita dengan menjawab "maa
         isTyping = true;
         status.textContent = 'Mengetik...';
         showTyping();
+
+        // Intercept and fetch order tracking codes (RAG flow)
+        const trackingMatch = text.match(/SDT-\d{8}-[A-Z0-9]{5}/i);
+        if (trackingMatch) {
+            const orderCode = trackingMatch[0].toUpperCase();
+            try {
+                const trackingRes = await fetch(`/api/track/${encodeURIComponent(orderCode)}`);
+                const trackingData = await trackingRes.json();
+                if (trackingData.found) {
+                    chatHistory.push({
+                        role: 'system',
+                        content: `[System Info: Hasil pelacakan riil untuk kode ${orderCode}: Ditemukan. Produk: ${trackingData.product_name}, Status: ${trackingData.status}, Tanggal Kirim: ${trackingData.delivery_date}, Jam Kirim: ${trackingData.delivery_time}. Sampaikan informasi ini secara ramah kepada pelanggan.]`
+                    });
+                } else {
+                    chatHistory.push({
+                        role: 'system',
+                        content: `[System Info: Hasil pelacakan riil untuk kode ${orderCode}: Tidak ditemukan. Infokan kepada pelanggan dengan sopan bahwa kode tersebut tidak terdaftar.]`
+                    });
+                }
+            } catch (e) {
+                // silent fail, fallback to standard LLM response
+            }
+        }
 
         if (!groqApiKey) {
             removeTyping();
