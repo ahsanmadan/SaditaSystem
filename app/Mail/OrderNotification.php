@@ -2,7 +2,8 @@
 
 namespace App\Mail;
 
-use App\Models\Order;
+use App\Models\Pembayaran;
+use App\Models\Pesanan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
@@ -14,14 +15,17 @@ class OrderNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $order;
+    public $pembayaran;
+    public $pesanan;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Order $order)
+    public function __construct(Pembayaran $pembayaran)
     {
-        $this->order = $order;
+        $this->pembayaran = $pembayaran;
+        // Memuat relasi pesanan jika belum dimuat
+        $this->pesanan = $pembayaran->relationLoaded('pesanan') ? $pembayaran->pesanan : $pembayaran->pesanan()->first();
     }
 
     /**
@@ -30,7 +34,7 @@ class OrderNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '📦 PESANAN BARU - SADITA ('.$this->order->order_id.')',
+            subject: '📦 PEMBAYARAN DIKONFIRMASI - SADITA ('.($this->pesanan->kode_pesanan ?? '-').')',
         );
     }
 

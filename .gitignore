@@ -51,3 +51,11 @@ Thumbs.db
 !/docs/pic/
 /docs/pic/*
 !/docs/pic/homepage-public.png
+
+# Java / Maven / IDE files
+**/target/
+**/.metadata/
+.classpath
+.project
+.settings/
+

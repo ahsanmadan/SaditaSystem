@@ -81,6 +81,8 @@ class DokuPaymentFlowTest extends TestCase
 
     public function test_notification_stores_actual_doku_channel_as_payment_method(): void
     {
+        \Illuminate\Support\Facades\Mail::fake();
+
         $pesanan = $this->createOrderWithRelations();
 
         $mock = Mockery::mock(DokuCheckoutService::class);
@@ -114,6 +116,10 @@ class DokuPaymentFlowTest extends TestCase
         $this->assertSame('VIRTUAL_ACCOUNT_BCA', $payment->metode);
         $this->assertSame(Pembayaran::GATEWAY_DOKU, $payment->gateway_provider);
         $this->assertSame(Pembayaran::STATUS_LUNAS, $payment->status);
+
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\OrderNotification::class, function ($mail) use ($pesanan) {
+            return $mail->hasTo(config('mail.admin_address')) && $mail->pesanan->id === $pesanan->id;
+        });
     }
 
     private function createOrderWithRelations(): Pesanan

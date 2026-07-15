@@ -3,103 +3,192 @@
 <head>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
             line-height: 1.6;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
         }
         .container {
             max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
+            margin: 30px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eef2f5;
         }
         .header {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
+            color: #7A1F2B;
             margin-bottom: 20px;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
             border-bottom: 2px solid #7A1F2B;
+            text-align: center;
         }
         .section {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fdfdfd;
+            border-left: 3px solid #ddd;
+            border-radius: 4px;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 15px;
+            color: #7A1F2B;
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
         .label {
             font-weight: bold;
             color: #555;
+            display: inline-block;
+            width: 130px;
         }
-        .highlight {
-            font-size: 18px;
+        .value {
+            color: #222;
+        }
+        .highlight-box {
+            font-size: 16px;
             font-weight: bold;
-            color: #7A1F2B;
-            margin: 15px 0;
-            padding: 10px;
-            background: #FAF5F0;
-            border-radius: 5px;
+            color: #2e7d32;
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 6px;
+            border-left: 5px solid #2e7d32;
+            text-align: center;
         }
         .footer {
             margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
-            font-size: 14px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
         }
         .btn {
             display: inline-block;
             background: #7A1F2B;
-            color: #fff;
-            padding: 10px 20px;
+            color: #ffffff !important;
+            padding: 12px 25px;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 6px;
             font-weight: bold;
+            box-shadow: 0 4px 6px rgba(122, 31, 43, 0.2);
+            transition: background 0.3s ease;
+        }
+        .item-list {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+        .item-detail {
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            📦 PESANAN BARU - SADITA
+            💵 PEMBAYARAN TERKONFIRMASI - SADITA
         </div>
 
-        <div class="highlight">
-            🆔 {{ $order->order_id }}
-        </div>
-
-        <div class="section">
-            <span class="label">📅 Tanggal Pesan:</span> {{ $order->created_at->format('d F Y') }}<br>
-            <span class="label">🚚 Tanggal Antar:</span> {{ \Carbon\Carbon::parse($order->delivery_date)->format('d F Y') }} ({{ $order->delivery_time }})
+        <div class="highlight-box">
+            Kode Pesanan: {{ $pesanan->kode_pesanan ?? '-' }}
         </div>
 
         <div class="section">
-            <span class="label">📦 Produk:</span> {{ $order->product_name }}<br>
-            <span class="label">🎨 Jenis:</span> {{ $order->jenis ?: '-' }}
+            <div class="section-title">Informasi Pesanan</div>
+            <div>
+                <span class="label">📅 Tanggal Pesan:</span>
+                <span class="value">{{ $pesanan->created_at ? $pesanan->created_at->format('d F Y H:i') : '-' }}</span>
+            </div>
+            <div>
+                <span class="label">💼 Layanan:</span>
+                <span class="value">{{ ucfirst($pesanan->tipe_layanan ?? '-') }}</span>
+            </div>
         </div>
 
         <div class="section">
-            <span class="label">👤 Pemesan:</span> {{ $order->sender_name }} ({{ $order->sender_phone }})<br>
-            <span class="label">🏷️ Untuk:</span> {{ $order->untuk ?: $order->receiver_name }}
+            <div class="section-title">Rincian Pembayaran</div>
+            <div>
+                <span class="label">💰 Jumlah Dibayar:</span>
+                <span class="value" style="font-weight: bold; color: #2e7d32;">Rp {{ number_format($pembayaran->jumlah_dibayar, 0, ',', '.') }}</span>
+            </div>
+            <div>
+                <span class="label">💳 Metode:</span>
+                <span class="value">{{ $pembayaran->resolvedMetodeLabel() }}</span>
+            </div>
+            <div>
+                <span class="label">⏰ Waktu Bayar:</span>
+                <span class="value">{{ $pembayaran->waktu_dibayar ? $pembayaran->waktu_dibayar->format('d F Y H:i') : '-' }}</span>
+            </div>
         </div>
 
         <div class="section">
-            <span class="label">💬 Ucapan:</span><br>
-            <i>{!! nl2br(e($order->greeting_msg ?: '-')) !!}</i>
-        </div>
-        
-        <div class="section">
-            <span class="label">📝 Instruksi Khusus:</span><br>
-            {{ $order->special_instruction ?: '-' }}
+            <div class="section-title">Detail Item</div>
+            <ul class="item-list">
+                @if($pesanan->detailItems && $pesanan->detailItems->count() > 0)
+                    @foreach ($pesanan->detailItems as $item)
+                        <li class="item-detail">
+                            <strong>{{ $item->nama_produk_snapshot }}</strong> (x{{ $item->kuantitas }}) 
+                            - Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                            @if ($item->teks_ucapan)
+                                <br><span style="font-size: 13px; color: #666; font-style: italic;">Ucapan: "{{ $item->teks_ucapan }}"</span>
+                            @endif
+                        </li>
+                    @endforeach
+                @else
+                    <li>Tidak ada detail item produk.</li>
+                @endif
+            </ul>
         </div>
 
         <div class="section">
-            <span class="label">📍 Alamat Pengiriman:</span><br>
-            {{ $order->address }}
+            <div class="section-title">Detail Pelanggan</div>
+            <div>
+                <span class="label">👤 Nama:</span>
+                <span class="value">{{ $pesanan->pelanggan->nama_lengkap ?? '-' }}</span>
+            </div>
+            <div>
+                <span class="label">📞 No. HP:</span>
+                <span class="value">{{ $pesanan->pelanggan->no_hp ?? '-' }}</span>
+            </div>
+            <div>
+                <span class="label">✉️ Email:</span>
+                <span class="value">{{ $pesanan->pelanggan->email ?? '-' }}</span>
+            </div>
         </div>
 
-        <div class="highlight" style="background: #e8f5e9; color: #2e7d32;">
-            💰 Status: LUNAS
-        </div>
+        @if ($pesanan->pengiriman)
+            <div class="section">
+                <div class="section-title">Pengiriman & Antar</div>
+                <div>
+                    <span class="label">👤 Penerima:</span>
+                    <span class="value">{{ $pesanan->pengiriman->nama_penerima ?? '-' }} ({{ $pesanan->pengiriman->no_hp_penerima ?? '-' }})</span>
+                </div>
+                <div>
+                    <span class="label">📅 Tanggal Kirim:</span>
+                    <span class="value">{{ \Carbon\Carbon::parse($pesanan->pengiriman->tanggal_pengiriman)->format('d F Y') }} ({{ $pesanan->pengiriman->jam_pengiriman }})</span>
+                </div>
+                <div>
+                    <span class="label">📍 Alamat Lengkap:</span><br>
+                    <span class="value" style="display: block; margin-top: 5px;">{{ $pesanan->pengiriman->alamat_lengkap ?? '-' }}</span>
+                </div>
+                @if($pesanan->pengiriman->patokan_lokasi)
+                    <div style="margin-top: 5px;">
+                        <span class="label">📍 Patokan:</span>
+                        <span class="value">{{ $pesanan->pengiriman->patokan_lokasi }}</span>
+                    </div>
+                @endif
+            </div>
+        @endif
 
         <div class="footer">
-            <a href="{{ url('/admin/orders') }}" class="btn">🔗 Buka Dashboard Admin</a>
+            <a href="{{ route('admin.edit', ['focus' => 'pesanan', 'record' => $pesanan->id]) }}" class="btn">🔗 Buka Dashboard Admin</a>
         </div>
     </div>
 </body>
 </html>
+
