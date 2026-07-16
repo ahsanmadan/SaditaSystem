@@ -12,8 +12,9 @@ class CheckRole
     {
         $user = $request->user();
 
-        if (! $user || ! $user->is_admin || ! in_array($user->role, $roles, true)) {
-            abort(403);
+        // Cek: user login, akun aktif, dan role sesuai
+        if (! $user || ! $user->isActive() || ! in_array($user->role, $roles, true)) {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
         return $next($request);

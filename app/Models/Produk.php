@@ -27,13 +27,19 @@ class Produk extends Model
 
     public function gambarItems()
     {
-        return $this->hasMany(GambarProduk::class, 'produk_id', 'id');
+        return $this->hasMany(GambarProduk::class, 'produk_id', 'id')->orderByDesc('is_utama')->orderBy('id');
     }
 
     public function fotoUtamaUrl(): string
     {
+        $gambarUtama = $this->relationLoaded('gambarItems')
+            ? $this->gambarItems->firstWhere('is_utama') ?? $this->gambarItems->first()
+            : $this->gambarItems()->orderByDesc('is_utama')->orderBy('id')->first();
+
         $paths = array_filter([
+            $gambarUtama?->path_gambar,
             $this->foto_utama,
+            ...array_values($this->galeri_foto ?? []),
             'images/'.$this->slug.'.jpg',
             $this->kategori?->slug ? 'images/cat-'.$this->kategori->slug.'.jpg' : null,
             'images/hero-1.jpg',

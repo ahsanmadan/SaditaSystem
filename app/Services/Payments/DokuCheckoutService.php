@@ -183,6 +183,11 @@ class DokuCheckoutService
         $email = $pelanggan?->email ?: 'guest+'.strtolower($pesanan->kode_pesanan).'@sadita.local';
         $phone = $this->normalizePhone($pelanggan?->no_hp ?: $pengiriman?->no_hp_penerima ?: '');
         $address = $pengiriman?->alamat_lengkap ?: 'Alamat akan dikonfirmasi admin';
+        $productNames = $detailItems->pluck('nama_produk_snapshot')->filter()->implode(', ');
+
+        if (blank($productNames)) {
+            $productNames = 'Produk Sadita';
+        }
 
         $payload = [
             'order' => [
@@ -190,11 +195,11 @@ class DokuCheckoutService
                 'amount' => (int) $pesanan->grand_total,
                 'currency' => 'IDR',
                 'callback_url' => $this->resolveReturnUrl($pesanan),
-                'line_items' => $detailItems->map(fn ($item) => [
-                    'name' => $item->nama_produk_snapshot,
-                    'price' => (int) $item->harga_satuan_snapshot,
-                    'quantity' => (int) $item->kuantitas,
-                ])->values()->all(),
+                'line_items' => [[
+                    'name' => $productNames,
+                    'price' => (int) $pesanan->grand_total,
+                    'quantity' => 1,
+                ]],
             ],
             'payment' => [
                 'payment_due_date' => (int) config('doku.payment_due_minutes', 60),

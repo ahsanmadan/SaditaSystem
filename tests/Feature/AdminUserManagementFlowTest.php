@@ -26,12 +26,14 @@ class AdminUserManagementFlowTest extends TestCase
             'password' => 'password123',
             'role' => User::ROLE_STAFF,
             'is_admin' => false,
+            'is_active' => true,
         ])->assertRedirect(route('admin.index', ['focus' => 'users', 'mode' => 'manage']));
 
         $created = User::query()->where('email', 'qa.staff@example.test')->firstOrFail();
 
         $this->assertSame(User::ROLE_STAFF, $created->role);
         $this->assertFalse($created->is_admin);
+        $this->assertTrue($created->is_active);
         $this->assertTrue(Hash::check('password123', $created->password));
 
         $this->put(route('admin.update', ['focus' => 'users', 'record' => $created->id]), [
@@ -40,6 +42,7 @@ class AdminUserManagementFlowTest extends TestCase
             'password' => 'password456',
             'role' => User::ROLE_ADMIN,
             'is_admin' => true,
+            'is_active' => false,
         ])->assertRedirect(route('admin.index', ['focus' => 'users', 'mode' => 'manage']));
 
         $created->refresh();
@@ -47,6 +50,7 @@ class AdminUserManagementFlowTest extends TestCase
         $this->assertSame('QA Admin', $created->name);
         $this->assertSame(User::ROLE_ADMIN, $created->role);
         $this->assertTrue($created->is_admin);
+        $this->assertFalse($created->is_active);
         $this->assertTrue(Hash::check('password456', $created->password));
 
         $this->delete(route('admin.destroy', ['focus' => 'users', 'record' => $created->id]))

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class KodePromo extends Model
 {
+    use HasFactory;
+
     protected $table = 'kode_promo';
 
     protected $guarded = ['id'];
@@ -16,9 +19,14 @@ class KodePromo extends Model
         'is_aktif' => 'boolean',
     ];
 
-    public function pesananItems()
+    public function pesanan()
     {
         return $this->hasMany(Pesanan::class, 'kode_promo_id', 'id');
+    }
+
+    public function pesananItems()
+    {
+        return $this->pesanan();
     }
 
     public function isExpired(): bool
@@ -34,6 +42,19 @@ class KodePromo extends Model
     public function isQuotaExceeded(): bool
     {
         return $this->kuota !== null && $this->dipakai >= $this->kuota;
+    }
+
+    public function meetsMinimumOrder(int $subtotal): bool
+    {
+        return $subtotal >= (int) $this->minimum_order;
+    }
+
+    public function isAvailable(): bool
+    {
+        return $this->is_aktif
+            && ! $this->isNotStarted()
+            && ! $this->isExpired()
+            && ! $this->isQuotaExceeded();
     }
 
     public function calculateDiscount(int $subtotal): int

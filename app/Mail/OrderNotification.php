@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Order;
+use App\Models\Pesanan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
@@ -14,29 +14,20 @@ class OrderNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $order;
+    public Pesanan $order;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct(Order $order)
+    public function __construct(Pesanan $order)
     {
         $this->order = $order;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '📦 PESANAN BARU - SADITA ('.$this->order->order_id.')',
+            subject: 'Pesanan baru Sadita - '.$this->order->kode_pesanan,
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
@@ -45,8 +36,6 @@ class OrderNotification extends Mailable
     }
 
     /**
-     * Get the attachments for the message.
-     *
      * @return array<int, Attachment>
      */
     public function attachments(): array
