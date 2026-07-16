@@ -1,105 +1,71 @@
+@php
+    $customer = $order->pelanggan;
+    $delivery = $order->pengiriman;
+    $items = $order->detailItems ?? collect();
+    $firstItem = $items->first();
+    $productNames = $items->pluck('nama_produk_snapshot')->filter()->implode(', ');
+@endphp
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
+    <title>Pesanan baru Sadita</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            color: #333;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
-        }
-        .header {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #7A1F2B;
-        }
-        .section {
-            margin-bottom: 15px;
-        }
-        .label {
-            font-weight: bold;
-            color: #555;
-        }
-        .highlight {
-            font-size: 18px;
-            font-weight: bold;
-            color: #7A1F2B;
-            margin: 15px 0;
-            padding: 10px;
-            background: #FAF5F0;
-            border-radius: 5px;
-        }
-        .footer {
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
-            font-size: 14px;
-        }
-        .btn {
-            display: inline-block;
-            background: #7A1F2B;
-            color: #fff;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
+        body { font-family: Arial, sans-serif; color: #2f2526; line-height: 1.6; background: #f8f4ef; }
+        .container { max-width: 620px; margin: 0 auto; padding: 24px; background: #ffffff; border-radius: 18px; border: 1px solid #eadfd2; }
+        .header { font-size: 22px; font-weight: 700; margin-bottom: 18px; color: #7A1F2B; }
+        .badge { display: inline-block; padding: 8px 14px; background: #f8ede7; color: #7A1F2B; border-radius: 999px; font-weight: 700; margin-bottom: 18px; }
+        .section { margin-bottom: 16px; }
+        .label { font-weight: 700; color: #5f4b45; }
+        .panel { padding: 14px 16px; background: #fbf7f2; border: 1px solid #efe4d7; border-radius: 14px; }
+        .button { display: inline-block; margin-top: 14px; padding: 12px 18px; background: #7A1F2B; color: #ffffff !important; text-decoration: none; border-radius: 12px; font-weight: 700; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            📦 PESANAN BARU - SADITA
-        </div>
+        <div class="header">Pesanan baru masuk</div>
+        <div class="badge">{{ $order->kode_pesanan }}</div>
 
-        <div class="highlight">
-            🆔 {{ $order->order_id }}
-        </div>
-
-        <div class="section">
-            <span class="label">📅 Tanggal Pesan:</span> {{ $order->created_at->format('d F Y') }}<br>
-            <span class="label">🚚 Tanggal Antar:</span> {{ \Carbon\Carbon::parse($order->delivery_date)->format('d F Y') }} ({{ $order->delivery_time }})
+        <div class="section panel">
+            <div><span class="label">Tanggal masuk:</span> {{ $order->created_at?->translatedFormat('d M Y, H:i') ?? '-' }}</div>
+            <div><span class="label">Status:</span> {{ str($order->status)->replace('_', ' ')->title() }}</div>
+            <div><span class="label">Total:</span> Rp {{ number_format((int) $order->grand_total, 0, ',', '.') }}</div>
         </div>
 
         <div class="section">
-            <span class="label">📦 Produk:</span> {{ $order->product_name }}<br>
-            <span class="label">🎨 Jenis:</span> {{ $order->jenis ?: '-' }}
+            <div class="label">Pelanggan</div>
+            <div>{{ $customer?->nama_lengkap ?? '-' }}</div>
+            <div>{{ $customer?->no_hp ?? '-' }}</div>
         </div>
 
         <div class="section">
-            <span class="label">👤 Pemesan:</span> {{ $order->sender_name }} ({{ $order->sender_phone }})<br>
-            <span class="label">🏷️ Untuk:</span> {{ $order->untuk ?: $order->receiver_name }}
+            <div class="label">Produk</div>
+            <div>{{ $productNames ?: 'Produk Sadita' }}</div>
         </div>
 
         <div class="section">
-            <span class="label">💬 Ucapan:</span><br>
-            <i>{!! nl2br(e($order->greeting_msg ?: '-')) !!}</i>
+            <div class="label">Pengiriman</div>
+            <div>{{ $delivery?->nama_penerima ?? '-' }}</div>
+            <div>{{ $delivery?->alamat_lengkap ?? '-' }}</div>
+            <div>
+                {{ $delivery?->tanggal_pengiriman?->translatedFormat('d M Y') ?? optional($delivery?->tanggal_pengiriman)->format('d M Y') ?? '-' }}
+                @if($delivery?->jam_pengiriman)
+                    | {{ \Carbon\Carbon::parse($delivery->jam_pengiriman)->format('H:i') }}
+                @endif
+            </div>
         </div>
-        
+
         <div class="section">
-            <span class="label">📝 Instruksi Khusus:</span><br>
-            {{ $order->special_instruction ?: '-' }}
+            <div class="label">Ucapan</div>
+            <div>{{ $firstItem?->teks_ucapan ?: '-' }}</div>
         </div>
 
         <div class="section">
-            <span class="label">📍 Alamat Pengiriman:</span><br>
-            {{ $order->address }}
+            <div class="label">Catatan</div>
+            <div>{{ $order->catatan_pembeli ?: '-' }}</div>
         </div>
 
-        <div class="highlight" style="background: #e8f5e9; color: #2e7d32;">
-            💰 Status: LUNAS
-        </div>
-
-        <div class="footer">
-            <a href="{{ url('/admin/orders') }}" class="btn">🔗 Buka Dashboard Admin</a>
-        </div>
+        <a href="{{ route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']) }}" class="button">Buka dashboard pesanan</a>
     </div>
 </body>
 </html>

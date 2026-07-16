@@ -11,13 +11,39 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // ── Demo: Owner ──────────────────────────────────────────────────────────
         User::updateOrCreate(
             ['email' => 'admin'],
             [
-                'name' => 'Admin Sadita (Demo)',
+                'name'     => 'Admin Sadita (Demo)',
                 'password' => Hash::make('admin'),
-                'role' => User::ROLE_OWNER,
+                'role'     => User::ROLE_OWNER,
                 'is_admin' => true,
+                'is_active' => true,
+            ]
+        );
+
+        // ── Demo: Admin ───────────────────────────────────────────────────────────
+        User::updateOrCreate(
+            ['email' => 'adminsadita@sadita.test'],
+            [
+                'name'      => 'Admin Panel (Demo)',
+                'password'  => Hash::make('sadita123'),
+                'role'      => User::ROLE_ADMIN,
+                'is_admin'  => true,
+                'is_active' => true,
+            ]
+        );
+
+        // ── Demo: Staff ───────────────────────────────────────────────────────────
+        User::updateOrCreate(
+            ['email' => 'staff@sadita.test'],
+            [
+                'name'      => 'Staff Sadita (Demo)',
+                'password'  => Hash::make('sadita123'),
+                'role'      => User::ROLE_STAFF,
+                'is_admin'  => true,
+                'is_active' => true,
             ]
         );
 

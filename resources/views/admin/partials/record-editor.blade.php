@@ -124,6 +124,14 @@
                                                             value="{{ old('foto_utama', $currentRecord?->foto_utama) }}"
                                                             class="{{ $editorFieldClass }}">
                                                     </div>
+                                                    <div class="sm:col-span-2">
+                                                        <label for="galeri_foto" class="{{ $editorLabelClass }}">Galeri foto</label>
+                                                        <textarea id="galeri_foto" name="galeri_foto" rows="4" class="{{ $editorFieldClass }}"
+                                                            placeholder="Satu path atau URL per baris">{{ old('galeri_foto', collect($currentRecord?->galeri_foto ?? [])->implode("\n")) }}</textarea>
+                                                        <p class="mt-1 text-xs leading-5 text-[#7b655e]">
+                                                            Path ini akan ikut disinkronkan ke tabel gambar produk.
+                                                        </p>
+                                                    </div>
                                                     <label class="{{ $editorToggleClass }}">
                                                         <input type="checkbox" name="is_customizable" value="1"
                                                             {{ old('is_customizable', (int) ($currentRecord?->is_customizable ?? 0)) ? 'checked' : '' }}
@@ -583,6 +591,12 @@
                                                             {{ old('is_admin', $isEditing ? (int) $currentRecord?->is_admin : 1) ? 'checked' : '' }}
                                                             class="{{ $editorCheckboxClass }}">
                                                         Beri akses admin panel
+                                                    </label>
+                                                    <label class="{{ $editorToggleClass }} sm:col-span-2">
+                                                        <input type="checkbox" name="is_active" value="1"
+                                                            {{ old('is_active', $isEditing ? (int) ($currentRecord?->is_active ?? 1) : 1) ? 'checked' : '' }}
+                                                            class="{{ $editorCheckboxClass }}">
+                                                        Akun aktif
                                                     </label>
                                                 </div>
                                             </section>

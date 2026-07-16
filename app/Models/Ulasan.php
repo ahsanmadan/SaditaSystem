@@ -15,6 +15,7 @@ class Ulasan extends Model
 
     protected $casts = [
         'is_tampil' => 'boolean',
+        'used_at' => 'datetime',
     ];
 
     public function pesanan()

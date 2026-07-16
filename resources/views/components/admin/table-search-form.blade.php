@@ -3,7 +3,7 @@
     'value' => '',
 ])
 
-<div class="ml-auto w-full max-w-[13rem]">
+<div class="ml-auto w-[10.5rem] shrink-0 sm:w-full sm:max-w-[13rem]">
     <form method="GET" action="{{ url()->current() }}" data-local-table-search="true">
         <x-ui.input-group class="rounded-[18px] border-[#ddd3cb] bg-white shadow-[0_6px_16px_rgba(74,35,41,0.05)]">
             <x-ui.input-group-input

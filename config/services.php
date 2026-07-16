@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // reCAPTCHA v2 — test keys (always pass on localhost)
+    // https://developers.google.com/recaptcha/docs/faq#id-like-to-run-automated-tests-with-recaptcha
+    'recaptcha' => [
+        'site_key' => env('RECAPTCHA_SITE_KEY', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'),
+        'secret'   => env('RECAPTCHA_SECRET_KEY', '6LeIxAcTAAAAAGG-vFI1TnRWxMHv6KVkoB0Z7IcC'),
+    ],
+
 ];
