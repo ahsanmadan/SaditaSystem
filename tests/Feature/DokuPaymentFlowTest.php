@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\CustomerTrackingLinkMail;
 use App\Models\Kategori;
 use App\Models\Pelanggan;
 use App\Models\Pembayaran;
@@ -10,6 +11,7 @@ use App\Models\Pesanan;
 use App\Models\Produk;
 use App\Services\Payments\DokuCheckoutService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Mockery;
 use Tests\TestCase;
 
@@ -117,8 +119,74 @@ class DokuPaymentFlowTest extends TestCase
         $this->assertSame(Pembayaran::GATEWAY_DOKU, $payment->gateway_provider);
         $this->assertSame(Pembayaran::STATUS_LUNAS, $payment->status);
 
-        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\OrderNotification::class, function ($mail) use ($pesanan) {
+        \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\PaymentConfirmedMail::class, function ($mail) use ($pesanan) {
             return $mail->hasTo(config('mail.admin_address')) && $mail->pesanan->id === $pesanan->id;
+        });
+    }
+
+    public function test_checkout_sends_customer_tracking_email_and_logs_it(): void
+    {
+        Mail::fake();
+
+        $pesanan = $this->createOrderWithRelations();
+
+        $mock = Mockery::mock(DokuCheckoutService::class);
+        $mock->shouldReceive('isConfigured')->once()->andReturn(true);
+        $mock->shouldReceive('createCheckout')->once()->andReturn([
+            'request_id' => 'req-test-123',
+            'payload' => ['dummy' => true],
+            'response' => ['response' => ['payment' => ['url' => 'https://checkout.example.test/pay', 'token_id' => 'tok-123', 'expired_date' => '20260716123000']]],
+            'checkout_url' => 'https://checkout.example.test/pay',
+            'token_id' => 'tok-123',
+            'expired_date' => '20260716123000',
+        ]);
+        $this->app->instance(DokuCheckoutService::class, $mock);
+
+        $this->post(route('doku.checkout', ['order_id' => $pesanan->kode_pesanan]), [
+            'payment_method' => 'ALL',
+        ])->assertRedirect('https://checkout.example.test/pay');
+
+        Mail::assertSent(CustomerTrackingLinkMail::class, function (CustomerTrackingLinkMail $mail) use ($pesanan) {
+            return $mail->hasTo('doku@example.test')
+                && $mail->order->kode_pesanan === $pesanan->kode_pesanan
+                && $mail->paymentMethodLabel === 'Semua metode DOKU'
+                && count($mail->attachments()) === 1;
+        });
+
+        $this->assertDatabaseHas('email_log', [
+            'pesanan_id' => $pesanan->id,
+            'email_tujuan' => 'doku@example.test',
+            'jenis' => 'tracking_link_customer',
+            'status' => 'sent',
+        ]);
+    }
+
+    public function test_checkout_with_existing_active_doku_link_still_sends_customer_tracking_email(): void
+    {
+        Mail::fake();
+
+        $pesanan = $this->createOrderWithRelations();
+
+        Pembayaran::create([
+            'pesanan_id' => $pesanan->id,
+            'metode' => Pembayaran::METODE_DOKU_CHECKOUT,
+            'jumlah_dibayar' => 200000,
+            'bukti_transfer' => '',
+            'status' => Pembayaran::STATUS_MENUNGGU,
+            'gateway_provider' => Pembayaran::GATEWAY_DOKU,
+            'checkout_url' => 'https://checkout.example.test/existing',
+            'expires_at' => now()->addMinutes(30),
+        ]);
+
+        $this->post(route('doku.checkout', ['order_id' => $pesanan->kode_pesanan]), [
+            'payment_method' => 'ALL',
+        ])->assertRedirect('https://checkout.example.test/existing');
+
+        Mail::assertSent(CustomerTrackingLinkMail::class, function (CustomerTrackingLinkMail $mail) use ($pesanan) {
+            return $mail->hasTo('doku@example.test')
+                && $mail->order->kode_pesanan === $pesanan->kode_pesanan
+                && $mail->checkoutUrl === 'https://checkout.example.test/existing'
+                && count($mail->attachments()) === 1;
         });
     }
 

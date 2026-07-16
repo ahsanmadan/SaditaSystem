@@ -1,9 +1,38 @@
+                    @php
+                        $tableSortKey = fn (string $column) => match ($column) {
+                            'Nama', 'Produk', 'Pengulas', 'Pelanggan' => 'name',
+                            'Slug' => 'slug',
+                            'Status' => 'status',
+                            'Dibuat', 'Terdaftar', 'Waktu' => 'created_at',
+                            'Kode' => 'kode',
+                            'Diskon' => 'nilai_diskon',
+                            'Harga Dasar' => 'harga_dasar',
+                            'Email' => 'email',
+                            'Role' => 'role',
+                            'Admin' => 'is_admin',
+                            'Rating' => 'rating',
+                            'Total' => 'grand_total',
+                            'Nominal' => 'jumlah_dibayar',
+                            'Metode' => 'metode',
+                            default => null,
+                        };
+                        $canBulkDelete = $isManageMode && $focus !== 'aktivitas' && $user?->isOwner();
+                        $canManageData = $canManageData ?? false;
+                    @endphp
+
+                    @if ($canBulkDelete)
+                        <form id="admin-bulk-delete-form" action="{{ route('admin.bulk-destroy') }}" method="POST" data-delete-confirm="true" class="hidden">
+                            @csrf
+                            <input type="hidden" name="focus" value="{{ $focus }}">
+                            <span data-bulk-selected-inputs></span>
+                        </form>
+                    @endif
+
                     @if ($focus === 'dashboard')
-                        <section class="mt-6 grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_390px] xl:items-start">
-                            <div class="min-w-0 space-y-6">
-                                <x-ui.card
-                                    x-data="{ range: '{{ $defaultOmzetRange ?? '30d' }}', showScale: false }"
-                                    class="relative overflow-hidden border-[#e6ddd5] shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
+                        <section class="mt-6 space-y-6">
+                            <x-ui.card
+                                x-data="{ range: '{{ $defaultOmzetRange ?? '30d' }}', showScale: false }"
+                                class="relative overflow-hidden border-[#e6ddd5] shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
                                     <x-ui.card-header
                                         class="flex flex-col gap-3 border-b border-slate-100 px-4 pb-3 pt-4 pr-14 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:pb-4 sm:pt-6">
                                         <div class="min-w-0">
@@ -33,39 +62,31 @@
                                         </div>
                                     </x-ui.card-header>
 
-                                    <x-ui.button type="button" variant="outline" size="icon"
-                                        @click="showScale = !showScale; $dispatch('toggle-chart-scale', showScale)"
-                                        x-bind:aria-expanded="showScale.toString()"
-                                        x-bind:aria-label="showScale ? 'Sembunyikan skala penjualan' : 'Tampilkan skala penjualan'"
-                                        class="absolute right-3 top-3 z-20 h-8 w-8 rounded-lg border-slate-200 bg-white/95 shadow-sm sm:hidden">
-                                        <svg x-show="!showScale" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" aria-hidden="true">
-                                            <path d="m9 18 6-6-6-6" />
-                                        </svg>
-                                        <svg x-cloak x-show="showScale" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" aria-hidden="true">
-                                            <path d="m15 18-6-6 6-6" />
-                                        </svg>
-                                    </x-ui.button>
-
                                     <x-ui.card-content class="px-3 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-6">
-                                        <div class="relative">
-                                            <aside x-cloak x-show="showScale"
-                                                x-transition:enter="transition ease-out duration-200"
-                                                x-transition:enter-start="translate-x-3 opacity-0"
-                                                x-transition:enter-end="translate-x-0 opacity-100"
-                                                x-transition:leave="transition ease-in duration-150"
-                                                x-transition:leave-start="translate-x-0 opacity-100"
-                                                x-transition:leave-end="translate-x-3 opacity-0"
-                                                class="pointer-events-none absolute inset-y-2 right-0 z-0 w-[68px] border-l border-slate-100 bg-white/90 backdrop-blur-sm">
-                                                <span class="absolute right-2 top-2 text-[9px] font-semibold text-slate-400">RP</span>
-                                            </aside>
-                                            <div id="revenue-line-chart"
-                                                class="relative z-10 min-h-[286px] w-full sm:min-h-[320px]"
-                                                aria-label="Grafik penjualan"></div>
-                                        </div>
+                                        <x-ui.chart id="revenue-area-chart" type="area"
+                                            :config="[
+                                                'sales' => ['label' => 'Penjualan', 'color' => '#7A1F2B'],
+                                            ]"
+                                            :series="[['name' => 'Penjualan', 'data' => []]]"
+                                            :colors="['#7A1F2B']"
+                                            :options="[
+                                                'fill' => [
+                                                    'type' => 'gradient',
+                                                    'gradient' => [
+                                                        'shadeIntensity' => 1,
+                                                        'opacityFrom' => 0.52,
+                                                        'opacityTo' => 0.06,
+                                                        'stops' => [5, 95],
+                                                    ],
+                                                ],
+                                                'stroke' => ['width' => 2.5, 'curve' => 'smooth'],
+                                                'yaxis' => ['show' => false],
+                                                'legend' => ['show' => false],
+                                                'tooltip' => ['x' => ['show' => true]],
+                                            ]"
+                                            height="320"
+                                            label="Grafik penjualan"
+                                            class="aspect-auto h-[250px] sm:h-[320px]" />
 
                                         <div class="mt-3 sm:hidden">
                                             <div class="grid w-full grid-cols-6 items-center gap-1 rounded-xl border border-slate-200/60 bg-slate-100 p-1">
@@ -94,9 +115,11 @@
                                                 Belum ada penjualan.
                                             </div>
                                         @endunless
-                                    </x-ui.card-content>
-                                </x-ui.card>
+                                </x-ui.card-content>
+                            </x-ui.card>
 
+                            <div class="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-12 xl:items-start">
+                                <div class="min-w-0 xl:col-span-7">
                                 <x-ui.card
                                     class="overflow-hidden rounded-[28px] border-[#e6ddd5] shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
                                     <x-ui.card-header>
@@ -144,10 +167,9 @@
                                         </div>
                                     </x-ui.card-content>
                                 </x-ui.card>
+                                </div>
 
-                            </div>
-
-                            <aside class="min-w-0 space-y-6">
+                                <div class="min-w-0 xl:col-span-5">
                                 <x-ui.card
                                     class="overflow-hidden border-[#e6ddd5] text-[#241818] shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
                                     <x-ui.card-header class="flex flex-row items-end justify-between gap-4">
@@ -201,42 +223,41 @@
                                         @endforelse
                                     </x-ui.card-content>
                                 </x-ui.card>
+                                </div>
 
-                                <x-ui.card
-                                    class="overflow-hidden border-[#e6ddd5] p-5 shadow-[0_16px_34px_rgba(56,35,27,0.05)] sm:p-6">
-                                    <p class="text-xs font-semibold tracking-[0.04em] text-[#7b655e]">
-                                        Order</p>
-                                    <h2 class="mt-2 text-[1.35rem] font-semibold tracking-[-0.04em] text-[#2c1d1d]">
-                                        Status order</h2>
-
-                                    <div class="mt-5 space-y-4">
-                                        @foreach ($statusBreakdown as $status)
-                                            @php($statusVisual = $statusToneMeta($status['label']))
-                                            <div class="rounded-[20px] border border-[#eee2db] bg-[#fcfaf8] p-4">
-                                                <div class="mb-2 flex items-center justify-between gap-3">
-                                                    <span
-                                                        class="text-sm font-medium text-[#3f2e2a]">{{ $status['label'] }}</span>
-                                                    <span
-                                                        class="{{ $statusVisual['badge'] }} rounded-xl px-2.5 py-1 text-xs font-semibold tabular-nums">
-                                                        {{ $status['count'] }}
-                                                    </span>
-                                                </div>
-                                                <div class="flex h-2.5 w-full overflow-hidden rounded-full bg-[#efe7e0]"
-                                                    role="progressbar"
-                                                    aria-valuenow="{{ min(100, max(6, $status['percentage'])) }}"
-                                                    aria-valuemin="0" aria-valuemax="100"
-                                                    title="{{ $status['label'] }}: {{ $status['count'] }} pesanan">
-                                                    <div class="flex flex-col justify-center overflow-hidden rounded-full text-center text-xs text-white whitespace-nowrap transition-all duration-500"
-                                                        style="width: {{ min(100, max(6, $status['percentage'])) }}%; background: linear-gradient(90deg, {{ $statusVisual['bar'] }} 0%, color-mix(in srgb, {{ $statusVisual['bar'] }} 64%, white) 100%);">
-                                                    </div>
-                                                </div>
-                                                <p class="mt-2 text-xs font-medium text-[#7b655e]">
-                                                    {{ $status['percentage'] }}% dari order</p>
+                                <div class="min-w-0 xl:col-span-12">
+                                    <x-ui.card class="overflow-hidden border-[#e6ddd5] shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
+                                        <x-ui.card-header class="flex flex-row items-end justify-between gap-4 border-b border-[#efe7e0] px-5 py-4 sm:px-6">
+                                            <div>
+                                                <x-ui.card-description class="text-xs font-semibold tracking-[0.04em] text-[#7b655e]">Order</x-ui.card-description>
+                                                <x-ui.card-title class="mt-1 text-xl font-semibold tracking-[-0.03em] text-[#2c1d1d]">Status order</x-ui.card-title>
                                             </div>
-                                        @endforeach
-                                    </div>
-                                </x-ui.card>
-                            </aside>
+                                            <span class="text-xs font-medium text-[#8b746d]">{{ collect($statusBreakdown)->sum('count') }} order</span>
+                                        </x-ui.card-header>
+
+                                        <x-ui.card-content class="grid divide-y divide-[#efe7e0] p-0 md:grid-cols-2 md:divide-x md:divide-y-0 xl:grid-cols-5">
+                                            @foreach ($statusBreakdown as $status)
+                                                @php($statusVisual = $statusToneMeta($status['label']))
+                                                <div class="min-w-0 px-5 py-4 sm:px-6">
+                                                    <div class="flex items-center justify-between gap-3">
+                                                        <span class="truncate text-sm font-medium text-[#3f2e2a]">{{ $status['label'] }}</span>
+                                                        <span class="{{ $statusVisual['badge'] }} shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums">{{ $status['count'] }}</span>
+                                                    </div>
+                                                    <div class="mt-3 flex h-2 w-full overflow-hidden rounded-full bg-[#efe7e0]"
+                                                        role="progressbar"
+                                                        aria-valuenow="{{ min(100, max(6, $status['percentage'])) }}"
+                                                        aria-valuemin="0" aria-valuemax="100"
+                                                        title="{{ $status['label'] }}: {{ $status['count'] }} pesanan">
+                                                        <div class="h-full rounded-full transition-[width] duration-500"
+                                                            style="width: {{ min(100, max(6, $status['percentage'])) }}%; background: {{ $statusVisual['bar'] }};"></div>
+                                                    </div>
+                                                    <p class="mt-2 text-xs text-[#7b655e]">{{ $status['percentage'] }}% dari order</p>
+                                                </div>
+                                            @endforeach
+                                        </x-ui.card-content>
+                                    </x-ui.card>
+                                </div>
+                            </div>
                         </section>
                     @elseif ($focus === 'produk')
                         <section class="mt-6">
@@ -247,8 +268,16 @@
                             </div>
                         </section>
 
-                        <div class="mb-4 mt-6 flex justify-end">
-                            <x-admin.table-search-form value="{{ request('search') }}" placeholder="Search..." />
+                        <div data-table-toolbar class="mb-3 mt-5 flex items-center gap-2 sm:mb-4 sm:mt-6 sm:justify-between">
+                            @if ($primaryAction)
+                                <a href="{{ $primaryAction['href'] }}"
+                                    class="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#7A1F2B] px-3.5 py-2 text-xs font-semibold text-white shadow-[0_6px_12px_rgba(94,23,33,0.14)] transition hover:bg-[#651925] sm:rounded-full sm:px-4 sm:py-2.5 sm:text-sm">
+                                    {{ $primaryAction['label'] }}
+                                </a>
+                            @endif
+                            <div class="sm:ml-auto">
+                                <x-admin.table-search-form value="{{ request('search') }}" placeholder="Search..." />
+                            </div>
                         </div>
 
                         <section class="mt-6 sm:hidden">
@@ -315,7 +344,7 @@
                         </section>
 
                         <section
-                            class="mt-6 hidden overflow-hidden rounded-[32px] border border-[#e6ddd5] bg-white shadow-[0_16px_34px_rgba(56,35,27,0.05)] sm:block">
+                            class="mt-6 hidden overflow-hidden rounded-2xl border border-[#ded1c7] bg-white shadow-[0_4px_10px_rgba(56,35,27,0.04)] sm:block">
                             <div
                                 class="grid grid-cols-[minmax(0,2fr)_190px_140px_170px_170px] gap-4 border-b border-[#e6ddd5] bg-[#fbf8f5] px-6 py-4 text-[11px] font-semibold tracking-[0.04em] text-[#7b655e]">
                                 <span>Produk</span>
@@ -383,6 +412,13 @@
                             <x-admin.pagination-summary :paginator="$focusPreview['rows']" label="produk" />
                         @endif
                     @elseif ($focus === 'pesanan')
+                        @if (session('admin_status'))
+                            <div
+                                class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
+                                {{ session('admin_status') }}
+                            </div>
+                        @endif
+
                         <section class="mt-6">
                             <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                                 <div class="flex flex-wrap gap-2">
@@ -398,9 +434,16 @@
                             </div>
                         </section>
 
-                        <div class="mb-4 mt-6 flex justify-end">
-
-                            <x-admin.table-search-form value="{{ request('search') }}" placeholder="Search..." />
+                        <div data-table-toolbar class="mb-3 mt-5 flex items-center gap-2 sm:mb-4 sm:mt-6 sm:justify-between">
+                            @if ($primaryAction)
+                                <a href="{{ $primaryAction['href'] }}"
+                                    class="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#7A1F2B] px-3.5 py-2 text-xs font-semibold text-white shadow-[0_6px_12px_rgba(94,23,33,0.14)] transition hover:bg-[#651925] sm:rounded-full sm:px-4 sm:py-2.5 sm:text-sm">
+                                    {{ $primaryAction['label'] }}
+                                </a>
+                            @endif
+                            <div class="sm:ml-auto">
+                                <x-admin.table-search-form value="{{ request('search') }}" placeholder="Search..." />
+                            </div>
                         </div>
 
                         <section class="mt-6 lg:hidden">
@@ -431,6 +474,31 @@
                                                 {{ $row['cells'][2] ?? '-' }}
                                             </span>
                                         </div>
+                                        @if (!empty($row['status_note']) || !empty($row['quick_action']['buttons']))
+                                            <div class="col-span-3 space-y-2 pt-1">
+                                                @if (!empty($row['status_note']))
+                                                    <p class="text-[11px] leading-5 text-[#7b655e]">
+                                                        {{ $row['status_note'] }}
+                                                    </p>
+                                                @endif
+                                                @if (!empty($row['quick_action']['buttons']))
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach ($row['quick_action']['buttons'] as $button)
+                                                            <form method="POST"
+                                                                action="{{ route('admin.orders.quick-action', $row['id']) }}">
+                                                                @csrf
+                                                                <input type="hidden" name="action"
+                                                                    value="{{ $button['action'] }}">
+                                                                <button type="submit"
+                                                                    class="inline-flex items-center rounded-full border px-3 py-1.5 text-[11px] font-semibold transition {{ $button['class'] }}">
+                                                                    {{ $button['label'] }}
+                                                                </button>
+                                                            </form>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endif
                                     </article>
                                 @empty
                                     <div class="px-5 py-8 text-center text-sm text-[#6a5854]">Belum ada pesanan.</div>
@@ -439,7 +507,7 @@
                         </section>
 
                         <section
-                            class="mt-6 overflow-hidden rounded-[32px] border border-[#e6ddd5] bg-white shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
+                            class="mt-6 overflow-hidden rounded-2xl border border-[#ded1c7] bg-white shadow-[0_4px_10px_rgba(56,35,27,0.04)]">
                             <div>
                                 <div
                                     class="hidden grid-cols-[170px_minmax(0,1.3fr)_180px_170px_150px] gap-4 border-b border-[#e6ddd5] bg-[#fbf8f5] px-6 py-4 text-[11px] font-semibold tracking-[0.04em] text-[#7b655e] lg:grid">
@@ -483,18 +551,40 @@
                                                 <p class="text-sm font-semibold text-[#17284b] tabular-nums">
                                                     {{ $row['cells'][3] ?? '-' }}</p>
                                             </div>
-                                            <div class="flex items-center gap-2">
-                                                @if (!empty($row['edit_href']))
-                                                    <a href="{{ $row['edit_href'] }}"
-                                                        class="inline-flex items-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-3.5 py-2 text-xs font-semibold text-[#56353a] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1F2B]">
-                                                        Edit
-                                                    </a>
-                                                @else
-                                                    <span
-                                                        class="inline-flex items-center rounded-full bg-zinc-100 px-3.5 py-2 text-xs font-semibold text-zinc-500">
-                                                        Tidak tersedia
-                                                    </span>
+                                            <div class="space-y-2">
+                                                @if (!empty($row['status_note']))
+                                                    <p class="text-[11px] leading-5 text-[#7b655e]">
+                                                        {{ $row['status_note'] }}
+                                                    </p>
                                                 @endif
+                                                <div class="flex flex-wrap items-center gap-2">
+                                                    @if (!empty($row['quick_action']['buttons']))
+                                                        @foreach ($row['quick_action']['buttons'] as $button)
+                                                            <form method="POST"
+                                                                action="{{ route('admin.orders.quick-action', $row['id']) }}">
+                                                                @csrf
+                                                                <input type="hidden" name="action"
+                                                                    value="{{ $button['action'] }}">
+                                                                <button type="submit"
+                                                                    class="inline-flex items-center rounded-full border px-3.5 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1F2B] {{ $button['class'] }}">
+                                                                    {{ $button['label'] }}
+                                                                </button>
+                                                            </form>
+                                                        @endforeach
+                                                    @endif
+
+                                                    @if ($canManageData && !empty($row['edit_href']))
+                                                        <a href="{{ $row['edit_href'] }}"
+                                                            class="inline-flex items-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-3.5 py-2 text-xs font-semibold text-[#56353a] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1F2B]">
+                                                            Edit
+                                                        </a>
+                                                    @elseif (empty($row['quick_action']['buttons']))
+                                                        <span
+                                                            class="inline-flex items-center rounded-full bg-zinc-100 px-3.5 py-2 text-xs font-semibold text-zinc-500">
+                                                            Tidak tersedia
+                                                        </span>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                     @empty
@@ -512,15 +602,22 @@
                             <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                                 <div class="grid gap-2 sm:grid-cols-3 xl:min-w-[620px] xl:flex-1">
                                     @foreach ($focusMetrics as $metric)
-                                        <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" class="min-h-[9.5rem] p-4" />
+                                        <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" />
                                     @endforeach
                                 </div>
                             </div>
                         </section>
 
-                        <div class="mb-4 mt-6 flex justify-end">
-
-                            <x-admin.table-search-form value="{{ request('search') }}" placeholder="Search..." />
+                        <div data-table-toolbar class="mb-3 mt-5 flex items-center gap-2 sm:mb-4 sm:mt-6 sm:justify-between">
+                            @if ($primaryAction)
+                                <a href="{{ $primaryAction['href'] }}"
+                                    class="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#7A1F2B] px-3.5 py-2 text-xs font-semibold text-white shadow-[0_6px_12px_rgba(94,23,33,0.14)] transition hover:bg-[#651925] sm:rounded-full sm:px-4 sm:py-2.5 sm:text-sm">
+                                    {{ $primaryAction['label'] }}
+                                </a>
+                            @endif
+                            <div class="sm:ml-auto">
+                                <x-admin.table-search-form value="{{ request('search') }}" placeholder="Search..." />
+                            </div>
                         </div>
 
                         <section class="mt-6 lg:hidden">
@@ -583,65 +680,90 @@
                         </section>
 
                         <section
-                            class="mt-6 overflow-hidden rounded-[32px] border border-[#e6ddd5] bg-white shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
-                            <div>
-                                <div
-                                    class="hidden grid-cols-[minmax(0,1.5fr)_170px_240px_150px_150px] gap-4 border-b border-[#e6ddd5] bg-[#fbf8f5] px-6 py-4 text-[11px] font-semibold tracking-[0.04em] text-[#7b655e] lg:grid">
-                                    @foreach ($focusPreview['columns'] as $column)
-                                        <span>{{ $column }}</span>
-                                    @endforeach
-                                    <span>Aksi</span>
-                                </div>
-                                <div class="hidden divide-y divide-[#efe7e0] lg:block">
-                                    @forelse ($focusPreview['rows'] as $row)
-                                        <div
-                                            class="grid gap-4 px-6 py-4 lg:grid-cols-[minmax(0,1.5fr)_170px_240px_150px_150px] lg:items-center">
-                                            <div class="flex min-w-0 items-center gap-4">
-                                                <div class="min-w-0">
-                                                    <p class="truncate text-sm font-semibold text-[#17284b]">
-                                                        {!! $highlightSearch($row['cells'][0] ?? '-') !!}</p>
-                                                    <p class="mt-1 truncate text-xs text-[#6a5854]">
-                                                        {!! $highlightSearch($row['cells'][2] ?? '-') !!}</p>
-                                                </div>
-                                            </div>
-                                            <p class="truncate text-sm text-[#5e4d49]">{!! $highlightSearch($row['cells'][1] ?? '-') !!}
-                                            </p>
-                                            <p class="truncate text-sm text-[#5e4d49]">{!! $highlightSearch($row['cells'][2] ?? '-') !!}
-                                            </p>
-                                            <p class="text-sm font-medium text-[#17284b]">
-                                                {{ $row['cells'][3] ?? '-' }}</p>
-                                            <div>
-                                                @if (!empty($row['edit_href']))
-                                                    <div class="flex flex-wrap items-center gap-2">
-                                                        <a href="{{ $row['edit_href'] }}"
-                                                            class="inline-flex items-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-3.5 py-2 text-xs font-semibold text-[#56353a] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1F2B]">
-                                                            Edit
-                                                        </a>
-                                                        @if ($focus !== 'users' || ($row['id'] ?? null) !== ($user?->id ?? null))
-                                                            <form method="POST"
-                                                                action="{{ route('admin.destroy', ['focus' => $focus, 'record' => $row['id']]) }}"
-                                                                data-delete-confirm="true">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="inline-flex items-center rounded-full border border-rose-200 bg-white px-3.5 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-50">
-                                                                    Hapus
-                                                                </button>
-                                                            </form>
+                            class="mt-6 overflow-hidden rounded-2xl border border-[#ded1c7] bg-white shadow-[0_4px_10px_rgba(56,35,27,0.04)]">
+                            <div class="hidden lg:block">
+                                <table data-admin-table class="min-w-full table-fixed border-collapse">
+                                    <thead>
+                                        <tr
+                                            class="border-b border-[#e6ddd5] bg-[#f8f4ef] text-left text-[11px] font-semibold tracking-[0.04em] text-[#7b655e]">
+                                            <x-admin.sortable-header :label="$focusPreview['columns'][0] ?? 'Pelanggan'" sort-key="name" class="w-[27%] px-6 py-4" />
+                                            <x-admin.sortable-header :label="$focusPreview['columns'][1] ?? 'Kontak'" class="w-[18%] px-4 py-4" />
+                                            <x-admin.sortable-header :label="$focusPreview['columns'][2] ?? 'Email'" sort-key="email" class="w-[26%] px-4 py-4" />
+                                            <x-admin.sortable-header :label="$focusPreview['columns'][3] ?? 'Terdaftar'" sort-key="created_at" class="w-[14%] px-4 py-4" />
+                                            <th class="w-[15%] px-4 py-4 text-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-[#efe7e0]">
+                                        @forelse ($focusPreview['rows'] as $row)
+                                            <tr data-record-id="{{ $row['id'] }}" class="group transition hover:bg-[#fcfaf8]">
+                                                <td class="px-6 py-4 align-middle">
+                                                    <div class="flex min-w-0 items-center gap-3">
+                                                        <span
+                                                            class="inline-flex h-8 w-8 flex-none items-center justify-center rounded-2xl border border-[#efe4da] bg-[#fcf8f4] text-[11px] font-semibold text-[#8b5e3c]">
+                                                            {{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}
+                                                        </span>
+                                                        <div class="min-w-0">
+                                                            <p class="truncate text-sm font-semibold text-[#17284b]">
+                                                                {!! $highlightSearch($row['cells'][0] ?? '-') !!}
+                                                            </p>
+                                                            <p class="mt-1 truncate text-xs text-[#8d7770]">
+                                                                {!! $highlightSearch($row['cells'][2] ?? '-') !!}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-4 align-middle">
+                                                    <p class="truncate text-[13px] text-[#5e4d49]">
+                                                        {!! $highlightSearch($row['cells'][1] ?? '-') !!}
+                                                    </p>
+                                                </td>
+                                                <td class="px-4 py-4 align-middle">
+                                                    <p class="truncate text-[13px] text-[#5e4d49]">
+                                                        {!! $highlightSearch($row['cells'][2] ?? '-') !!}
+                                                    </p>
+                                                </td>
+                                                <td class="px-4 py-4 align-middle">
+                                                    <p class="text-[13px] font-medium text-[#17284b] tabular-nums">
+                                                        {{ $row['cells'][3] ?? '-' }}
+                                                    </p>
+                                                </td>
+                                                <td class="px-4 py-4 align-middle">
+                                                    <div class="flex items-center justify-end gap-2">
+                                                        @if (!empty($row['edit_href']))
+                                                            <a href="{{ $row['edit_href'] }}"
+                                                                class="inline-flex items-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-3.5 py-2 text-xs font-semibold text-[#56353a] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1F2B]">
+                                                                Edit
+                                                            </a>
+                                                            @if ($focus !== 'users' || ($row['id'] ?? null) !== ($user?->id ?? null))
+                                                                <form method="POST"
+                                                                    action="{{ route('admin.destroy', ['focus' => $focus, 'record' => $row['id']]) }}"
+                                                                    data-delete-confirm="true">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit"
+                                                                        class="inline-flex items-center rounded-full border border-rose-200 bg-white px-3.5 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-50">
+                                                                        Hapus
+                                                                    </button>
+                                                                </form>
+                                                            @endif
+                                                        @else
+                                                            <span
+                                                                class="inline-flex items-center rounded-full bg-zinc-100 px-3.5 py-2 text-xs font-semibold text-zinc-500">
+                                                                Tidak tersedia
+                                                            </span>
                                                         @endif
                                                     </div>
-                                                @else
-                                                    <span
-                                                        class="inline-flex items-center rounded-full bg-zinc-100 px-3.5 py-2 text-xs font-semibold text-zinc-500">
-                                                        Tidak tersedia
-                                                    </span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    @empty
-                                        <div class="px-6 py-10 text-sm text-[#6a5854]">Belum ada pelanggan.</div>
-                                    @endforelse
-                                </div>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="px-6 py-10 text-sm text-[#6a5854]">
+                                                    Belum ada pelanggan.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
                         </section>
 
@@ -652,7 +774,7 @@
                         <section class="mt-6">
                             <div class="grid gap-2.5 xl:hidden">
                                 @foreach ($focusMetrics as $metric)
-                                    <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" class="min-h-[9.5rem] p-4" />
+                                    <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" />
                                 @endforeach
                             </div>
                             <div class="hidden gap-4 xl:grid xl:grid-cols-3">
@@ -662,9 +784,16 @@
                             </div>
                         </section>
 
-                        <div class="mb-4 mt-6 flex justify-end">
-
-                            <x-admin.table-search-form value="{{ request('search') }}" placeholder="Search..." />
+                        <div data-table-toolbar class="mb-3 mt-5 flex items-center gap-2 sm:mb-4 sm:mt-6 sm:justify-between">
+                            @if ($primaryAction)
+                                <a href="{{ $primaryAction['href'] }}"
+                                    class="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#7A1F2B] px-3.5 py-2 text-xs font-semibold text-white shadow-[0_6px_12px_rgba(94,23,33,0.14)] transition hover:bg-[#651925] sm:rounded-full sm:px-4 sm:py-2.5 sm:text-sm">
+                                    {{ $primaryAction['label'] }}
+                                </a>
+                            @endif
+                            <div class="sm:ml-auto">
+                                <x-admin.table-search-form value="{{ request('search') }}" placeholder="Search..." />
+                            </div>
                         </div>
 
                         <section class="mt-6 lg:hidden">
@@ -704,52 +833,71 @@
                         </section>
 
                         <section
-                            class="mt-6 overflow-hidden rounded-[32px] border border-[#e6ddd5] bg-white shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
-                            <div>
-                                <div
-                                    class="hidden grid-cols-[repeat(4,minmax(0,1fr))_140px] gap-4 border-b border-[#e6ddd5] bg-[#fbf8f5] px-6 py-4 text-[11px] font-semibold tracking-[0.04em] text-[#7b655e] lg:grid">
-                                    @foreach ($focusPreview['columns'] as $column)
-                                        <span>{{ $column }}</span>
-                                    @endforeach
-                                    <span>Aksi</span>
-                                </div>
-                                <div class="hidden divide-y divide-[#efe7e0] lg:block">
-                                    @forelse ($focusPreview['rows'] as $row)
-                                        <div
-                                            class="grid gap-4 px-6 py-4 lg:grid-cols-[repeat(4,minmax(0,1fr))_140px] lg:items-center">
-                                            @foreach ($row['cells'] ?? [] as $index => $cell)
-                                                <div class="min-w-0">
-                                                    <p
-                                                        class="text-xs font-semibold tracking-[0.04em] text-[#7b655e] lg:hidden">
-                                                        {{ $focusPreview['columns'][$index] }}</p>
-                                                    @if ($index === 2)
-                                                        <span
-                                                            class="{{ $statusPill($cell) }} inline-flex rounded-full px-2.5 py-1 text-xs font-semibold">{{ $cell }}</span>
-                                                    @else
-                                                        <p
-                                                            class="truncate text-sm {{ $index === 3 ? 'font-semibold text-[#2c1d1d] tabular-nums' : 'text-[#5e4d49]' }}">
-                                                            {!! $highlightSearch($cell) !!}</p>
-                                                    @endif
-                                                </div>
+                            class="mt-6 overflow-hidden rounded-2xl border border-[#ded1c7] bg-white shadow-[0_4px_10px_rgba(56,35,27,0.04)]">
+                            <div class="hidden lg:block">
+                                <table data-admin-table class="min-w-full table-fixed border-collapse">
+                                    <thead>
+                                        <tr
+                                            class="border-b border-[#e6ddd5] bg-[#f8f4ef] text-left text-[11px] font-semibold tracking-[0.04em] text-[#7b655e]">
+                                            @foreach ($focusPreview['columns'] as $column)
+                                                <x-admin.sortable-header :label="$column" :sort-key="$tableSortKey($column)" class="px-6 py-4" />
                                             @endforeach
-                                            <div>
-                                                @if (!empty($row['edit_href']))
-                                                    <a href="{{ $row['edit_href'] }}"
-                                                        class="inline-flex items-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-3.5 py-2 text-xs font-semibold text-[#56353a] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1F2B]">
-                                                        Edit
-                                                    </a>
-                                                @else
-                                                    <span
-                                                        class="inline-flex items-center rounded-full bg-zinc-100 px-3.5 py-2 text-xs font-semibold text-zinc-500">
-                                                        Tidak tersedia
-                                                    </span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    @empty
-                                        <div class="px-6 py-10 text-sm text-[#6a5854]">Belum ada pembayaran.</div>
-                                    @endforelse
-                                </div>
+                                            <th class="w-[112px] px-6 py-4 text-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-[#efe7e0]">
+                                        @forelse ($focusPreview['rows'] as $row)
+                                            <tr data-record-id="{{ $row['id'] }}" class="group transition hover:bg-[#fcfaf8]">
+                                                @foreach ($row['cells'] ?? [] as $index => $cell)
+                                                    <td class="px-6 py-4 align-middle">
+                                                        @if ($index === 0)
+                                                            <div class="flex min-w-0 items-center gap-3">
+                                                                <span
+                                                                    class="inline-flex h-8 w-8 flex-none items-center justify-center rounded-2xl border border-[#efe4da] bg-[#fcf8f4] text-[11px] font-semibold text-[#8b5e3c]">
+                                                                    {{ str_pad((string) $loop->parent->iteration, 2, '0', STR_PAD_LEFT) }}
+                                                                </span>
+                                                                <p class="truncate text-sm font-semibold text-[#17284b]">
+                                                                    {!! $highlightSearch($cell) !!}
+                                                                </p>
+                                                            </div>
+                                                        @elseif ($index === 2)
+                                                            <span
+                                                                class="{{ $statusPill($cell) }} inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold">
+                                                                {{ $cell }}
+                                                            </span>
+                                                        @else
+                                                            <p
+                                                                class="truncate text-[13px] {{ $index === 3 ? 'font-semibold text-[#2c1d1d] tabular-nums' : 'text-[#5e4d49]' }}">
+                                                                {!! $highlightSearch($cell) !!}
+                                                            </p>
+                                                        @endif
+                                                    </td>
+                                                @endforeach
+                                                <td class="px-6 py-4 align-middle">
+                                                    <div class="flex items-center justify-end gap-2">
+                                                        @if (!empty($row['edit_href']))
+                                                            <a href="{{ $row['edit_href'] }}"
+                                                                class="inline-flex items-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-3.5 py-2 text-xs font-semibold text-[#56353a] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1F2B]">
+                                                                Edit
+                                                            </a>
+                                                        @else
+                                                            <span
+                                                                class="inline-flex items-center rounded-full bg-zinc-100 px-3.5 py-2 text-xs font-semibold text-zinc-500">
+                                                                Tidak tersedia
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="px-6 py-10 text-sm text-[#6a5854]">
+                                                    Belum ada pembayaran.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
                         </section>
 
@@ -761,7 +909,7 @@
                         <section class="mt-6">
                             <div class="grid gap-2.5 xl:hidden">
                                 @foreach ($focusMetrics as $metric)
-                                    <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" class="min-h-[9.5rem] p-4" />
+                                    <x-admin.insight-card :label="$metric['label']" :value="is_numeric($metric['value']) ? number_format((float) $metric['value'], fmod((float) $metric['value'], 1.0) === 0.0 ? 0 : 1, ',', '.') : $metric['value']" :hint="$metric['hint'] ?? null" />
                                 @endforeach
                             </div>
                             <div class="hidden gap-4 xl:grid xl:grid-cols-3">
@@ -771,69 +919,64 @@
                             </div>
                         </section>
 
-                        <div class="mb-4 mt-6 flex justify-end">
-
-                            <x-admin.table-search-form value="{{ request('search') }}" placeholder="Search..." />
+                        <div data-table-toolbar class="mb-3 mt-5 flex items-center gap-2 sm:mb-4 sm:mt-6 sm:justify-between">
+                            @if ($primaryAction)
+                                <a href="{{ $primaryAction['href'] }}"
+                                    class="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#7A1F2B] px-3.5 py-2 text-xs font-semibold text-white shadow-[0_6px_12px_rgba(94,23,33,0.14)] transition hover:bg-[#651925] sm:rounded-full sm:px-4 sm:py-2.5 sm:text-sm">
+                                    {{ $primaryAction['label'] }}
+                                </a>
+                            @endif
+                            <div class="sm:ml-auto">
+                                <x-admin.table-search-form value="{{ request('search') }}" placeholder="Search..." />
+                            </div>
                         </div>
 
-                        <section class="mt-6 lg:hidden">
-                            <div
-                                class="overflow-hidden rounded-[24px] border border-[#e6ddd5] bg-white shadow-[0_14px_28px_rgba(56,35,27,0.05)]">
-                                <div
-                                    class="grid {{ $showTableActions ? 'grid-cols-[minmax(0,1fr)_88px_86px]' : 'grid-cols-[minmax(0,1fr)_110px]' }} gap-3 border-b border-[#e6ddd5] bg-[#fbf8f5] px-4 py-3 text-[11px] font-semibold tracking-[0.04em] text-[#7b655e]">
-                                    <span>{{ $focusPreview['columns'][0] ?? 'Data' }}</span>
-                                    <span>{{ $focusPreview['columns'][2] ?? ($focusPreview['columns'][1] ?? 'Info') }}</span>
-                                    @if ($showTableActions)
-                                        <span class="text-right">Aksi</span>
-                                    @endif
-                                </div>
+                        <section class="mt-3 lg:hidden">
+                            <div class="overflow-hidden rounded-2xl border border-[#ded1c7] bg-white shadow-[0_4px_10px_rgba(56,35,27,0.04)]">
                                 @forelse ($focusPreview['rows'] as $row)
-                                    <article
-                                        class="grid {{ $showTableActions ? 'grid-cols-[minmax(0,1fr)_88px_86px]' : 'grid-cols-[minmax(0,1fr)_110px]' }} gap-3 border-b border-[#edf2fb] px-4 py-3.5 last:border-b-0">
-                                        <div class="min-w-0">
-                                            <p class="truncate text-[13px] font-semibold text-[#17284b]">
-                                                {!! $highlightSearch($row['cells'][0] ?? '-') !!}</p>
-                                            <p class="mt-0.5 truncate text-[11px] text-[#6a5854]">
-                                                {{ $focusPreview['columns'][1] ?? 'Info' }}:
-                                                {!! $highlightSearch($row['cells'][1] ?? '-') !!}
-                                            </p>
-                                        </div>
-                                        <div class="flex items-center">
+                                    <article class="border-b border-[#efe7e0] px-4 py-3.5 last:border-b-0">
+                                        <div class="flex items-start justify-between gap-4">
+                                            <div class="min-w-0">
+                                                <p class="truncate text-sm font-semibold text-[#17284b]">
+                                                    {!! $highlightSearch($row['cells'][0] ?? '-') !!}</p>
+                                                <p class="mt-1 truncate text-xs text-[#6a5854]">
+                                                    {{ $focusPreview['columns'][1] ?? 'Info' }}:
+                                                    {!! $highlightSearch($row['cells'][1] ?? '-') !!}
+                                                </p>
+                                            </div>
                                             @php($summaryCell = $row['cells'][2] ?? ($row['cells'][1] ?? '-'))
                                             @if (in_array(mb_strtolower((string) $summaryCell), ['aktif', 'nonaktif', 'ditampilkan', 'disembunyikan'], true))
                                                 <span
-                                                    class="{{ $statusPill($summaryCell) }} inline-flex rounded-full px-2 py-1 text-[10px] font-semibold">
+                                                    class="{{ $statusPill($summaryCell) }} inline-flex shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold">
                                                     {{ $summaryCell }}
                                                 </span>
                                             @else
-                                                <p class="truncate text-[12px] text-[#5e4d49]">{{ $summaryCell }}
+                                                <p class="shrink-0 text-xs font-medium text-[#5e4d49]">{{ $summaryCell }}
                                                 </p>
                                             @endif
                                         </div>
                                         @if ($showTableActions)
-                                            <div class="flex items-center justify-end">
+                                            <div class="mt-3 flex items-center justify-end gap-2 border-t border-[#f0e9e3] pt-3">
                                                 @if (!empty($row['edit_href']))
-                                                    <div class="flex items-center gap-2">
-                                                        <a href="{{ $row['edit_href'] }}"
-                                                            class="inline-flex h-8 items-center justify-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-3 text-[11px] font-semibold text-[#56353a] transition hover:bg-white">
-                                                            Edit
-                                                        </a>
-                                                        @if ($focus !== 'users' || ($row['id'] ?? null) !== ($user?->id ?? null))
-                                                            <form method="POST"
-                                                                action="{{ route('admin.destroy', ['focus' => $focus, 'record' => $row['id']]) }}"
-                                                                data-delete-confirm="true">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="inline-flex h-8 items-center justify-center rounded-full border border-rose-200 bg-white px-2.5 text-[11px] font-semibold text-rose-700 transition hover:bg-rose-50">
-                                                                    Hapus
-                                                                </button>
-                                                            </form>
-                                                        @endif
-                                                    </div>
+                                                    <a href="{{ $row['edit_href'] }}"
+                                                        class="inline-flex h-8 items-center justify-center rounded-lg border border-[#e6ddd5] bg-[#fbf8f5] px-3 text-[11px] font-semibold text-[#56353a] transition hover:bg-white">
+                                                        Edit
+                                                    </a>
+                                                    @if ($focus !== 'users' || ($row['id'] ?? null) !== ($user?->id ?? null))
+                                                        <form method="POST"
+                                                            action="{{ route('admin.destroy', ['focus' => $focus, 'record' => $row['id']]) }}"
+                                                            data-delete-confirm="true">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                class="inline-flex h-8 items-center justify-center rounded-lg border border-rose-200 bg-white px-3 text-[11px] font-semibold text-rose-700 transition hover:bg-rose-50">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                 @else
                                                     <span
-                                                        class="inline-flex h-8 items-center justify-center rounded-xl border border-zinc-200 px-3 text-[11px] font-semibold text-zinc-500">
+                                                        class="inline-flex h-8 items-center justify-center rounded-lg border border-zinc-200 px-3 text-[11px] font-semibold text-zinc-500">
                                                         Nihil
                                                     </span>
                                                 @endif
@@ -848,59 +991,91 @@
                         </section>
 
                         <section
-                            class="mt-6 overflow-hidden rounded-[32px] border border-[#e6ddd5] bg-white shadow-[0_16px_34px_rgba(56,35,27,0.05)]">
-                            <div>
-                                <div
-                                    class="hidden {{ $showTableActions ? 'grid-cols-[repeat(4,minmax(0,1fr))_140px]' : 'grid-cols-[repeat(4,minmax(0,1fr))]' }} gap-4 border-b border-[#e6ddd5] bg-[#fbf8f5] px-6 py-4 text-[11px] font-semibold tracking-[0.04em] text-[#7b655e] lg:grid">
-                                    @foreach ($focusPreview['columns'] as $column)
-                                        <span>{{ $column }}</span>
-                                    @endforeach
-                                    @if ($showTableActions)
-                                        <span>Aksi</span>
-                                    @endif
-                                </div>
-                                <div class="hidden divide-y divide-[#efe7e0] lg:block">
-                                    @forelse ($focusPreview['rows'] as $row)
-                                        <div
-                                            class="grid gap-4 px-6 py-4 {{ $showTableActions ? 'lg:grid-cols-[repeat(4,minmax(0,1fr))_140px]' : 'lg:grid-cols-[repeat(4,minmax(0,1fr))]' }} lg:items-center">
-                                            @foreach ($row['cells'] ?? [] as $index => $cell)
-                                                <div class="min-w-0">
-                                                    <p
-                                                        class="text-xs font-semibold tracking-[0.04em] text-[#7b655e] lg:hidden">
-                                                        {{ $focusPreview['columns'][$index] }}</p>
-                                                    <p
-                                                        class="truncate text-sm {{ $index === 0 ? 'font-semibold text-[#17284b]' : 'text-[#5e4d49]' }}">
-                                                        {!! $highlightSearch($cell) !!}</p>
-                                                </div>
+                            class="mt-6 overflow-hidden rounded-2xl border border-[#ded1c7] bg-white shadow-[0_4px_10px_rgba(56,35,27,0.04)]">
+                            <div class="hidden lg:block">
+                                <table data-admin-table class="min-w-full table-fixed border-collapse">
+                                    <thead>
+                                        <tr
+                                            class="border-b border-[#e6ddd5] bg-[#f8f4ef] text-left text-[11px] font-semibold tracking-[0.04em] text-[#7b655e]">
+                                            @foreach ($focusPreview['columns'] as $column)
+                                                <x-admin.sortable-header :label="$column" :sort-key="$tableSortKey($column)" class="px-6 py-4" />
                                             @endforeach
-                                            @if ($showTableActions && !empty($row['edit_href']))
-                                                <div class="flex flex-wrap items-center gap-2">
-                                                    <a href="{{ $row['edit_href'] }}"
-                                                        class="inline-flex items-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-3.5 py-2 text-xs font-semibold text-[#56353a] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1F2B]">
-                                                        Edit
-                                                    </a>
-                                                    @if ($focus !== 'users' || ($row['id'] ?? null) !== ($user?->id ?? null))
-                                                        <form method="POST"
-                                                            action="{{ route('admin.destroy', ['focus' => $focus, 'record' => $row['id']]) }}"
-                                                            data-delete-confirm="true">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="inline-flex items-center rounded-full border border-rose-200 bg-white px-3.5 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-50">
-                                                                Hapus
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                </div>
-                                            @elseif ($showTableActions)
-                                                <div class="hidden lg:block"></div>
+                                            @if ($showTableActions)
+                                                <th class="w-[128px] px-6 py-4 text-right">Aksi</th>
                                             @endif
-                                        </div>
-                                    @empty
-                                        <div class="px-6 py-10 text-sm text-[#6a5854]">Belum ada data untuk modul ini.
-                                        </div>
-                                    @endforelse
-                                </div>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-[#efe7e0]">
+                                        @forelse ($focusPreview['rows'] as $row)
+                                            <tr data-record-id="{{ $row['id'] }}" class="group transition hover:bg-[#fcfaf8]">
+                                                @foreach ($row['cells'] ?? [] as $index => $cell)
+                                                    <td class="px-6 py-4 align-middle">
+                                                        @php($normalizedCell = mb_strtolower(trim((string) $cell)))
+                                                        @if ($index === 0)
+                                                            <div class="flex min-w-0 items-center gap-3">
+                                                                <span
+                                                                    class="inline-flex h-8 w-8 flex-none items-center justify-center rounded-2xl border border-[#efe4da] bg-[#fcf8f4] text-[11px] font-semibold text-[#8b5e3c]">
+                                                                    {{ str_pad((string) $loop->parent->iteration, 2, '0', STR_PAD_LEFT) }}
+                                                                </span>
+                                                                <p class="truncate text-sm font-semibold text-[#17284b]">
+                                                                    {!! $highlightSearch($cell) !!}
+                                                                </p>
+                                                            </div>
+                                                        @elseif (in_array($normalizedCell, ['aktif', 'nonaktif', 'ditampilkan', 'disembunyikan'], true))
+                                                            <span
+                                                                class="{{ $statusPill($cell) }} inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold">
+                                                                {{ $cell }}
+                                                            </span>
+                                                        @else
+                                                            <p
+                                                                class="truncate text-[13px] {{ $index === 3 ? 'font-medium text-[#2c1d1d] tabular-nums' : 'text-[#5e4d49]' }}">
+                                                                {!! $highlightSearch($cell) !!}
+                                                            </p>
+                                                        @endif
+                                                    </td>
+                                                @endforeach
+                                                @if ($showTableActions)
+                                                    <td class="px-6 py-4 align-middle">
+                                                        @if ($canManageData && !empty($row['edit_href']))
+                                                            <div class="flex items-center justify-end gap-2">
+                                                                <a href="{{ $row['edit_href'] }}"
+                                                                    class="inline-flex items-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-3.5 py-2 text-xs font-semibold text-[#56353a] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1F2B]">
+                                                                    Edit
+                                                                </a>
+                                                                @if ($focus !== 'users' || ($row['id'] ?? null) !== ($user?->id ?? null))
+                                                                    <form method="POST"
+                                                                        action="{{ route('admin.destroy', ['focus' => $focus, 'record' => $row['id']]) }}"
+                                                                        data-delete-confirm="true">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit"
+                                                                            class="inline-flex items-center rounded-full border border-rose-200 bg-white px-3.5 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-50">
+                                                                            Hapus
+                                                                        </button>
+                                                                    </form>
+                                                                @endif
+                                                            </div>
+                                                        @else
+                                                            <div class="flex justify-end">
+                                                                <span
+                                                                    class="inline-flex items-center rounded-full bg-zinc-100 px-3.5 py-2 text-xs font-semibold text-zinc-500">
+                                                                    Tidak tersedia
+                                                                </span>
+                                                            </div>
+                                                        @endif
+                                                    </td>
+                                                @endif
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="{{ $showTableActions ? count($focusPreview['columns']) + 1 : count($focusPreview['columns']) }}"
+                                                    class="px-6 py-10 text-sm text-[#6a5854]">
+                                                    Belum ada data untuk modul ini.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
                         </section>
 

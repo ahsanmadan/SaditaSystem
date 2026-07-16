@@ -5,15 +5,20 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DokuPaymentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/katalog', [HomeController::class, 'catalog'])->name('catalog');
 Route::get('/order', [OrderController::class, 'create'])->name('order');
 Route::get('/order/{order_id}/edit', [OrderController::class, 'edit'])->name('order.edit');
 Route::post('/order', [OrderController::class, 'store'])->name('order.store');
 Route::get('/invoice/{order_id}', [OrderController::class, 'show'])->name('invoice.show');
 Route::get('/invoice/{order_id}/print', [OrderController::class, 'print'])->name('invoice.print');
-
+Route::get('/invoice/{order_id}/download', [OrderController::class, 'download'])->name('invoice.download');
+Route::get('/tracking', [OrderController::class, 'trackingPage'])->name('tracking.page');
+Route::get('/ulasan/{token}', [ReviewController::class, 'show'])->name('review.show');
+Route::post('/ulasan/{token}', [ReviewController::class, 'store'])->name('review.store');
 Route::post('/invoice/{order_id}/promo', [OrderController::class, 'applyPromo'])->name('order.apply-promo');
 Route::get('/api/track/{order_id}', [OrderController::class, 'track'])->name('order.track');
 Route::post('/invoice/{order_id}/pay/doku', [DokuPaymentController::class, 'checkout'])->name('doku.checkout');
@@ -31,7 +36,7 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name(
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-Route::middleware(['auth', 'check.role:owner,admin'])->group(function () {
+Route::middleware(['auth', 'check.role:owner,admin,staff'])->group(function () {
     Route::redirect('/admin-lite', '/admin', 301);
     Route::redirect('/admin-lite/{focus}', '/admin/{focus}', 301)
         ->where('focus', 'dashboard|kategori|produk|promo|pelanggan|ulasan|pesanan|pembayaran|aktivitas|users');
@@ -52,6 +57,8 @@ Route::middleware(['auth', 'check.role:owner,admin'])->group(function () {
         ->name('admin.search.global');
     Route::post('/admin/notifications/seen', [AdminController::class, 'markNotificationsSeen'])
         ->name('admin.notifications.seen');
+    Route::post('/admin/pesanan/{pesanan}/quick-action', [AdminController::class, 'advanceOrderStatus'])
+        ->name('admin.orders.quick-action');
     Route::get('/admin/{focus}/{record}/edit', [AdminController::class, 'edit'])
         ->where('focus', 'kategori|produk|promo|pelanggan|ulasan|pesanan|pembayaran|users')
         ->name('admin.edit');
@@ -61,6 +68,8 @@ Route::middleware(['auth', 'check.role:owner,admin'])->group(function () {
     Route::put('/admin/{focus}/{record}', [AdminController::class, 'update'])
         ->where('focus', 'kategori|produk|promo|pelanggan|ulasan|pesanan|pembayaran|users')
         ->name('admin.update');
+    Route::post('/admin/bulk-destroy', [AdminController::class, 'bulkDestroy'])
+        ->name('admin.bulk-destroy');
     Route::delete('/admin/{focus}/{record}', [AdminController::class, 'destroy'])
         ->where('focus', 'kategori|produk|promo|pelanggan|ulasan|pesanan|pembayaran|users')
         ->name('admin.destroy');

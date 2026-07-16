@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Notifications\SaditaResetPasswordNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
@@ -45,13 +47,16 @@ class AuthFlowTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_non_admin_user_cannot_login_to_admin_panel(): void
+
+
+    public function test_inactive_admin_user_cannot_login(): void
     {
         $user = User::factory()->create([
-            'email' => 'staff@example.test',
+            'email' => 'inactive@example.test',
             'password' => Hash::make('password123'),
-            'role' => User::ROLE_STAFF,
-            'is_admin' => false,
+            'role' => User::ROLE_ADMIN,
+            'is_admin' => true,
+            'is_active' => false,
         ]);
 
         $this->from('/login')
@@ -67,6 +72,8 @@ class AuthFlowTest extends TestCase
 
     public function test_forgot_password_sends_reset_status_for_registered_email(): void
     {
+        Notification::fake();
+
         $user = User::factory()->create([
             'email' => 'owner@example.test',
             'role' => User::ROLE_OWNER,
@@ -79,6 +86,8 @@ class AuthFlowTest extends TestCase
             ])
             ->assertRedirect('/forgot-password')
             ->assertSessionHas('status');
+
+        Notification::assertSentTo($user, SaditaResetPasswordNotification::class);
     }
 
     public function test_user_can_reset_password_with_valid_token(): void

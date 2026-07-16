@@ -16,7 +16,6 @@
         }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 
 <body class="admin-shell min-h-screen bg-[#f2ece7] text-[#241818] antialiased">
@@ -601,15 +600,17 @@
                                         </svg>
                                         <span x-cloak x-show="unreadNotifications > 0"
                                             class="absolute right-2 top-2 inline-flex min-w-[18px] items-center justify-center rounded-full bg-[#b8385c] px-1.5 py-[2px] text-[10px] font-semibold text-white"
-                                            x-text="unreadNotifications > 9 ? '9+' : unreadNotifications"></span>
+                                            x-text="unreadNotifications"></span>
                                     </x-ui.button>
                                 @endif
                                 <a href="{{ route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']) }}"
                                     class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[#e6ddd5] bg-white text-[#56353a] shadow-sm transition hover:border-[#d3c3b7] hover:bg-[#fbf7f3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1F2B] sm:w-auto sm:gap-2 sm:px-4">
                                     <svg class="h-4.5 w-4.5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                                         <path
-                                            d="M7 4.5H13M7.75 3H12.25C12.66 3 13 3.34 13 3.75V5H15C15.83 5 16.5 5.67 16.5 6.5V15C16.5 15.83 15.83 16.5 15 16.5H5C4.17 16.5 3.5 15.83 3.5 15V6.5C3.5 5.67 4.17 5 5 5H7V3.75C7 3.34 7.34 3 7.75 3Z"
-                                            stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+                                            d="M7 3.5H13M8 2.5H12C12.55 2.5 13 2.95 13 3.5V4.5H14.25C15.22 4.5 16 5.28 16 6.25V15.25C16 16.22 15.22 17 14.25 17H5.75C4.78 17 4 16.22 4 15.25V6.25C4 5.28 4.78 4.5 5.75 4.5H7V3.5C7 2.95 7.45 2.5 8 2.5Z"
+                                            stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                                        <path d="M7 8H13M7 10.75H13M7 13.5H10.5" stroke="currentColor"
+                                            stroke-width="1.5" stroke-linecap="round" />
                                     </svg>
                                     <span class="hidden text-sm font-semibold sm:inline">Pesanan</span>
                                 </a>
@@ -729,18 +730,18 @@
 
                     <section class="pb-1">
                         <x-ui.card
-                            class="rounded-[28px] border-[#e6ddd5] p-5 shadow-[0_18px_42px_rgba(56,35,27,0.06)] sm:p-7 xl:p-8">
+                            class="{{ $isManageMode ? 'rounded-[26px] border-[#e6ddd5] p-5 shadow-[0_14px_32px_rgba(56,35,27,0.05)] sm:p-6' : 'rounded-[28px] border-[#e6ddd5] p-5 shadow-[0_18px_42px_rgba(56,35,27,0.06)] sm:p-7 xl:p-8' }}">
                             <div
-                                class="relative {{ $isManageMode ? 'flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between' : ($isDashboardView ? 'grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-stretch' : 'grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_360px] xl:items-start') }}">
+                                class="relative {{ $isManageMode ? 'flex flex-col gap-3' : ($isDashboardView ? 'grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-stretch' : 'grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_360px] xl:items-start') }}">
                                 <div class="{{ $isDashboardView ? 'min-w-0 xl:flex xl:h-full xl:flex-col' : 'min-w-0' }}">
                                     <p class="text-xs font-semibold tracking-[0.04em] text-[#7b655e] sm:text-sm">
                                         {{ $overviewLabel }}
                                     </p>
                                     <h1
-                                        class="mt-3 max-w-[11ch] text-[1.95rem] font-semibold leading-[0.95] tracking-[-0.045em] text-[#2c1d1d] sm:max-w-3xl sm:text-[3rem] [text-wrap:balance]">
+                                        class="mt-3 max-w-[11ch] font-semibold leading-[0.95] tracking-[-0.045em] text-[#2c1d1d] [text-wrap:balance] {{ $isManageMode ? 'text-[1.8rem] sm:max-w-4xl sm:text-[2.7rem]' : 'text-[1.95rem] sm:max-w-3xl sm:text-[3rem]' }}">
                                         {{ $heroTitle }}
                                     </h1>
-                                    @unless ($isDashboardView)
+                                    @unless ($isDashboardView || $isManageMode)
                                         <p
                                             class="mt-4 max-w-2xl text-[14px] leading-6 text-[#6a5854] sm:text-[15px] sm:leading-7">
                                             {{ $heroDescription }}
@@ -753,12 +754,6 @@
                                                 <a href="{{ $primaryAction['href'] }}"
                                                     class="inline-flex items-center rounded-full bg-[#7A1F2B] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(94,23,33,0.18)] transition hover:bg-[#651925]">
                                                     {{ $primaryAction['label'] }}
-                                                </a>
-                                            @endif
-                                            @if ($secondaryAction)
-                                                <a href="{{ $secondaryAction['href'] }}"
-                                                    class="inline-flex items-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-4 py-2.5 text-sm font-semibold text-[#56353a] transition hover:border-[#d6c6ba] hover:bg-white">
-                                                    {{ $secondaryAction['label'] }}
                                                 </a>
                                             @endif
                                         </div>
@@ -879,33 +874,14 @@
                                     @endif
                                 </div>
 
-                                @if ($isManageMode)
-                                    <div class="flex flex-wrap gap-3">
-                                        @if ($primaryAction)
-                                            <a href="{{ $primaryAction['href'] }}"
-                                                class="inline-flex items-center rounded-full bg-[#7A1F2B] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(94,23,33,0.18)] transition hover:bg-[#651925]">
-                                                {{ $primaryAction['label'] }}
-                                            </a>
-                                        @endif
-                                        @if ($secondaryAction)
-                                            <a href="{{ $secondaryAction['href'] }}"
-                                                class="inline-flex items-center rounded-full border border-[#e6ddd5] bg-[#fbf8f5] px-4 py-2.5 text-sm font-semibold text-[#56353a] transition hover:border-[#d6c6ba] hover:bg-white">
-                                                {{ $secondaryAction['label'] }}
-                                            </a>
-                                        @endif
-                                    </div>
-                                @else
+                                @if (!$isManageMode)
                                     <x-ui.card class="border-[#ece3db] bg-[#faf7f4] shadow-none">
                                         <x-ui.card-header
-                                            class="flex flex-row items-center justify-between gap-3 border-b border-[#e7dcd4] pb-4">
+                                            class="border-b border-[#e7dcd4] pb-4">
                                             <x-ui.card-title
                                                 class="text-xs font-semibold tracking-[0.04em] text-[#7b655e]">
                                                 {{ $isDashboardView ? 'Pulse hari ini' : 'Ringkasan modul' }}
                                             </x-ui.card-title>
-                                            <x-ui.badge variant="outline"
-                                                class="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-[#6f5c55]">
-                                                {{ $workspaceDate }}
-                                            </x-ui.badge>
                                         </x-ui.card-header>
 
                                         <x-ui.card-content class="pt-4">
@@ -1087,7 +1063,7 @@
                 const adminLayout = document.getElementById('admin-layout');
                 const errorSummary = document.getElementById('admin-error-summary');
                 const editorForm = document.querySelector('[data-admin-editor-form="true"]');
-                const chartElement = document.getElementById('revenue-line-chart');
+                const chartElement = document.getElementById('revenue-area-chart');
                 const successToast = document.getElementById('admin-success-toast');
                 const successToastClose = document.getElementById('admin-success-toast-close');
                 const deleteDialog = document.getElementById('admin-delete-dialog');
@@ -1096,7 +1072,6 @@
                 const deleteForms = Array.from(document.querySelectorAll('form[data-delete-confirm="true"]'));
                 const validationErrors = @json($validationErrors ?? []);
                 let pendingDeleteForm = null;
-                let omzetChart = null;
                 let activeOmzetRange = defaultOmzetRange;
                 let showMobileChartScale = false;
                 const desktopSidebarStorageKey = 'sadita-desktop-sidebar-open';
@@ -1150,6 +1125,8 @@
                         formatter: isCompactChartViewport() ? formatCompactCurrency : formatCurrency,
                     },
                 });
+                const getChartStrokeWidth = () => isCompactChartViewport() ? 2.75 : 3.25;
+                const getChartMarkerHoverSize = () => isCompactChartViewport() ? 4 : 5;
 
                 const formatChartLabel = (point, range) => {
                     const parsedDate = parseChartDate(point.raw_date ?? point.date);
@@ -1226,270 +1203,159 @@
                     });
                 };
 
-                const renderOmzetChart = () => {
-                    if (!chartElement || typeof ApexCharts === 'undefined') {
-                        return;
-                    }
+                const getRangeBounds = (range, points) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
 
-                    const initialPoints = getFilteredOmzetPoints(defaultOmzetRange);
-                    const seriesData = initialPoints.map((point) => ({
-                        x: point.raw_date ?? point.date,
-                        y: Number(point.value ?? 0),
-                    }));
-                    const rangeBounds = (() => {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-
-                        if (defaultOmzetRange === 'all') {
-                            return {
-                                min: parseChartDate(initialPoints[0]?.raw_date ?? initialPoints[0]?.date)?.getTime(),
-                                max: today.getTime(),
-                            };
-                        }
-
-                        if (defaultOmzetRange === 'ytd') {
-                            return {
-                                min: new Date(today.getFullYear(), 0, 1).getTime(),
-                                max: today.getTime(),
-                            };
-                        }
-
-                        const days = {
-                            '30d': 30,
-                            '6m': 183,
-                            '1y': 365,
-                            '5y': 1825,
-                        }[defaultOmzetRange] ?? 30;
-                        const minDate = new Date(today);
-                        minDate.setDate(minDate.getDate() - (days - 1));
-
+                    if (range === 'all') {
                         return {
-                            min: minDate.getTime(),
+                            min: parseChartDate(points[0]?.raw_date ?? points[0]?.date)?.getTime(),
                             max: today.getTime(),
                         };
-                    })();
+                    }
 
-                    omzetChart = new ApexCharts(chartElement, {
+                    if (range === 'ytd') {
+                        return {
+                            min: new Date(today.getFullYear(), 0, 1).getTime(),
+                            max: today.getTime(),
+                        };
+                    }
+
+                    const days = {
+                        '30d': 30,
+                        '6m': 183,
+                        '1y': 365,
+                        '5y': 1825,
+                    }[range] ?? 30;
+                    const minDate = new Date(today);
+                    minDate.setDate(minDate.getDate() - (days - 1));
+
+                    return { min: minDate.getTime(), max: today.getTime() };
+                };
+
+                const buildOmzetChartPayload = (range) => {
+                    const points = getFilteredOmzetPoints(range);
+                    const rangeBounds = getRangeBounds(range, points);
+
+                    return {
                         chart: {
-                            type: 'line',
+                            type: 'area',
                             height: getChartHeight(),
-                            toolbar: {
-                                show: false,
-                            },
                             dropShadow: {
-                                enabled: !isCompactChartViewport(),
-                                color: '#7A1F2B',
-                                top: 3,
-                                left: 1,
-                                blur: 4,
-                                opacity: 0.15,
-                            },
-                            animations: {
                                 enabled: true,
-                                easing: 'easeinout',
-                                speed: 720,
+                                color: '#7A1F2B',
+                                top: 2,
+                                left: 0,
+                                blur: 3,
+                                opacity: 0.12,
                             },
-                            fontFamily: 'Manrope, Inter, sans-serif',
                         },
                         series: [{
-                            name: 'Omzet',
-                            data: seriesData,
+                            name: 'Penjualan',
+                            data: points.map((point) => ({
+                                x: parseChartDate(point.raw_date ?? point.date)?.getTime(),
+                                y: Number(point.value ?? 0),
+                            })),
                         }],
                         colors: ['#7A1F2B'],
-                        dataLabels: {
-                            enabled: false,
-                        },
                         stroke: {
                             curve: 'smooth',
-                            width: isCompactChartViewport() ? 2.5 : 3,
+                            width: getChartStrokeWidth(),
+                            lineCap: 'round',
+                        },
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shadeIntensity: 1,
+                                opacityFrom: 0.38,
+                                opacityTo: 0.03,
+                                stops: [5, 95],
+                            },
                         },
                         markers: {
                             size: 0,
-                            hover: {
-                                size: 5,
-                            },
+                            hover: { size: getChartMarkerHoverSize() },
                         },
                         grid: {
-                            borderColor: '#eadfd6',
-                            strokeDashArray: isCompactChartViewport() ? 3 : 4,
+                            borderColor: '#efe4dc',
+                            strokeDashArray: 3,
                             padding: getChartGridPadding(),
                         },
                         xaxis: {
                             type: 'datetime',
                             min: rangeBounds.min,
                             max: rangeBounds.max,
-                            axisBorder: {
-                                show: false,
-                            },
-                            axisTicks: {
-                                show: false,
-                            },
-                            tickAmount: getChartTickAmount(defaultOmzetRange),
+                            axisBorder: { show: false },
+                            axisTicks: { show: false },
+                            tickAmount: getChartTickAmount(range),
                             labels: {
                                 rotate: 0,
                                 hideOverlappingLabels: true,
                                 trim: true,
                                 style: {
-                                    colors: '#8b746d',
+                                    colors: '#9a837b',
                                     fontSize: isCompactChartViewport() ? '10px' : '11px',
                                 },
-                                formatter: (_value, timestamp) => {
-                                    if (!timestamp) {
-                                        return '';
-                                    }
-
-                                    const date = new Date(timestamp);
-                                    return new Intl.DateTimeFormat('id-ID', {
-                                        ...(isCompactChartViewport() ? {
-                                            day: '2-digit',
-                                            month: 'short',
-                                        } : {
-                                            day: '2-digit',
-                                            month: 'short',
-                                        }),
-                                    }).format(date);
-                                },
+                                formatter: (_value, timestamp) => timestamp
+                                    ? new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'short' })
+                                        .format(new Date(timestamp))
+                                    : '',
                             },
                         },
-                        yaxis: getChartYAxisOptions(),
+                        yaxis: { show: false },
                         tooltip: {
                             x: {
                                 formatter: (_value, context) => {
-                                    const point = initialPoints[context.dataPointIndex];
+                                    const point = points[context.dataPointIndex];
+                                    const date = parseChartDate(point?.raw_date ?? point?.date);
 
-                                    if (!point) {
-                                        return _value;
-                                    }
-
-                                    const parsedDate = parseChartDate(point.raw_date ?? point.date);
-                                    return parsedDate ? new Intl.DateTimeFormat('id-ID', {
-                                        day: '2-digit',
-                                        month: 'long',
-                                        year: 'numeric',
-                                    }).format(parsedDate) : point.label;
+                                    return date
+                                        ? new Intl.DateTimeFormat('id-ID', {
+                                            day: '2-digit', month: 'long', year: 'numeric',
+                                        }).format(date)
+                                        : point?.label ?? _value;
                                 },
                             },
-                            y: {
-                                formatter: (value) => formatCurrency(value),
-                            },
+                            y: { formatter: (value) => formatCurrency(value) },
                         },
                         states: {
-                            hover: {
-                                filter: {
-                                    type: 'lighten',
-                                    value: 0.08,
-                                },
-                            },
+                            normal: { filter: { type: 'none', value: 0 } },
+                            hover: { filter: { type: 'none', value: 0 } },
+                            active: { filter: { type: 'none', value: 0 } },
                         },
-                    });
+                    };
+                };
 
-                    omzetChart.render();
+                const updateOmzetChart = (range = activeOmzetRange) => {
+                    if (!chartElement) {
+                        return;
+                    }
+
+                    chartElement.dispatchEvent(new CustomEvent('sadita-chart-update', {
+                        detail: buildOmzetChartPayload(range),
+                    }));
+                };
+
+                const renderOmzetChart = () => {
+                    const syncChart = () => updateOmzetChart(defaultOmzetRange);
+
+                    if (chartElement?.dataset.chartReady === 'true') {
+                        syncChart();
+                    } else {
+                        chartElement?.addEventListener('sadita-chart-ready', syncChart, { once: true });
+                    }
 
                     document.addEventListener('filter-chart', (event) => {
-                        const range = typeof event.detail === 'string' ? event.detail : '30d';
-                        activeOmzetRange = range;
-                        const filteredPoints = getFilteredOmzetPoints(range);
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        const rangeBounds = (() => {
-                            if (range === 'all') {
-                                return {
-                                    min: parseChartDate(filteredPoints[0]?.raw_date ?? filteredPoints[0]?.date)
-                                        ?.getTime(),
-                                    max: today.getTime(),
-                                };
-                            }
-
-                            if (range === 'ytd') {
-                                return {
-                                    min: new Date(today.getFullYear(), 0, 1).getTime(),
-                                    max: today.getTime(),
-                                };
-                            }
-
-                            const days = {
-                                '30d': 30,
-                                '6m': 183,
-                                '1y': 365,
-                                '5y': 1825,
-                            } [range] ?? 30;
-                            const minDate = new Date(today);
-                            minDate.setDate(minDate.getDate() - (days - 1));
-
-                            return {
-                                min: minDate.getTime(),
-                                max: today.getTime(),
-                            };
-                        })();
-
-                        omzetChart.updateOptions({
-                            chart: {
-                                height: getChartHeight(),
-                            },
-                            series: [{
-                                name: 'Omzet',
-                                data: filteredPoints.map((point) => ({
-                                    x: point.raw_date ?? point.date,
-                                    y: Number(point.value ?? 0),
-                                })),
-                            }],
-                            xaxis: {
-                                type: 'datetime',
-                                min: rangeBounds.min,
-                                max: rangeBounds.max,
-                                tickAmount: getChartTickAmount(range),
-                            },
-                            yaxis: getChartYAxisOptions(),
-                            tooltip: {
-                                x: {
-                                    formatter: (_value, context) => {
-                                        const point = filteredPoints[context.dataPointIndex];
-
-                                        if (!point) {
-                                            return _value;
-                                        }
-
-                                        const parsedDate = parseChartDate(point.raw_date ?? point.date);
-                                        return parsedDate ? new Intl.DateTimeFormat('id-ID', {
-                                            day: '2-digit',
-                                            month: 'long',
-                                            year: 'numeric',
-                                        }).format(parsedDate) : point.label;
-                                    },
-                                },
-                            },
-                        }, false, true);
+                        activeOmzetRange = typeof event.detail === 'string' ? event.detail : '30d';
+                        updateOmzetChart(activeOmzetRange);
                     });
 
                     document.addEventListener('toggle-chart-scale', (event) => {
                         showMobileChartScale = Boolean(event.detail);
-
-                        omzetChart.updateOptions({
-                            yaxis: getChartYAxisOptions(),
-                            grid: {
-                                padding: getChartGridPadding(),
-                            },
-                        }, false, false);
+                        updateOmzetChart();
                     });
 
-                    window.addEventListener('resize', () => {
-                        if (!omzetChart) {
-                            return;
-                        }
-
-                        omzetChart.updateOptions({
-                            chart: {
-                                height: getChartHeight(),
-                            },
-                            xaxis: {
-                                tickAmount: getChartTickAmount(activeOmzetRange),
-                            },
-                            yaxis: getChartYAxisOptions(),
-                            grid: {
-                                padding: getChartGridPadding(),
-                            },
-                        }, false, false);
-                    });
+                    window.addEventListener('resize', () => updateOmzetChart());
                 };
 
                 const showSuccessToast = () => {
@@ -1567,6 +1433,92 @@
                             pendingDeleteForm.submit();
                         }
                     });
+                };
+
+                const initializeNativeDataTable = () => {
+                    const bulkForm = document.getElementById('admin-bulk-delete-form');
+                    const bulkInputs = bulkForm?.querySelector('[data-bulk-selected-inputs]');
+                    const table = document.querySelector('table[data-admin-table]');
+                    const toolbar = document.querySelector('[data-table-toolbar]');
+
+                    if (!bulkForm || !bulkInputs || !table || !toolbar) {
+                        return;
+                    }
+
+                    const rows = Array.from(table.querySelectorAll('tbody tr[data-record-id]'));
+
+                    if (rows.length === 0) {
+                        return;
+                    }
+
+                    const headerRow = table.querySelector('thead tr');
+
+                    if (!headerRow) {
+                        return;
+                    }
+
+                    headerRow.insertAdjacentHTML('afterbegin', `
+                        <th class="w-11 px-3 py-4">
+                            <input type="checkbox" data-table-select-all aria-label="Pilih semua baris"
+                                class="h-4 w-4 rounded border-[#d9c9bd] text-[#7A1F2B] focus:ring-[#7A1F2B]">
+                        </th>
+                    `);
+
+                    rows.forEach((row) => {
+                        row.insertAdjacentHTML('afterbegin', `
+                            <td class="w-11 px-3 py-4 align-middle">
+                                <input type="checkbox" data-table-row-select value="${row.dataset.recordId}" aria-label="Pilih baris"
+                                    class="h-4 w-4 rounded border-[#d9c9bd] text-[#7A1F2B] focus:ring-[#7A1F2B]">
+                            </td>
+                        `);
+                    });
+
+                    const bulkBar = document.createElement('div');
+                    bulkBar.className = 'hidden items-center gap-3 text-sm font-medium text-[#56353a] sm:flex';
+                    bulkBar.innerHTML = `
+                        <span data-bulk-selected-count>0 dipilih</span>
+                        <button type="submit" form="admin-bulk-delete-form" data-bulk-delete-button
+                            class="inline-flex h-9 items-center justify-center rounded-full border border-rose-200 bg-white px-3 text-xs font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            disabled>
+                            Hapus pilihan
+                        </button>
+                    `;
+                    toolbar.prepend(bulkBar);
+
+                    const selectAll = headerRow.querySelector('[data-table-select-all]');
+                    const rowSelects = Array.from(table.querySelectorAll('[data-table-row-select]'));
+                    const selectedCount = bulkBar.querySelector('[data-bulk-selected-count]');
+                    const bulkButton = bulkBar.querySelector('[data-bulk-delete-button]');
+
+                    const syncSelection = () => {
+                        const selectedIds = rowSelects.filter((input) => input.checked).map((input) => input.value);
+                        bulkInputs.replaceChildren(...selectedIds.map((id) => {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'ids[]';
+                            input.value = id;
+                            return input;
+                        }));
+
+                        selectedCount.textContent = `${selectedIds.length} dipilih`;
+                        bulkButton.disabled = selectedIds.length === 0;
+                        bulkBar.classList.toggle('hidden', selectedIds.length === 0);
+
+                        if (selectAll) {
+                            selectAll.checked = selectedIds.length === rowSelects.length;
+                            selectAll.indeterminate = selectedIds.length > 0 && selectedIds.length < rowSelects.length;
+                        }
+                    };
+
+                    selectAll?.addEventListener('change', () => {
+                        rowSelects.forEach((input) => {
+                            input.checked = selectAll.checked;
+                        });
+                        syncSelection();
+                    });
+
+                    rowSelects.forEach((input) => input.addEventListener('change', syncSelection));
+                    syncSelection();
                 };
 
                 const appendFieldErrors = () => {
@@ -1650,8 +1602,13 @@
 
                 appendFieldErrors();
                 bindSubmitLoadingState();
+                initializeNativeDataTable();
                 bindDeleteDialog();
-                renderOmzetChart();
+                if (window.Alpine) {
+                    window.requestAnimationFrame(renderOmzetChart);
+                } else {
+                    document.addEventListener('alpine:initialized', renderOmzetChart, { once: true });
+                }
                 showSuccessToast();
 
                 if (!openButton || !closeButton || !openDesktopButton || !sidebar || !backdrop || !adminLayout) {

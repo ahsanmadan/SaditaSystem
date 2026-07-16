@@ -1,6 +1,43 @@
 @php
     $isHomePage = request()->routeIs('home');
+    $isCatalogPage = request()->routeIs('catalog');
     $sectionBaseUrl = $isHomePage ? '' : url('/');
+    $catalogNavItems = [
+        [
+            'label' => 'Semua Koleksi',
+            'href' => route('catalog'),
+            'description' => 'Lihat seluruh pilihan Sadita dalam satu halaman.',
+        ],
+        [
+            'label' => 'Papan Bunga',
+            'href' => route('catalog', ['category' => 'papan-bunga']),
+            'description' => 'Standing board dan papan ucapan yang siap kirim.',
+        ],
+        [
+            'label' => 'Hantaran',
+            'href' => route('catalog', ['category' => 'hantaran']),
+            'description' => 'Box seserahan, gift set, dan paket hantaran premium.',
+        ],
+        [
+            'label' => 'Dekorasi',
+            'href' => route('catalog', ['category' => 'dekorasi']),
+            'description' => 'Dekorasi acara yang bisa disesuaikan dengan kebutuhan.',
+        ],
+    ];
+    $catalogFeatureItems = [
+        [
+            'eyebrow' => 'Best Seller',
+            'title' => 'Paling sering dipilih',
+            'copy' => 'Masuk ke halaman semua produk lalu lihat item yang paling sering selesai dipesan.',
+            'href' => route('catalog') . '#catalog-best-sellers',
+        ],
+        [
+            'eyebrow' => 'Custom Order',
+            'title' => 'Mulai dari kebutuhan acara',
+            'copy' => 'Masuk ke kategori yang paling relevan lalu buka detail produknya sebelum pesan.',
+            'href' => route('catalog', ['category' => 'dekorasi']),
+        ],
+    ];
 @endphp
 
 <header id="main-navbar"
@@ -13,13 +50,25 @@
         </a>
 
         <!-- Desktop Navigation -->
-        <nav class="hidden md:flex items-center gap-8 text-[13px] font-medium tracking-wide uppercase">
-            <a href="{{ $sectionBaseUrl }}#beranda" class="nav-link">Beranda</a>
-            <a href="{{ $sectionBaseUrl }}#kategori" class="nav-link">Kategori</a>
-            <a href="{{ $sectionBaseUrl }}#galeri" class="nav-link">Galeri</a>
-            <a href="{{ $sectionBaseUrl }}#cara-pesan" class="nav-link">Cara Pesan</a>
-            <a href="{{ $sectionBaseUrl }}#lacak" class="nav-link">Lacak</a>
-            <a href="{{ $sectionBaseUrl }}#tentang" class="nav-link">Tentang</a>
+        <nav class="hidden md:flex items-center space-x-8 text-[13px] font-medium tracking-wide uppercase">
+            <a href="{{ $sectionBaseUrl }}#beranda" class="nav-link" data-section-link="beranda">Beranda</a>
+            <div class="relative">
+                <button id="catalog-nav-trigger" type="button"
+                    class="nav-link nav-dropdown-trigger inline-flex items-center gap-2" data-nav-dropdown-trigger
+                    aria-expanded="false" aria-controls="catalog-nav-menu"
+                    @if ($isCatalogPage) aria-current="page" @endif>
+                    <span>Katalog</span>
+                    <svg class="h-3.5 w-3.5 transition-transform duration-200" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                    </svg>
+                </button>
+            </div>
+            <a href="{{ $sectionBaseUrl }}#kategori" class="nav-link" data-section-link="kategori">Kategori</a>
+            <a href="{{ $sectionBaseUrl }}#galeri" class="nav-link" data-section-link="galeri">Galeri</a>
+            <a href="{{ $sectionBaseUrl }}#cara-pesan" class="nav-link" data-section-link="cara-pesan">Cara Pesan</a>
+            <a href="{{ $sectionBaseUrl }}#lacak" class="nav-link" data-section-link="lacak">Lacak</a>
+            <a href="{{ $sectionBaseUrl }}#tentang" class="nav-link" data-section-link="tentang">Tentang</a>
         </nav>
 
         <!-- Desktop CTA -->
@@ -42,16 +91,92 @@
         </button>
     </div>
 
+    <div id="catalog-nav-menu" data-nav-dropdown class="catalog-mega-menu pointer-events-none opacity-0 -translate-y-3"
+        aria-hidden="true">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="catalog-mega-menu__panel">
+                <div class="catalog-mega-menu__layout">
+                    <div class="catalog-mega-menu__intro">
+                        <div class="catalog-mega-menu__eyebrow">Katalog Sadita</div>
+                        <a href="{{ route('catalog') }}" class="catalog-mega-menu__all-link">
+                            <span>Lihat semua koleksi</span>
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </a>
+                        <p class="catalog-mega-menu__intro-copy">
+                            Pilih jalur layanan yang paling pas dulu, lalu lanjut ke produk yang ingin dilihat.
+                        </p>
+                    </div>
+
+                    <div class="catalog-mega-menu__columns">
+                        @foreach (array_slice($catalogNavItems, 1) as $item)
+                            <div class="catalog-mega-menu__column">
+                                <div class="catalog-mega-menu__column-label">{{ $item['label'] }}</div>
+                                <a href="{{ $item['href'] }}" class="catalog-mega-menu__column-link">
+                                    {{ $item['label'] }}
+                                </a>
+                                <p class="catalog-mega-menu__column-copy">{{ $item['description'] }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="catalog-mega-menu__feature">
+                        <div class="catalog-mega-menu__feature-heading">Pilihan cepat</div>
+                        <div class="catalog-mega-menu__feature-grid">
+                            @foreach ($catalogFeatureItems as $feature)
+                                <a href="{{ $feature['href'] }}" class="catalog-mega-menu__feature-card">
+                                    <div class="catalog-mega-menu__feature-eyebrow">{{ $feature['eyebrow'] }}</div>
+                                    <div class="catalog-mega-menu__feature-title">{{ $feature['title'] }}</div>
+                                    <p class="catalog-mega-menu__feature-copy">{{ $feature['copy'] }}</p>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile Menu Overlay -->
     <div id="mobile-menu"
-        class="mobile-menu-panel md:hidden fixed inset-x-0 top-0 h-screen bg-[#FFFDFB] transform translate-x-full transition-transform duration-300 ease-in-out z-[55]">
+        class="mobile-menu-panel md:hidden fixed inset-x-0 top-0 h-screen bg-[#FFFDFB] transform translate-x-full transition-transform duration-300 ease-in-out z-[70]">
+        <button id="mobile-menu-close" type="button" class="mobile-menu-close flex items-center justify-center"
+            aria-label="Tutup menu">
+            <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 6l12 12M18 6L6 18" />
+            </svg>
+        </button>
         <div class="flex flex-col px-6 pt-24 pb-8 gap-1 h-full overflow-y-auto">
-            <a href="{{ $sectionBaseUrl }}#beranda" class="mobile-nav-link">Beranda</a>
-            <a href="{{ $sectionBaseUrl }}#kategori" class="mobile-nav-link">Kategori</a>
-            <a href="{{ $sectionBaseUrl }}#galeri" class="mobile-nav-link">Galeri</a>
-            <a href="{{ $sectionBaseUrl }}#cara-pesan" class="mobile-nav-link">Cara Pesan</a>
-            <a href="{{ $sectionBaseUrl }}#lacak" class="mobile-nav-link">Lacak</a>
-            <a href="{{ $sectionBaseUrl }}#tentang" class="mobile-nav-link">Tentang</a>
+            <a href="{{ $sectionBaseUrl }}#beranda" class="mobile-nav-link" data-section-link="beranda">Beranda</a>
+            <div class="mobile-catalog">
+                <button type="button" class="mobile-catalog-trigger" data-mobile-catalog-trigger
+                    aria-expanded="{{ $isCatalogPage ? 'true' : 'false' }}" aria-controls="mobile-catalog-panel">
+                    <span class="uppercase">KATALOG</span>
+                    <svg class="h-5 w-5 transition-transform duration-200" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 9l6 6 6-6" />
+                    </svg>
+                </button>
+                <div id="mobile-catalog-panel" class="mobile-catalog-panel {{ $isCatalogPage ? 'is-open' : '' }}"
+                    data-mobile-catalog-panel @if (!$isCatalogPage) hidden @endif>
+                    @foreach ($catalogNavItems as $item)
+                        <a href="{{ $item['href'] }}" class="mobile-catalog-link">
+                            <span class="mobile-catalog-link__title">{{ $item['label'] }}</span>
+                            <span class="mobile-catalog-link__copy">{{ $item['description'] }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+            <a href="{{ $sectionBaseUrl }}#kategori" class="mobile-nav-link"
+                data-section-link="kategori">Kategori</a>
+            <a href="{{ $sectionBaseUrl }}#galeri" class="mobile-nav-link" data-section-link="galeri">Galeri</a>
+            <a href="{{ $sectionBaseUrl }}#cara-pesan" class="mobile-nav-link" data-section-link="cara-pesan">Cara
+                Pesan</a>
+            <a href="{{ $sectionBaseUrl }}#lacak" class="mobile-nav-link" data-section-link="lacak">Lacak</a>
+            <a href="{{ $sectionBaseUrl }}#tentang" class="mobile-nav-link" data-section-link="tentang">Tentang</a>
             <a href="{{ $sectionBaseUrl }}#kontak" class="mobile-nav-link">Kontak</a>
             <div class="mt-6 pt-6 border-t border-[#E8C87A]/10">
                 <a href="/login"

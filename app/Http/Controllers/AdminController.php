@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
+use App\Models\GambarProduk;
 use App\Models\Kategori;
 use App\Models\KodePromo;
 use App\Models\Pelanggan;
+use App\Models\PengembalianPesanan;
 use App\Models\Pembayaran;
 use App\Models\Pesanan;
 use App\Models\Produk;
@@ -77,6 +79,26 @@ class AdminController extends Controller
         ]);
     }
 
+    public function advanceOrderStatus(Request $request, Pesanan $pesanan)
+    {
+        $validated = $request->validate([
+            'action' => ['required', Rule::in(['advance', 'pickup_ok', 'pickup_damaged', 'damage_paid'])],
+        ]);
+
+        $pesanan->loadMissing([
+            'detailItems.produk:id,is_sewa',
+            'pengembalian',
+        ]);
+
+        $this->syncRentalPickupWindow($pesanan);
+
+        $message = DB::transaction(function () use ($pesanan, $validated): string {
+            return $this->handleQuickOrderAction($pesanan, $validated['action']);
+        });
+
+        return back()->with('admin_status', $message);
+    }
+
     public function showSearchResults(Request $request)
     {
         $validated = $request->validate([
@@ -95,8 +117,44 @@ class AdminController extends Controller
         ]);
     }
 
+    private function canAccessAdminPanel(?User $user): bool
+    {
+        return $user?->isActive() && $user?->is_admin && in_array($user?->role, [User::ROLE_OWNER, User::ROLE_ADMIN, User::ROLE_STAFF], true);
+    }
+
+    private function canManageAdminData(?User $user): bool
+    {
+        return $user?->isOwner() || $user?->isAdmin();
+    }
+
+    private function allowedFocusesFor(?User $user): array
+    {
+        if ($user?->isStaff()) {
+            return ['dashboard', 'pesanan', 'pembayaran'];
+        }
+
+        return ['dashboard', 'kategori', 'produk', 'promo', 'pelanggan', 'ulasan', 'pesanan', 'pembayaran', 'aktivitas', 'users'];
+    }
+
+    private function assertFocusAccess(string $focus, ?User $user): void
+    {
+        abort_unless($this->canAccessAdminPanel($user), 403);
+        abort_unless(in_array($focus, $this->allowedFocusesFor($user), true), 403);
+    }
+
+    private function assertMutationAccess(Request $request, string $focus): void
+    {
+        abort_unless($this->canManageAdminData($request->user()), 403);
+
+        if ($focus === 'users') {
+            abort_unless($request->user()?->isOwner(), 403);
+        }
+    }
+
     public function update(Request $request, string $focus, int $record)
     {
+        $this->assertMutationAccess($request, $focus);
+
         $user = $request->user();
         $recordModel = $this->findRecord($focus, $record);
         $beforeSnapshot = $this->snapshotRecordForLog($recordModel);
@@ -111,21 +169,7 @@ class AdminController extends Controller
                 'is_aktif' => $request->boolean('is_aktif'),
             ]),
 
-            'produk' => $recordModel->update($request->validate([
-                'kategori_id' => ['required', 'exists:kategori,id'],
-                'nama' => ['required', 'string', 'max:200'],
-                'slug' => ['required', 'string', 'max:200', Rule::unique('produk', 'slug')->ignore($recordModel->id)],
-                'deskripsi' => ['nullable', 'string'],
-                'harga_dasar' => ['required', 'integer', 'min:0'],
-                'foto_utama' => ['nullable', 'string', 'max:255'],
-                'is_customizable' => ['nullable', 'boolean'],
-                'is_sewa' => ['nullable', 'boolean'],
-                'is_aktif' => ['nullable', 'boolean'],
-            ]) + [
-                'is_customizable' => $request->boolean('is_customizable'),
-                'is_sewa' => $request->boolean('is_sewa'),
-                'is_aktif' => $request->boolean('is_aktif'),
-            ]),
+            'produk' => $this->updateProduct($request, $recordModel),
 
             'promo' => $recordModel->update($request->validate([
                 'kode' => ['required', 'string', 'max:20', Rule::unique('kode_promo', 'kode')->ignore($recordModel->id)],
@@ -175,6 +219,8 @@ class AdminController extends Controller
                     Pesanan::STATUS_DIPROSES,
                     Pesanan::STATUS_SIAPKIRIM,
                     Pesanan::STATUS_SELESAI,
+                    Pesanan::STATUS_PENJEMPUTAN,
+                    Pesanan::STATUS_MENUNGGU_DENDA,
                     Pesanan::STATUS_DIBATALKAN,
                 ])],
                 'total_harga' => ['required', 'integer', 'min:0'],
@@ -222,6 +268,8 @@ class AdminController extends Controller
 
     public function destroy(Request $request, string $focus, int $record)
     {
+        $this->assertMutationAccess($request, $focus);
+
         $recordModel = $this->findRecord($focus, $record);
 
         abort_unless($this->canDeleteRecord($focus, $recordModel, $request->user()), 403);
@@ -244,11 +292,48 @@ class AdminController extends Controller
         }
     }
 
+    public function bulkDestroy(Request $request)
+    {
+        abort_unless($request->user()?->isOwner(), 403);
+
+        $validated = $request->validate([
+            'focus' => ['required', Rule::in(['kategori', 'produk', 'promo', 'pelanggan', 'ulasan', 'pesanan', 'pembayaran', 'users'])],
+            'ids' => ['required', 'array', 'min:1', 'max:50'],
+            'ids.*' => ['integer', 'distinct'],
+        ]);
+
+        $deletedCount = DB::transaction(function () use ($validated, $request) {
+            $count = 0;
+
+            foreach ($validated['ids'] as $id) {
+                $record = $this->findRecord($validated['focus'], (int) $id);
+                abort_unless($this->canDeleteRecord($validated['focus'], $record, $request->user()), 403);
+
+                $this->logAdminDelete(
+                    $validated['focus'],
+                    $record,
+                    $this->resolveRecordLabel($validated['focus'], $record),
+                );
+
+                $record->delete();
+                $count++;
+            }
+
+            return $count;
+        });
+
+        $this->flushAdminCaches();
+
+        return redirect()
+            ->route('admin.index', ['focus' => $validated['focus'], 'mode' => 'manage'])
+            ->with('success', $deletedCount.' data berhasil dihapus.');
+    }
+
     public function markNotificationsSeen(Request $request): JsonResponse
     {
         $user = $request->user();
 
-        abort_unless($user?->isAdmin(), 403);
+        abort_unless($this->canAccessAdminPanel($user), 403);
 
         $user->forceFill([
             'notifications_seen_at' => now(),
@@ -268,6 +353,8 @@ class AdminController extends Controller
         $focus = blank($focus) ? 'dashboard' : $focus;
         $mode = blank($mode) ? ($focus === 'dashboard' ? 'overview' : 'manage') : $mode;
 
+        $this->assertFocusAccess($focus, $user);
+
         if ($focus === 'aktivitas' && $mode === 'create') {
             $mode = 'manage';
         }
@@ -276,7 +363,25 @@ class AdminController extends Controller
             abort(403);
         }
 
-        $menu = [
+        if ($user?->isStaff() && in_array($mode, ['create', 'edit'], true)) {
+            abort(403);
+        }
+
+        $menu = $user?->isStaff() ? [
+            [
+                'group' => 'Ringkasan',
+                'items' => [
+                    ['key' => 'dashboard', 'label' => 'Dasbor', 'href' => route('admin.index'), 'icon' => 'dashboard'],
+                ],
+            ],
+            [
+                'group' => 'Operasional',
+                'items' => [
+                    ['key' => 'pesanan', 'label' => 'Pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'icon' => 'clipboard'],
+                    ['key' => 'pembayaran', 'label' => 'Verifikasi Pembayaran', 'href' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'manage']), 'icon' => 'banknotes'],
+                ],
+            ],
+        ] : [
             [
                 'group' => 'Ringkasan',
                 'items' => [
@@ -381,6 +486,7 @@ class AdminController extends Controller
 
         $focusModule = $modules[$focus] ?? $modules['dashboard'];
         $isOwner = $user?->isOwner() === true;
+        $canManage = $this->canManageAdminData($user);
         $adminSnapshot = $this->buildAdminSnapshot($isOwner);
         $statusBreakdown = $this->buildStatusBreakdown($adminSnapshot['pesanan']['by_status']);
         $dashboardPayload = $this->shouldLoadDashboardAnalytics($focus, $mode)
@@ -460,16 +566,16 @@ class AdminController extends Controller
 
         $focusMetrics = $this->buildFocusMetrics($focus, $adminSnapshot);
         $focusPreview = $this->buildFocusPreview($focus, $request);
-        $quickActions = $this->buildQuickActions($focus, $isOwner);
+        $quickActions = $this->buildQuickActions($focus, $isOwner, $canManage);
         $activityFeed = $focus === 'dashboard' && $user ? $this->buildActivityFeed($user) : [];
         $notificationUnreadCount = $user ? $this->buildNotificationUnreadCount($user) : 0;
         $notificationScopeLabel = $user?->isStaff()
             ? 'Pesanan baru masuk'
             : 'Aktivitas admin dan pesanan baru';
-        $modeTabs = $this->buildModeTabs($focus, $isOwner, $currentRecord !== null);
+        $modeTabs = $this->buildModeTabs($focus, $isOwner, $canManage, $currentRecord !== null);
         $createBlueprint = $this->buildCreateBlueprint($focus);
         $formSections = $this->buildFormSections($focus);
-        $formOptionsPayload = in_array($mode, ['create', 'edit'], true) && $focus !== 'dashboard'
+        $formOptionsPayload = $canManage && in_array($mode, ['create', 'edit'], true) && $focus !== 'dashboard'
             ? $this->buildFormOptions($focus, $isOwner, $currentRecord)
             : ['options' => [], 'meta' => []];
         $searchTerm = trim((string) $request->query('search', ''));
@@ -494,6 +600,7 @@ class AdminController extends Controller
             'formSections' => $formSections,
             'formOptions' => $formOptionsPayload['options'],
             'formOptionMeta' => $formOptionsPayload['meta'],
+            'canManageData' => $canManage,
             'currentRecord' => $currentRecord,
             'user' => $user,
             'searchTerm' => $searchTerm,
@@ -638,6 +745,8 @@ class AdminController extends Controller
 
     public function store(Request $request, string $focus)
     {
+        $this->assertMutationAccess($request, $focus);
+
         $user = $request->user();
 
         $createdRecord = match ($focus) {
@@ -650,21 +759,7 @@ class AdminController extends Controller
                 'is_aktif' => $request->boolean('is_aktif'),
             ]),
 
-            'produk' => Produk::query()->create($request->validate([
-                'kategori_id' => ['required', 'exists:kategori,id'],
-                'nama' => ['required', 'string', 'max:200'],
-                'slug' => ['required', 'string', 'max:200', 'unique:produk,slug'],
-                'deskripsi' => ['nullable', 'string'],
-                'harga_dasar' => ['required', 'integer', 'min:0'],
-                'foto_utama' => ['nullable', 'string', 'max:255'],
-                'is_customizable' => ['nullable', 'boolean'],
-                'is_sewa' => ['nullable', 'boolean'],
-                'is_aktif' => ['nullable', 'boolean'],
-            ]) + [
-                'is_customizable' => $request->boolean('is_customizable'),
-                'is_sewa' => $request->boolean('is_sewa'),
-                'is_aktif' => $request->boolean('is_aktif'),
-            ]),
+            'produk' => $this->storeProduct($request),
 
             'promo' => KodePromo::query()->create($request->validate([
                 'kode' => ['required', 'string', 'max:20', 'unique:kode_promo,kode'],
@@ -716,6 +811,8 @@ class AdminController extends Controller
                     Pesanan::STATUS_DIPROSES,
                     Pesanan::STATUS_SIAPKIRIM,
                     Pesanan::STATUS_SELESAI,
+                    Pesanan::STATUS_PENJEMPUTAN,
+                    Pesanan::STATUS_MENUNGGU_DENDA,
                     Pesanan::STATUS_DIBATALKAN,
                 ])],
                 'total_harga' => ['required', 'integer', 'min:0'],
@@ -771,6 +868,7 @@ class AdminController extends Controller
             'password' => ['required', 'string', 'min:8'],
             'role' => ['required', Rule::in([User::ROLE_OWNER, User::ROLE_ADMIN, User::ROLE_STAFF])],
             'is_admin' => ['nullable', 'boolean'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
         return User::query()->create([
@@ -779,6 +877,7 @@ class AdminController extends Controller
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'is_admin' => $request->boolean('is_admin'),
+            'is_active' => $request->boolean('is_active', true),
         ]);
     }
 
@@ -792,6 +891,7 @@ class AdminController extends Controller
             'password' => ['nullable', 'string', 'min:8'],
             'role' => ['required', Rule::in([User::ROLE_OWNER, User::ROLE_ADMIN, User::ROLE_STAFF])],
             'is_admin' => ['nullable', 'boolean'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
         $payload = [
@@ -799,6 +899,7 @@ class AdminController extends Controller
             'email' => $validated['email'],
             'role' => $validated['role'],
             'is_admin' => $request->boolean('is_admin'),
+            'is_active' => $request->boolean('is_active'),
         ];
 
         if (filled($validated['password'] ?? null)) {
@@ -806,6 +907,86 @@ class AdminController extends Controller
         }
 
         return $user->update($payload);
+    }
+
+    private function storeProduct(Request $request): Produk
+    {
+        $validated = $this->validateProductPayload($request);
+
+        $product = Produk::query()->create($validated);
+        $this->syncProductImages($product, $validated['foto_utama'] ?? null, $request->input('galeri_foto'));
+
+        return $product->fresh(['kategori', 'gambarItems']);
+    }
+
+    private function updateProduct(Request $request, Produk $product): bool
+    {
+        $validated = $this->validateProductPayload($request, $product);
+        $updated = $product->update($validated);
+
+        $this->syncProductImages($product->fresh(), $validated['foto_utama'] ?? null, $request->input('galeri_foto'));
+
+        return $updated;
+    }
+
+    private function validateProductPayload(Request $request, ?Produk $product = null): array
+    {
+        return $request->validate([
+            'kategori_id' => ['required', 'exists:kategori,id'],
+            'nama' => ['required', 'string', 'max:200'],
+            'slug' => ['required', 'string', 'max:200', Rule::unique('produk', 'slug')->ignore($product?->id)],
+            'deskripsi' => ['nullable', 'string'],
+            'harga_dasar' => ['required', 'integer', 'min:0'],
+            'foto_utama' => ['nullable', 'string', 'max:255'],
+            'galeri_foto' => ['nullable', 'string', 'max:5000'],
+            'is_customizable' => ['nullable', 'boolean'],
+            'is_sewa' => ['nullable', 'boolean'],
+            'is_aktif' => ['nullable', 'boolean'],
+        ]) + [
+            'is_customizable' => $request->boolean('is_customizable'),
+            'is_sewa' => $request->boolean('is_sewa'),
+            'is_aktif' => $request->boolean('is_aktif'),
+            'galeri_foto' => $this->parseGalleryInput($request->input('galeri_foto')),
+        ];
+    }
+
+    private function parseGalleryInput(?string $value): array
+    {
+        return collect(preg_split('/[\r\n,]+/', (string) $value))
+            ->map(fn ($path) => trim((string) $path))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function syncProductImages(Produk $product, ?string $primaryPath, mixed $galleryInput): void
+    {
+        $galleryPaths = is_array($galleryInput) ? $galleryInput : $this->parseGalleryInput($galleryInput);
+
+        $paths = collect(array_merge(
+            filled($primaryPath) ? [trim($primaryPath)] : [],
+            $galleryPaths,
+        ))
+            ->map(fn ($path) => trim((string) $path))
+            ->filter()
+            ->unique()
+            ->values();
+
+        $product->updateQuietly([
+            'galeri_foto' => $galleryPaths,
+        ]);
+
+        $product->gambarItems()->delete();
+
+        $paths->each(function (string $path, int $index) use ($product, $primaryPath) {
+            GambarProduk::query()->create([
+                'produk_id' => $product->id,
+                'path_gambar' => $path,
+                'is_utama' => filled($primaryPath)
+                    ? $path === trim((string) $primaryPath)
+                    : $index === 0,
+            ]);
+        });
     }
 
     private function canDeleteRecord(string $focus, mixed $recordModel, ?User $user): bool
@@ -847,7 +1028,7 @@ class AdminController extends Controller
         };
     }
 
-    private function buildModeTabs(string $focus, bool $isOwner, bool $hasEditingRecord = false): array
+    private function buildModeTabs(string $focus, bool $isOwner, bool $canManage, bool $hasEditingRecord = false): array
     {
         if ($focus === 'dashboard') {
             return [
@@ -866,7 +1047,7 @@ class AdminController extends Controller
             ['key' => 'manage', 'label' => 'Kelola', 'href' => route('admin.index', ['focus' => $focus, 'mode' => 'manage'])],
         ];
 
-        if ($focus !== 'users' || $isOwner) {
+        if ($canManage && ($focus !== 'users' || $isOwner)) {
             $tabs[] = ['key' => 'create', 'label' => 'Tambah', 'href' => route('admin.index', ['focus' => $focus, 'mode' => 'create'])];
         }
 
@@ -884,6 +1065,8 @@ class AdminController extends Controller
             Pesanan::STATUS_MENUNGGU => ['Menunggu Bayar', 'warning'],
             Pesanan::STATUS_DIPROSES => ['Diproses', 'info'],
             Pesanan::STATUS_SIAPKIRIM => ['Siap Kirim', 'primary'],
+            Pesanan::STATUS_PENJEMPUTAN => ['Penjemputan', 'primary'],
+            Pesanan::STATUS_MENUNGGU_DENDA => ['Menunggu Denda', 'danger'],
             Pesanan::STATUS_SELESAI => ['Selesai', 'success'],
             Pesanan::STATUS_DIBATALKAN => ['Dibatalkan', 'danger'],
         ];
@@ -1177,6 +1360,8 @@ class AdminController extends Controller
     private function buildFocusPreview(string $focus, Request $request): array
     {
         $search = trim((string) $request->query('search', ''));
+        $sort = trim((string) $request->query('sort', 'created_at'));
+        $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
 
         return match ($focus) {
             'kategori' => [
@@ -1184,7 +1369,7 @@ class AdminController extends Controller
                 'subtitle' => 'Data kategori dimuat bertahap per halaman agar panel tetap ringan.',
                 'columns' => ['Nama', 'Slug', 'Status', 'Dibuat'],
                 'rows' => $this->applyFocusSearch(Kategori::query(), 'kategori', $search)
-                    ->latest()
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
                     ->paginate(10)
                     ->withQueryString()
                     ->through(fn (Kategori $kategori) => [
@@ -1204,7 +1389,7 @@ class AdminController extends Controller
                 'columns' => ['Produk', 'Kategori', 'Mode', 'Harga Dasar'],
                 'rows' => $this->applyFocusSearch(Produk::query(), 'produk', $search)
                     ->with('kategori:id,nama')
-                    ->latest()
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
                     ->paginate(8)
                     ->withQueryString()
                     ->through(fn (Produk $produk) => [
@@ -1224,7 +1409,7 @@ class AdminController extends Controller
                 'subtitle' => 'Promo dimuat sedikit-sedikit per halaman supaya evaluasi kampanye tetap cepat.',
                 'columns' => ['Kode', 'Diskon', 'Dipakai', 'Status'],
                 'rows' => $this->applyFocusSearch(KodePromo::query(), 'promo', $search)
-                    ->latest()
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
                     ->paginate(10)
                     ->withQueryString()
                     ->through(fn (KodePromo $promo) => [
@@ -1245,7 +1430,7 @@ class AdminController extends Controller
                 'subtitle' => 'Daftar pelanggan dimuat per halaman untuk menjaga performa saat data membesar.',
                 'columns' => ['Nama', 'No. HP', 'Email', 'Terdaftar'],
                 'rows' => $this->applyFocusSearch(Pelanggan::query(), 'pelanggan', $search)
-                    ->latest()
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
                     ->paginate(10)
                     ->withQueryString()
                     ->through(fn (Pelanggan $pelanggan) => [
@@ -1264,7 +1449,7 @@ class AdminController extends Controller
                 'subtitle' => 'Ulasan dimuat bertahap agar moderasi tetap responsif.',
                 'columns' => ['Pengulas', 'Rating', 'Komentar', 'Status'],
                 'rows' => $this->applyFocusSearch(Ulasan::query(), 'ulasan', $search)
-                    ->latest()
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
                     ->paginate(10)
                     ->withQueryString()
                     ->through(fn (Ulasan $ulasan) => [
@@ -1283,20 +1468,32 @@ class AdminController extends Controller
                 'subtitle' => 'Pesanan diambil per halaman supaya beban query tidak meledak saat order bertambah.',
                 'columns' => ['Kode', 'Pelanggan', 'Status', 'Total'],
                 'rows' => $this->applyFocusSearch(Pesanan::query(), 'pesanan', $search)
-                    ->with('pelanggan:id,nama_lengkap')
-                    ->latest()
+                    ->with([
+                        'pelanggan:id,nama_lengkap',
+                        'detailItems.produk:id,is_sewa',
+                        'pengembalian:id,pesanan_id,status_pengembalian,kondisi_barang,catatan_kerusakan,denda_kerusakan,status_denda,waktu_dijemput,tanggal_jemput',
+                    ])
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
                     ->paginate(10)
                     ->withQueryString()
-                    ->through(fn (Pesanan $pesanan) => [
-                        'id' => $pesanan->id,
-                        'cells' => [
-                            $pesanan->kode_pesanan,
-                            $pesanan->pelanggan?->nama_lengkap ?? '-',
-                            $this->statusLabel($pesanan->status),
-                            'Rp '.number_format((int) $pesanan->grand_total, 0, ',', '.'),
-                        ],
-                        'edit_href' => route('admin.edit', ['focus' => 'pesanan', 'record' => $pesanan->id]),
-                    ]),
+                    ->through(function (Pesanan $pesanan): array {
+                        $pesanan = $this->syncRentalPickupWindow($pesanan);
+                        $quickAction = $this->buildQuickOrderAction($pesanan);
+
+                        return [
+                            'id' => $pesanan->id,
+                            'cells' => [
+                                $pesanan->kode_pesanan,
+                                $pesanan->pelanggan?->nama_lengkap ?? '-',
+                                $this->statusLabel($pesanan->status),
+                                'Rp '.number_format((int) $pesanan->grand_total, 0, ',', '.'),
+                            ],
+                            'status_note' => $this->buildOrderStatusNote($pesanan),
+                            'quick_action' => $quickAction,
+                            'is_rental' => $pesanan->isRentalOrder(),
+                            'edit_href' => route('admin.edit', ['focus' => 'pesanan', 'record' => $pesanan->id]),
+                        ];
+                    }),
             ],
             'pembayaran' => [
                 'title' => 'Preview Verifikasi Pembayaran',
@@ -1304,7 +1501,7 @@ class AdminController extends Controller
                 'columns' => ['Pesanan', 'Metode', 'Status', 'Nominal'],
                 'rows' => $this->applyFocusSearch(Pembayaran::query(), 'pembayaran', $search)
                     ->with('pesanan:id,kode_pesanan')
-                    ->latest()
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
                     ->paginate(10)
                     ->withQueryString()
                     ->through(fn (Pembayaran $pembayaran) => [
@@ -1321,9 +1518,9 @@ class AdminController extends Controller
             'users' => [
                 'title' => 'Preview Users',
                 'subtitle' => 'Data user dimuat per halaman untuk menjaga panel tetap stabil.',
-                'columns' => ['Nama', 'Email', 'Role', 'Admin'],
+                'columns' => ['Nama', 'Email', 'Role', 'Status', 'Admin'],
                 'rows' => $this->applyFocusSearch(User::query(), 'users', $search)
-                    ->latest()
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
                     ->paginate(10)
                     ->withQueryString()
                     ->through(fn (User $user) => [
@@ -1332,6 +1529,7 @@ class AdminController extends Controller
                             $user->name,
                             $user->email,
                             ucfirst((string) $user->role),
+                            $user->is_active ? 'Aktif' : 'Nonaktif',
                             $user->is_admin ? 'Ya' : 'Tidak',
                         ],
                         'edit_href' => route('admin.edit', ['focus' => 'users', 'record' => $user->id]),
@@ -1344,7 +1542,7 @@ class AdminController extends Controller
                 'actions' => false,
                 'rows' => $this->applyFocusSearch(ActivityLog::query(), 'aktivitas', $search)
                     ->with('user:id,name')
-                    ->latest()
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
                     ->paginate(15)
                     ->withQueryString()
                     ->through(fn (ActivityLog $log) => [
@@ -1614,12 +1812,44 @@ class AdminController extends Controller
         };
     }
 
-    private function buildQuickActions(string $focus, bool $isOwner): array
+    private function applyFocusSort(Builder $query, string $focus, string $sort, string $direction): Builder
+    {
+        $columns = match ($focus) {
+            'kategori' => ['name' => 'nama', 'slug' => 'slug', 'status' => 'is_aktif', 'created_at' => 'created_at'],
+            'produk' => ['name' => 'nama', 'status' => 'is_sewa', 'harga_dasar' => 'harga_dasar', 'created_at' => 'created_at'],
+            'promo' => ['kode' => 'kode', 'nilai_diskon' => 'nilai_diskon', 'status' => 'is_aktif', 'created_at' => 'created_at'],
+            'pelanggan' => ['name' => 'nama_lengkap', 'email' => 'email', 'created_at' => 'created_at'],
+            'ulasan' => ['name' => 'nama_pengulas', 'rating' => 'rating', 'status' => 'is_tampil', 'created_at' => 'created_at'],
+            'pesanan' => ['kode' => 'kode_pesanan', 'status' => 'status', 'grand_total' => 'grand_total', 'created_at' => 'created_at'],
+            'pembayaran' => ['metode' => 'metode', 'status' => 'status', 'jumlah_dibayar' => 'jumlah_dibayar', 'created_at' => 'created_at'],
+            'users' => ['name' => 'name', 'email' => 'email', 'role' => 'role', 'is_active' => 'is_active', 'is_admin' => 'is_admin', 'created_at' => 'created_at'],
+            default => ['created_at' => 'created_at'],
+        };
+
+        return $query->orderBy($columns[$sort] ?? 'created_at', $direction);
+    }
+
+    private function buildQuickActions(string $focus, bool $isOwner, bool $canManage): array
     {
         $base = [
             ['label' => 'Kembali ke dasbor', 'href' => route('admin.index'), 'kind' => 'secondary'],
             ['label' => 'Buka daftar pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'kind' => 'secondary'],
         ];
+
+        if (! $canManage) {
+            return match ($focus) {
+                'pembayaran' => [
+                    ['label' => 'Lihat pembayaran', 'href' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'manage']), 'kind' => 'primary'],
+                    ['label' => 'Buka daftar pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'kind' => 'secondary'],
+                    ['label' => 'Kembali ke dasbor', 'href' => route('admin.index'), 'kind' => 'secondary'],
+                ],
+                default => [
+                    ['label' => 'Lihat pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'kind' => 'primary'],
+                    ['label' => 'Lihat pembayaran', 'href' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'manage']), 'kind' => 'secondary'],
+                    ['label' => 'Kembali ke dasbor', 'href' => route('admin.index'), 'kind' => 'secondary'],
+                ],
+            };
+        }
 
         $focusActions = match ($focus) {
             'kategori' => [
@@ -1967,12 +2197,245 @@ class AdminController extends Controller
         return $record->attributesToArray();
     }
 
+    private function handleQuickOrderAction(Pesanan $pesanan, string $action): string
+    {
+        $statusSebelum = (string) $pesanan->status;
+
+        $message = match ($action) {
+            'advance' => $this->advanceOrderLifecycle($pesanan),
+            'pickup_ok' => $this->markRentalPickupCompleted($pesanan, false),
+            'pickup_damaged' => $this->markRentalPickupCompleted($pesanan, true),
+            'damage_paid' => $this->markDamagePenaltyPaid($pesanan),
+        };
+
+        if ($statusSebelum !== (string) $pesanan->status) {
+            ActivityLogger::ubahStatusPesanan($pesanan, $statusSebelum, (string) $pesanan->status);
+        }
+
+        return $message;
+    }
+
+    private function advanceOrderLifecycle(Pesanan $pesanan): string
+    {
+        if ($pesanan->status === Pesanan::STATUS_DIPROSES) {
+            $pesanan->forceFill([
+                'status' => Pesanan::STATUS_SIAPKIRIM,
+            ])->save();
+
+            return 'Status pesanan dipindahkan ke Siap Kirim.';
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_SIAPKIRIM) {
+            $payload = [
+                'status' => Pesanan::STATUS_SELESAI,
+                'waktu_selesai' => $pesanan->waktu_selesai ?? now(),
+            ];
+
+            if ($pesanan->isRentalOrder()) {
+                $payload['pickup_deadline_at'] = now()->addDay();
+            }
+
+            $pesanan->forceFill($payload)->save();
+
+            if ($pesanan->isRentalOrder()) {
+                $pesanan->pengembalian()->updateOrCreate(
+                    ['pesanan_id' => $pesanan->id],
+                    [
+                        'status_pengembalian' => 'menunggu_dijemput',
+                        'tanggal_jemput' => optional($pesanan->pickup_deadline_at)->toDateString(),
+                        'kondisi_barang' => null,
+                        'catatan_kerusakan' => null,
+                        'denda_kerusakan' => 0,
+                        'status_denda' => 'tidak_ada',
+                        'waktu_dijemput' => null,
+                    ]
+                );
+
+                $pesanan->unsetRelation('pengembalian');
+                $pesanan->load('pengembalian');
+
+                return 'Pesanan sewa ditandai selesai dipakai. Hitung mundur penjemputan 1 hari sudah dimulai.';
+            }
+
+            return 'Status pesanan dipindahkan ke Selesai.';
+        }
+
+        return 'Status ini belum punya aksi cepat lanjutan.';
+    }
+
+    private function markRentalPickupCompleted(Pesanan $pesanan, bool $isDamaged): string
+    {
+        if (! $pesanan->isRentalOrder()) {
+            return 'Aksi penjemputan hanya tersedia untuk pesanan sewa.';
+        }
+
+        $pengembalian = $pesanan->pengembalian()->firstOrCreate(
+            ['pesanan_id' => $pesanan->id],
+            ['status_pengembalian' => 'menunggu_dijemput']
+        );
+
+        $pengembalian->fill([
+            'status_pengembalian' => 'sudah_dijemput',
+            'kondisi_barang' => $isDamaged ? 'rusak' : 'baik',
+            'status_denda' => $isDamaged ? 'menunggu_pembayaran' : 'tidak_ada',
+            'waktu_dijemput' => now(),
+            'tanggal_jemput' => optional($pengembalian->tanggal_jemput)->toDateString() ?? now()->toDateString(),
+        ]);
+
+        if ($isDamaged) {
+            $pengembalian->catatan_kerusakan = $pengembalian->catatan_kerusakan ?: 'Barang dikembalikan dalam kondisi rusak. Hubungi admin untuk konfirmasi denda.';
+            $pengembalian->denda_kerusakan = max((int) ($pengembalian->denda_kerusakan ?? 0), 0);
+        } else {
+            $pengembalian->catatan_kerusakan = null;
+            $pengembalian->denda_kerusakan = 0;
+        }
+
+        $pengembalian->save();
+
+        $pesanan->forceFill([
+            'status' => $isDamaged ? Pesanan::STATUS_MENUNGGU_DENDA : Pesanan::STATUS_SELESAI,
+            'pickup_deadline_at' => null,
+        ])->save();
+
+        $pesanan->setRelation('pengembalian', $pengembalian);
+
+        return $isDamaged
+            ? 'Barang ditandai rusak. Pesanan dipindahkan ke Menunggu Denda.'
+            : 'Penjemputan selesai. Pesanan ditutup tanpa denda.';
+    }
+
+    private function markDamagePenaltyPaid(Pesanan $pesanan): string
+    {
+        if ($pesanan->status !== Pesanan::STATUS_MENUNGGU_DENDA) {
+            return 'Pesanan ini belum berada di tahap denda.';
+        }
+
+        $pengembalian = $pesanan->pengembalian;
+
+        if (! $pengembalian) {
+            return 'Data pengembalian belum tersedia.';
+        }
+
+        $pengembalian->forceFill([
+            'status_denda' => 'lunas',
+        ])->save();
+
+        $pesanan->forceFill([
+            'status' => Pesanan::STATUS_SELESAI,
+            'pickup_deadline_at' => null,
+        ])->save();
+
+        $pesanan->setRelation('pengembalian', $pengembalian);
+
+        return 'Denda sudah ditandai lunas dan pesanan selesai sepenuhnya.';
+    }
+
+    private function syncRentalPickupWindow(Pesanan $pesanan): Pesanan
+    {
+        if (
+            ! $pesanan->isRentalOrder() ||
+            $pesanan->status !== Pesanan::STATUS_SELESAI ||
+            ! $pesanan->pickup_deadline_at
+        ) {
+            return $pesanan;
+        }
+
+        if ($pesanan->pickup_deadline_at->copy()->subMinutes(30)->lte(now())) {
+            $pesanan->forceFill([
+                'status' => Pesanan::STATUS_PENJEMPUTAN,
+            ])->saveQuietly();
+        }
+
+        return $pesanan;
+    }
+
+    private function buildQuickOrderAction(Pesanan $pesanan): ?array
+    {
+        if ($pesanan->status === Pesanan::STATUS_DIPROSES) {
+            return [
+                'buttons' => [
+                    $this->makeQuickOrderButton('Lanjut ke siap kirim', 'advance', 'primary'),
+                ],
+            ];
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_SIAPKIRIM) {
+            return [
+                'buttons' => [
+                    $this->makeQuickOrderButton('Tandai selesai', 'advance', 'primary'),
+                ],
+            ];
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_PENJEMPUTAN) {
+            return [
+                'buttons' => [
+                    $this->makeQuickOrderButton('Barang aman', 'pickup_ok', 'success'),
+                    $this->makeQuickOrderButton('Ada kerusakan', 'pickup_damaged', 'warning'),
+                ],
+            ];
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_MENUNGGU_DENDA) {
+            return [
+                'buttons' => [
+                    $this->makeQuickOrderButton('Sudah dibayar', 'damage_paid', 'danger'),
+                ],
+                'note' => 'Silakan hubungi '.$this->saditaContactPhone().' untuk konfirmasi denda kerusakan.',
+            ];
+        }
+
+        return null;
+    }
+
+    private function makeQuickOrderButton(string $label, string $action, string $variant): array
+    {
+        return [
+            'label' => $label,
+            'action' => $action,
+            'class' => match ($variant) {
+                'success' => 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
+                'warning' => 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100',
+                'danger' => 'border-[#d7b2b6] bg-[#fff4f5] text-[#8e2f3d] hover:bg-[#fdecef]',
+                default => 'border-[#d8c6b7] bg-[#fbf8f5] text-[#56353a] hover:bg-white',
+            },
+        ];
+    }
+
+    private function buildOrderStatusNote(Pesanan $pesanan): ?string
+    {
+        if (
+            $pesanan->isRentalOrder() &&
+            $pesanan->status === Pesanan::STATUS_SELESAI &&
+            $pesanan->pickup_deadline_at
+        ) {
+            return 'Penjemputan otomatis dibuka '.Carbon::parse($pesanan->pickup_deadline_at)->format('d M Y, H:i');
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_PENJEMPUTAN && $pesanan->pickup_deadline_at) {
+            return 'Batas jemput '.Carbon::parse($pesanan->pickup_deadline_at)->format('d M Y, H:i');
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_MENUNGGU_DENDA) {
+            return 'Konfirmasi denda ke '.$this->saditaContactPhone().'.';
+        }
+
+        return null;
+    }
+
+    private function saditaContactPhone(): string
+    {
+        return (string) (env('SADITA_CONTACT_PHONE') ?: '08xxxxxxxxxx');
+    }
+
     private function statusLabel(string $status): string
     {
         return match ($status) {
             Pesanan::STATUS_MENUNGGU => 'Menunggu Bayar',
             Pesanan::STATUS_DIPROSES => 'Diproses',
             Pesanan::STATUS_SIAPKIRIM => 'Siap Kirim',
+            Pesanan::STATUS_PENJEMPUTAN => 'Penjemputan',
+            Pesanan::STATUS_MENUNGGU_DENDA => 'Menunggu Denda',
             Pesanan::STATUS_SELESAI => 'Selesai',
             Pesanan::STATUS_DIBATALKAN => 'Dibatalkan',
             default => $status,

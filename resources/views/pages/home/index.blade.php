@@ -1,149 +1,109 @@
 @extends('layouts.app')
 
 @section('content')
-    <section id="beranda" class="relative w-full h-[100svh] overflow-hidden bg-[#18181b]">
-        <!-- Infinite Horizontal Carousel Background -->
-        <div class="hero-bg-carousel absolute inset-0 z-0 flex items-center overflow-hidden pointer-events-none opacity-40">
-            <div class="flex flex-row items-center gap-3 sm:gap-5 animate-scroll-horizontal">
-                <!-- Set A (8 Curated Best Photos) -->
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/bridesmaid-gift-box.jpg" alt="" class="w-full h-full object-cover"
-                        decoding="async">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
-                    <img src="/images/dekorasi-tunangan.jpg" alt="" class="w-full h-full object-cover"
-                        decoding="async">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-6">
-                    <img src="/images/set-hantaran-nikah.jpg" alt="" class="w-full h-full object-cover"
-                        decoding="async">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-3">
-                    <img src="/images/hero-2.jpg" alt="" class="w-full h-full object-cover" decoding="async">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-2">
-                    <img src="/images/hantaran-premium-wedding.jpg" alt="" class="w-full h-full object-cover"
-                        decoding="async">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-6">
-                    <img src="/images/dekorasi-lamaran.jpg" alt="" class="w-full h-full object-cover"
-                        decoding="async">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/seserahan-adat-minang.jpg" alt="" class="w-full h-full object-cover"
-                        decoding="async">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
-                    <img src="/images/papan-congratulations-eksklusif.jpg" alt=""
-                        class="w-full h-full object-cover" decoding="async">
-                </div>
-                <!-- Set B (Duplicate for seamless infinite loop) -->
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/bridesmaid-gift-box.jpg" alt="" class="w-full h-full object-cover"
-                        loading="lazy" decoding="async" fetchpriority="low">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
-                    <img src="/images/dekorasi-tunangan.jpg" alt="" class="w-full h-full object-cover" loading="lazy"
-                        decoding="async" fetchpriority="low">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-6">
-                    <img src="/images/set-hantaran-nikah.jpg" alt="" class="w-full h-full object-cover" loading="lazy"
-                        decoding="async" fetchpriority="low">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-3">
-                    <img src="/images/hero-2.jpg" alt="" class="w-full h-full object-cover" loading="lazy"
-                        decoding="async" fetchpriority="low">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-2">
-                    <img src="/images/hantaran-premium-wedding.jpg" alt="" class="w-full h-full object-cover"
-                        loading="lazy" decoding="async" fetchpriority="low">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-6">
-                    <img src="/images/dekorasi-lamaran.jpg" alt="" class="w-full h-full object-cover" loading="lazy"
-                        decoding="async" fetchpriority="low">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg rotate-3">
-                    <img src="/images/seserahan-adat-minang.jpg" alt="" class="w-full h-full object-cover"
-                        loading="lazy" decoding="async" fetchpriority="low">
-                </div>
-                <div
-                    class="flex-shrink-0 w-32 h-48 sm:w-44 sm:h-64 lg:w-56 lg:h-80 rounded-xl sm:rounded-2xl border border-white/10 sm:border-2 overflow-hidden shadow-md sm:shadow-lg -rotate-2">
-                    <img src="/images/papan-congratulations-eksklusif.jpg" alt=""
-                        class="w-full h-full object-cover" loading="lazy" decoding="async" fetchpriority="low">
-                </div>
-            </div>
-        </div>
+    @php
+        $heroBackgroundSlides = [
+            ['/images/bridesmaid-gift-box.jpg', 'Bridesmaid gift box Sadita'],
+            ['/images/hantaran-gold-edition.jpg', 'Hantaran gold edition Sadita'],
+            ['/images/hantaran-premium-wedding.jpg', 'Hantaran premium wedding Sadita'],
+            ['/images/papan-congratulations-eksklusif.jpg', 'Papan congratulations eksklusif Sadita'],
+            ['/images/papan-rustic-custom.jpg', 'Papan rustic custom Sadita'],
+            ['/images/papan-standing-mirror-premium.jpg', 'Papan standing mirror premium Sadita'],
+            ['/images/papan-ucapan-selamatan.jpg', 'Papan ucapan selamatan Sadita'],
+            ['/images/seserahan-adat-minang.jpg', 'Seserahan adat Minang Sadita'],
+            ['/images/set-hantaran-nikah.jpg', 'Set hantaran nikah Sadita'],
+            ['/images/standing-mirror-besar.jpg', 'Standing mirror besar Sadita'],
+        ];
+        $heroMarqueeRows = [
+            $heroBackgroundSlides,
+            array_merge(array_slice($heroBackgroundSlides, 3), array_slice($heroBackgroundSlides, 0, 3)),
+            array_merge(array_slice($heroBackgroundSlides, 6), array_slice($heroBackgroundSlides, 0, 6)),
+        ];
+    @endphp
 
-        <!-- Dimmed Gradient Overlay - stronger on mobile for readability -->
-        <div
-            class="hero-mobile-overlay absolute inset-0 bg-gradient-to-b from-[#18181b]/10 via-[#18181b]/50 to-[#18181b]/95 sm:from-transparent sm:via-[#18181b]/40 sm:to-[#18181b]/80 z-10 pointer-events-none">
-        </div>
-
-        <div class="hero-content relative z-20 h-full flex items-center justify-center pt-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-                <div class="hero-content-inner max-w-2xl mx-auto text-center">
-                    <span
-                        class="hero-kicker inline-block text-[10px] sm:text-sm uppercase tracking-[0.25em] sm:tracking-[0.3em] text-[#E8C87A] font-medium mb-3 sm:mb-4 reveal-on-scroll">Papan
-                        Ucapan, Hantaran & Dekorasi - Padang</span>
-                    <h1 class="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.08] sm:leading-[1.03] reveal-on-scroll"
-                        style="font-family:'Playfair Display',serif; text-shadow: 0 2px 20px rgba(0,0,0,0.6);">
-                        Papan Ucapan,<br>Hantaran &amp; <em class="italic text-[#E8C87A]">Dekorasi</em>
-                    </h1>
-                    <p class="hero-summary mt-3 sm:mt-5 text-sm sm:text-base lg:text-lg text-white/70 leading-relaxed max-w-sm sm:max-w-lg mx-auto reveal-on-scroll"
-                        style="text-shadow: 0 1px 8px rgba(0,0,0,0.5);">
-                        Sadita melayani papan ucapan, hantaran, dan dekorasi untuk berbagai momen spesial di Padang.
-                    </p>
-                    <div class="hero-cta-group mt-6 sm:mt-8 flex flex-wrap justify-center gap-3 sm:gap-4 reveal-on-scroll">
-                        <a href="#kategori"
-                            class="hero-cta-primary btn-primary px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-[#7A1F2B] text-white text-sm font-semibold tracking-wide">
-                            Pesan Sekarang
-                        </a>
-                        <a href="#galeri"
-                            class="hero-cta-secondary btn-outline px-6 sm:px-8 py-3 sm:py-3.5 rounded-full border border-white/30 text-white text-sm font-semibold backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
-                            Lihat Koleksi
-                        </a>
-                    </div>
-                    <div class="hero-quick-links mt-6 sm:mt-9 reveal-on-scroll">
-                        <p class="text-xs sm:text-sm text-white/55">
-                            Mulai dari layanan yang Anda butuhkan:
-                        </p>
-                        <div class="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm sm:text-[15px]">
-                            <a href="#kategori-papan-ucapan"
-                                class="text-white/82 transition-colors duration-300 hover:text-[#E8C87A]">
-                                Papan Ucapan
-                            </a>
-                            <span class="text-white/28">/</span>
-                            <a href="#kategori-hantaran"
-                                class="text-white/82 transition-colors duration-300 hover:text-[#E8C87A]">
-                                Hantaran
-                            </a>
-                            <span class="text-white/28">/</span>
-                            <a href="#kategori-dekorasi"
-                                class="text-white/82 transition-colors duration-300 hover:text-[#E8C87A]">
-                                Dekorasi
-                            </a>
+    <section id="beranda"
+        class="relative w-full min-h-screen overflow-hidden flex flex-col justify-center items-center bg-[#18181b]">
+        <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+            <div class="hero-marquee-stage h-full w-full">
+                @foreach ($heroMarqueeRows as $rowIndex => $rowSlides)
+                    <div
+                        class="hero-marquee-row {{ $rowIndex === 0 ? 'hero-marquee-row-top' : ($rowIndex === 1 ? 'hero-marquee-row-middle' : 'hero-marquee-row-bottom') }}">
+                        <div
+                            class="hero-marquee-track {{ $rowIndex === 1 ? 'hero-marquee-track-reverse hero-marquee-track-middle' : ($rowIndex === 0 ? 'hero-marquee-track-top' : 'hero-marquee-track-bottom') }}">
+                            @for ($duplicate = 0; $duplicate < 3; $duplicate++)
+                                <div class="hero-marquee-group" @if($duplicate > 0) aria-hidden="true" @endif>
+                                @foreach ($rowSlides as [$imagePath, $imageAlt])
+                                    <div class="hero-marquee-card">
+                                        <picture class="block h-full w-full">
+                                            <img src="{{ $imagePath }}" alt="{{ $imageAlt }}"
+                                                class="hero-marquee-image h-full w-full object-cover object-center"
+                                                loading="lazy" decoding="async">
+                                        </picture>
+                                    </div>
+                                @endforeach
+                                </div>
+                            @endfor
                         </div>
                     </div>
+                @endforeach
+                <div class="hero-marquee-spotlight"></div>
+                <div class="hero-marquee-vignette"></div>
+                <div class="hero-marquee-side-fade"></div>
+                <div class="hero-marquee-top-bottom-fade"></div>
+            </div>
+        </div>
+
+        <div class="hero-stage-overlay absolute inset-0 z-10 pointer-events-none">
+        </div>
+
+        <div
+            class="hero-mobile-stage relative z-20 text-center pointer-events-auto w-full max-w-2xl mx-auto px-4 pt-20 pb-20 sm:pt-24">
+            <div class="hero-content-shell hero-mobile-shell reveal-on-scroll px-4 py-6 sm:px-8 sm:py-8">
+                <span
+                    class="hero-mobile-kicker inline-block text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.28em] sm:tracking-[0.34em] text-[#E8C87A] font-medium mb-4">
+                    Papan Ucapan, Hantaran & Dekorasi - Padang
+                </span>
+                <h1 class="hero-mobile-title text-3xl sm:text-4xl md:text-6xl font-bold font-serif relative z-10 text-white leading-[0.94]"
+                    style="font-family:'Playfair Display',serif; text-shadow: 0 2px 20px rgba(0,0,0,0.6);">
+                    Papan Ucapan,<br>Hantaran &amp; <em class="italic text-[#E8C87A]">Dekorasi</em>
+                </h1>
+                <p class="hero-mobile-summary mt-4 text-sm md:text-base text-neutral-200 px-4 max-w-lg mx-auto relative z-10 leading-relaxed"
+                    style="text-shadow: 0 1px 8px rgba(0,0,0,0.45);">
+                    Sadita melayani papan ucapan, hantaran, dan dekorasi untuk berbagai momen spesial di Padang.
+                </p>
+                <div class="hero-mobile-actions mt-7 flex flex-col gap-3 max-w-[17.5rem] mx-auto sm:max-w-none sm:flex-row sm:justify-center">
+                    <a href="#kategori"
+                        class="hero-cta-primary w-full sm:w-auto px-5 sm:px-8 py-2.5 sm:py-3.5 rounded-full bg-sadita-maroon text-white text-[15px] font-semibold tracking-wide transition-all duration-300 hover:bg-sadita-maroon-soft hover:scale-105">
+                        Pesan Sekarang
+                    </a>
+                    <a href="#galeri"
+                        class="hero-cta-secondary w-full sm:w-auto px-5 sm:px-8 py-2.5 sm:py-3.5 rounded-full border border-white/30 text-white text-[15px] font-semibold backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
+                        Lihat Koleksi
+                    </a>
+                </div>
+                <div class="hero-mobile-meta mt-8">
+                    <p class="text-xs sm:text-sm text-white/60">
+                        Mulai dari layanan yang Anda butuhkan:
+                    </p>
+                    <div class="hero-mobile-pills mt-3 flex flex-wrap items-center justify-center gap-2 text-[13px] sm:text-sm md:text-[15px]">
+                        <a href="#kategori-papan-ucapan"
+                            class="inline-flex items-center rounded-full border border-white/12 bg-white/8 px-2.5 py-1 text-white/88 transition-colors duration-300 hover:text-[#E8C87A]">
+                            Papan Ucapan
+                        </a>
+                        <a href="#kategori-hantaran"
+                            class="inline-flex items-center rounded-full border border-white/12 bg-white/8 px-2.5 py-1 text-white/88 transition-colors duration-300 hover:text-[#E8C87A]">
+                            Hantaran
+                        </a>
+                        <a href="#kategori-dekorasi"
+                            class="inline-flex items-center rounded-full border border-white/12 bg-white/8 px-2.5 py-1 text-white/88 transition-colors duration-300 hover:text-[#E8C87A]">
+                            Dekorasi
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="absolute bottom-8 sm:bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
+        <div class="hero-scroll-hint absolute bottom-8 sm:bottom-12 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
             <span class="text-white/40 text-[10px] tracking-[0.3em] uppercase">Scroll</span>
             <svg class="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -157,19 +117,19 @@
             <div class="grid gap-8 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:items-end reveal-on-scroll">
                 <div class="max-w-sm">
                     <span class="text-[11px] uppercase tracking-[0.24em] text-[#7A1F2B] font-semibold">Pilihan Utama</span>
-                    <h2 class="mt-3 text-3xl sm:text-4xl font-bold leading-tight text-[#2D1E1E]">Tiga jalur layanan yang
-                        paling sering dicari pelanggan Sadita.</h2>
+                    <h2 class="mt-3 text-3xl sm:text-4xl font-bold leading-tight text-[#2D1E1E]">Tiga kategori utama
+                        layanan Sadita.</h2>
                 </div>
                 <div class="lg:pb-1">
                     <p class="max-w-2xl text-sm sm:text-base leading-relaxed text-[#6B5C57]">
-                        Supaya tidak terasa seperti katalog yang penuh pilihan acak, produk kami kami pecah berdasarkan cara
-                        orang benar-benar memesan: papan ucapan untuk pesan cepat, hantaran untuk hadiah yang rapi, dan
-                        dekorasi untuk momen yang perlu ditata lebih personal.
+                        Layanan Sadita terbagi ke dalam tiga kategori utama: papan ucapan untuk kirim ucapan yang cepat
+                        dan tepat, hantaran untuk hadiah yang rapi dan berkesan, serta dekorasi untuk momen yang ingin
+                        dipersiapkan lebih personal.
                     </p>
                 </div>
             </div>
 
-            <div class="mt-14 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+            <div class="category-showcase-grid mt-14 grid grid-cols-1 lg:grid-cols-12 gap-6">
                 @php
                     $categories = [
                         [
@@ -178,7 +138,7 @@
                             'Standing board & mirror elegan untuk momen berharga',
                             '/images/cat-papan-ucapan.jpg',
                             '#kategori-papan-ucapan',
-                            'lg:col-span-5 lg:mt-10',
+                            'lg:col-span-5',
                             'aspect-[4/4.7]',
                         ],
                         [
@@ -187,8 +147,8 @@
                             'Seserahan & gift box premium dengan detail cantik',
                             '/images/cat-hantaran.jpg',
                             '#kategori-hantaran',
-                            'lg:col-span-4',
-                            'aspect-[4/5.2]',
+                            'lg:col-span-4 lg:mt-10',
+                            'aspect-[4/5.15]',
                         ],
                         [
                             'Dekorasi',
@@ -197,39 +157,40 @@
                             '/images/cat-dekorasi.jpg',
                             '#kategori-dekorasi',
                             'lg:col-span-3 lg:mt-16',
-                            'aspect-[4/5.4]',
+                            'aspect-[4/5.95]',
                         ],
                     ];
                 @endphp
                 @foreach ($categories as $i => [$title, $price, $desc, $img, $link, $layoutClass, $aspectClass])
-                    <div class="reveal-on-scroll {{ $layoutClass }}" style="animation-delay: {{ $i * 150 }}ms">
+                    <div class="category-showcase-item reveal-on-scroll {{ $layoutClass }}" style="animation-delay: {{ $i * 150 }}ms">
                         <a href="{{ $link }}" class="category-card group relative block h-full">
                             <div
-                                class="relative overflow-hidden rounded-[2rem] {{ $aspectClass }} shadow-xl border border-[#EBDCCB] transition-all duration-500 group-hover:shadow-2xl group-hover:border-[#E8C87A]/60 bg-gray-100">
+                                class="category-showcase-frame relative overflow-hidden rounded-[2rem] {{ $aspectClass }} shadow-xl border border-[#EBDCCB] transition-all duration-500 group-hover:shadow-2xl group-hover:border-[#E8C87A]/60 bg-gray-100">
                                 <!-- Image -->
                                 <img src="{{ asset($img) }}" alt="{{ $title }}"
-                                    class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                    class="category-showcase-image w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                                     loading="lazy">
                                 <!-- Gradient overlay with maroon hover -->
                                 <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-colors duration-500 group-hover:from-[#7A1F2B]/95 group-hover:via-[#7A1F2B]/60">
+                                    class="absolute inset-0 bg-gradient-to-t from-black/92 via-black/52 via-35% to-transparent transition-colors duration-500 group-hover:from-[#7A1F2B]/96 group-hover:via-[#7A1F2B]/64">
                                 </div>
+                                <div class="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black/55 via-black/10 to-transparent transition-colors duration-500 group-hover:from-[#7A1F2B]/38 group-hover:to-transparent"></div>
 
                                 <!-- Content -->
-                                <div class="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
+                                <div class="category-showcase-content absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
                                     <div class="transform transition-transform duration-500 group-hover:-translate-y-2">
-                                        <div class="flex items-start justify-between gap-4">
+                                        <div class="flex items-end justify-between gap-4">
                                             <div>
-                                                <div class="mb-3 text-[10px] uppercase tracking-[0.22em] text-white/70">
+                                                <div class="category-showcase-kicker mb-3 text-[10px] uppercase tracking-[0.22em] text-white/70">
                                                     {{ $i === 0 ? 'Pesan cepat' : ($i === 1 ? 'Hadiah personal' : 'Penataan acara') }}
                                                 </div>
-                                                <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-wide"
+                                                <h3 class="category-showcase-title text-2xl sm:text-3xl font-bold text-white tracking-wide"
                                                     style="font-family:'Playfair Display',serif">{{ $title }}</h3>
                                                 <span
-                                                    class="inline-block mt-2 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-semibold tracking-wider">{{ $price }}</span>
+                                                    class="category-showcase-price inline-block mt-2 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-semibold tracking-[0.25em]">{{ $price }}</span>
                                             </div>
                                             <div
-                                                class="w-10 h-10 rounded-full bg-[#E8C87A] flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
+                                                class="category-showcase-arrow w-10 h-10 rounded-full bg-[#E8C87A] flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
                                                 <svg class="w-5 h-5 text-[#2D1E1E]" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -237,8 +198,16 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <p class="text-sm sm:text-base text-white/80 mt-4 leading-relaxed">
+                                        <p class="category-showcase-copy text-sm sm:text-base text-white/80 mt-4 leading-relaxed">
                                             {{ $desc }}</p>
+                                        <div class="category-showcase-cta mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white/88">
+                                            <span>Lihat Detail</span>
+                                            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -263,10 +232,11 @@
         @endphp
         <div class="mini-marquee">
             <div
-                class="mini-marquee-track text-[10px] sm:text-xs font-semibold tracking-wider uppercase whitespace-nowrap">
+                class="mini-marquee-track text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase whitespace-nowrap">
                 @for ($i = 0; $i < 3; $i++)
                     @foreach ($miniMarqueeItems as $label)
-                        <span class="mini-marquee-item"><span class="text-white"></span> {{ $label }}</span>
+                        <span class="mini-marquee-item">{{ $label }}</span>
+                        <span class="mini-marquee-separator" aria-hidden="true">&#10022;</span>
                     @endforeach
                 @endfor
             </div>
@@ -295,17 +265,23 @@
                         <p class="text-xs sm:text-sm text-gray-500 mt-1">
                             {{ $kategori->deskripsi ?? 'Koleksi eksklusif dari Sadita' }}</p>
                     </div>
-                    <a href="#"
+                    <a href="{{ route('catalog', ['category' => \Illuminate\Support\Str::slug($kategori->nama)]) }}"
                         class="text-xs sm:text-sm text-[#7A1F2B] font-semibold hover:underline whitespace-nowrap">Lihat
                         Semua -></a>
                 </div>
 
                 @if ($kategori->daftarProduk->isNotEmpty())
                     <div
-                        class="product-scroll-container flex gap-4 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-hide reveal-on-scroll">
+                        class="product-scroll-container flex items-stretch gap-4 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-hide reveal-on-scroll">
                         @foreach ($kategori->daftarProduk as $produk)
                             @php
-                                $isDecor = strtolower($kategori->nama) === 'dekorasi';
+                                $categoryName = strtolower(trim($kategori->nama));
+                                $isDecor = $categoryName === 'dekorasi';
+                                $serviceTypeLabel = match ($categoryName) {
+                                    'dekorasi' => 'Jasa',
+                                    'papan bunga', 'papan ucapan' => 'Sewa',
+                                    default => $produk->is_sewa ? 'Sewa' : 'Jasa',
+                                };
                                 $imgUrl = $produk->fotoUtamaUrl();
                                 $priceStr = 'Rp ' . number_format($produk->harga_dasar, 0, ',', '.');
                                 $descStr = $produk->deskripsi ?? 'Detail produk ' . $produk->nama;
@@ -314,20 +290,18 @@
                                 data-modal-price="{{ e($priceStr) }}" data-modal-image="{{ e($imgUrl) }}"
                                 data-modal-desc="{{ e($descStr) }}" data-modal-tag="{{ e($kategori->nama) }}"
                                 data-modal-is-decor="{{ $isDecor ? '1' : '0' }}"
-                                class="group product-card cursor-pointer min-w-[160px] sm:min-w-[220px] max-w-[160px] sm:max-w-[220px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-white border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(122,31,43,0.15)] flex flex-col">
+                                class="group product-card cursor-pointer min-w-[160px] sm:min-w-[220px] max-w-[160px] sm:max-w-[220px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-white border border-gray-100 transition-all duration-300 hover:shadow-[0_10px_24px_rgba(122,31,43,0.10)] flex flex-col self-stretch">
                                 <div class="relative h-48 sm:h-60 w-full overflow-hidden flex-shrink-0 bg-gray-50">
                                     <img src="{{ $imgUrl }}" alt="{{ $produk->nama }}"
-                                        class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                                        class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04]"
                                         loading="lazy">
                                     <div
                                         class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                     </div>
                                     <div class="absolute top-2 left-2 z-10 flex gap-1 flex-wrap">
                                         <span
-                                            class="px-2.5 py-0.5 bg-white/95 backdrop-blur-sm text-[#7A1F2B] text-[9px] sm:text-[10px] font-bold rounded-full shadow-sm">{{ $kategori->nama }}</span>
-                                        <span
                                             class="px-2 py-0.5 bg-[#7A1F2B]/95 backdrop-blur-sm text-[#E8C87A] text-[9px] sm:text-[10px] font-bold rounded-full shadow-sm">
-                                            {{ $produk->is_sewa ? 'Sewa' : 'Jasa' }}
+                                            {{ $serviceTypeLabel }}
                                         </span>
                                     </div>
                                 </div>
@@ -344,35 +318,38 @@
                                             @php
                                                 $waText = "Halo Sadita,\n\nSaya ingin konsultasi dekorasi.\n\nJenis Dekorasi: {$produk->nama}\n\nTanggal Acara:\nWaktu Acara:\n\nLokasi Acara:\n\nKonsep / Tema yang diinginkan:\n(Contoh: elegan, rustic, minimalis, dll)\n\nCatatan tambahan:\n(opsional)\n\nTerima kasih.";
                                             @endphp
-                                            <button type="button"
+                                            <a href="https://wa.me/62812616155335?text={{ rawurlencode($waText) }}"
+                                                target="_blank" rel="noopener noreferrer"
                                                 data-stop-modal
                                                 data-external-url="https://wa.me/62812616155335?text={{ rawurlencode($waText) }}"
-                                                class="w-full py-2 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white text-[10px] sm:text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                                class="group w-full py-2 bg-[#7A1F2B] hover:bg-[#8A2432] text-white text-[10px] sm:text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(122,31,43,0.18)]">
+                                                <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:scale-105" fill="currentColor" viewBox="0 0 24 24">
                                                     <path
                                                         d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
                                                 </svg>
                                                 Konsultasi
-                                            </button>
+                                            </a>
                                         @else
-                                            <button type="button"
+                                            <a href="{{ route('order') }}?product={{ rawurlencode($produk->nama) }}&price={{ rawurlencode($priceStr) }}&img={{ rawurlencode($imgUrl) }}&jenis={{ rawurlencode($kategori->nama) }}"
                                                 data-stop-modal
                                                 data-order-url="{{ route('order') }}?product={{ rawurlencode($produk->nama) }}&price={{ rawurlencode($priceStr) }}&img={{ rawurlencode($imgUrl) }}&jenis={{ rawurlencode($kategori->nama) }}"
-                                                class="w-full py-2 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white text-[10px] sm:text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors">
+                                                class="group w-full py-2 bg-[#7A1F2B] hover:bg-[#8A2432] text-white text-[10px] sm:text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(122,31,43,0.18)]">
                                                 Pesan
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                <svg class="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                                                 </svg>
-                                            </button>
+                                            </a>
                                         @endif
                                     </div>
                                 </div>
                             </div>
                         @endforeach
 
-                        <div class="group min-w-[160px] sm:min-w-[220px] max-w-[160px] sm:max-w-[220px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-[#7A1F2B] text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(122,31,43,0.3)] flex flex-col justify-center items-center text-center p-4 sm:p-5 cursor-pointer relative"
+                        <a href="https://wa.me/62812616155335?text=Halo+Sadita%2C+saya+ingin+konsultasi+mengenai+pesanan+saya"
+                            target="_blank" rel="noopener noreferrer"
+                            class="group product-card product-card-cta min-w-[160px] sm:min-w-[220px] max-w-[160px] sm:max-w-[220px] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-[#7A1F2B] text-white transition-all duration-300 hover:shadow-[0_10px_24px_rgba(122,31,43,0.18)] flex flex-col justify-center items-center text-center p-4 sm:p-5 cursor-pointer relative self-stretch"
                             data-external-url="https://wa.me/62812616155335?text=Halo+Sadita%2C+saya+ingin+konsultasi+mengenai+pesanan+saya">
                             <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                             <div
@@ -387,7 +364,7 @@
                             <span
                                 class="text-[9px] sm:text-xs font-bold text-[#7A1F2B] bg-[#E8C87A] px-4 py-2 rounded-full w-full block group-hover:bg-white transition-colors">Chat
                                 Sekarang</span>
-                        </div>
+                        </a>
                     </div>
                 @else
                     <div
@@ -401,11 +378,12 @@
                                 Detail produknya belum dimasukkan ke katalog publik, tapi Anda tetap bisa langsung konsultasi
                                 untuk kebutuhan {{ strtolower($kategori->nama) }}.
                             </p>
-                            <button type="button"
+                            <a href="https://wa.me/62812616155335?text={{ rawurlencode('Halo Sadita, saya ingin konsultasi mengenai ' . $kategori->nama . '.') }}"
+                                target="_blank" rel="noopener noreferrer"
                                 data-external-url="https://wa.me/62812616155335?text={{ rawurlencode('Halo Sadita, saya ingin konsultasi mengenai ' . $kategori->nama . '.') }}"
                                 class="mt-5 inline-flex items-center justify-center rounded-full bg-[#7A1F2B] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#8f2734]">
                                 Tanya via WhatsApp
-                            </button>
+                            </a>
                         </div>
                     </div>
                 @endif
@@ -413,7 +391,7 @@
         </section>
     @endforeach
 
-    <section class="py-16 sm:py-20 bg-[#FFFDFB] overflow-hidden">
+    <section id="kategori-alasan" class="py-16 sm:py-20 bg-[#FFFDFB] overflow-hidden">
         <div class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
             <div class="grid gap-10 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)] lg:items-start">
                 <div class="reveal-on-scroll">
@@ -791,105 +769,7 @@
         </div>
     </section>
 
-    <!-- Product Detail Modal -->
-    <div id="productModal" data-order-url="{{ route('order') }}"
-        class="fixed inset-0 z-[100] hidden flex justify-center items-center p-4 sm:p-6 opacity-0 transition-opacity duration-300">
-
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-[#2D1E1E]/40 backdrop-blur-sm transition-opacity"></div>
-
-        <!-- Modal Card (Split Layout on Desktop) -->
-        <div data-product-modal-card
-            class="bg-white w-[95%] sm:w-full max-w-[360px] md:max-w-[750px] lg:max-w-[850px] rounded-[1.5rem] md:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] transform scale-95 transition-transform duration-300 ease-out relative z-10 flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
-
-            <!-- Close Button -->
-            <button type="button" data-product-modal-close
-                class="absolute top-3 right-3 md:top-5 md:right-5 z-20 w-8 h-8 md:w-10 md:h-10 bg-white/80 md:bg-gray-100 backdrop-blur-sm md:backdrop-blur-none rounded-full flex items-center justify-center text-[#2D1E1E] hover:bg-white hover:text-[#7A1F2B] hover:shadow-md transition-all group">
-                <svg class="w-4 h-4 md:w-5 md:h-5 transform group-hover:rotate-90 transition-transform duration-300"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12">
-                    </path>
-                </svg>
-            </button>
-
-            <!-- Image Area -->
-            <div
-                class="w-full md:w-[45%] aspect-[4/3] md:aspect-auto md:h-auto relative flex items-center justify-center bg-[#F9F9F9] overflow-hidden group">
-                <img id="modalImg" alt=""
-                    class="w-full h-full md:absolute md:inset-0 object-cover transition-transform duration-700 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent md:hidden">
-                </div>
-            </div>
-
-            <!-- Content Area -->
-            <div class="w-full md:w-[55%] p-6 md:p-10 flex flex-col justify-center relative bg-white">
-                <div
-                    class="text-[#C9A84C] text-[10px] md:text-xs font-bold uppercase tracking-widest mb-3 md:mb-4 flex items-center gap-2">
-                    <span class="w-4 md:w-6 h-[1px] bg-[#C9A84C]"></span> Sadita Collection
-                </div>
-                <h3 id="modalTitle" class="text-xl md:text-3xl font-bold text-[#2D1E1E] mb-3 md:mb-4 leading-tight"
-                    style="font-family:'Playfair Display',serif"></h3>
-
-                <div class="flex-1 overflow-y-auto pr-2 scrollbar-hide mb-6 md:mb-8">
-                    <p id="modalDesc"
-                        class="text-xs md:text-sm text-gray-500 leading-relaxed line-clamp-4 md:line-clamp-none mb-4 md:mb-6">
-                    </p>
-
-                    <!-- Detail List -->
-                    <ul class="hidden md:flex flex-col space-y-3 text-xs md:text-sm text-gray-500">
-                        <li class="flex items-center gap-3">
-                            <div class="w-6 h-6 rounded-full bg-[#FAF5F0] flex items-center justify-center text-[#C9A84C]">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
-                            Kualitas Premium & Eksklusif
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <div class="w-6 h-6 rounded-full bg-[#FAF5F0] flex items-center justify-center text-[#C9A84C]">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
-                            Desain Elegan dan Tahan Lama
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <div class="w-6 h-6 rounded-full bg-[#FAF5F0] flex items-center justify-center text-[#C9A84C]">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
-                            Dapat Disesuaikan (Custom)
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="mt-auto pt-5 md:pt-6 border-t border-gray-100 flex items-center justify-between">
-                    <div>
-                        <div
-                            class="text-[9px] md:text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-0.5 md:mb-1">
-                            Mulai Dari</div>
-                        <div id="modalPrice" class="text-lg md:text-2xl font-bold text-[#7A1F2B]">
-                        </div>
-                    </div>
-                    <button id="modalOrderBtn"
-                        class="py-2.5 md:py-3 px-6 md:px-8 bg-[#7A1F2B] hover:bg-[#C9A84C] text-white rounded-xl md:rounded-2xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group">
-                        <span id="modalBtnText">Pesan</span>
-                        <span id="modalBtnIcon">
-                            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                            </svg>
-                        </span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('pages.home.partials.product-modal')
 
     <style>
         @keyframes scroll-horizontal {

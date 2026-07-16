@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CustomerTrackingLinkMail;
+use App\Models\EmailLog;
 use App\Models\Pembayaran;
 use App\Models\Pesanan;
 use App\Services\Payments\DokuCheckoutService;
@@ -10,7 +12,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use RuntimeException;
+use Throwable;
 
 class DokuPaymentController extends Controller
 {
@@ -21,7 +25,8 @@ class DokuPaymentController extends Controller
             ->firstOrFail();
 
         $selectedMethod = request()->input('payment_method', 'ALL');
-        $availableMethods = collect(config('doku.payment_methods', []))->pluck('code')->all();
+        $paymentMethods = collect(config('doku.payment_methods', []));
+        $availableMethods = $paymentMethods->pluck('code')->all();
 
         if (! in_array($selectedMethod, $availableMethods, true)) {
             return back()->with('error', 'Metode pembayaran yang dipilih tidak valid.');
@@ -42,6 +47,12 @@ class DokuPaymentController extends Controller
             filled($existingPayment->checkout_url) &&
             (blank($existingPayment->expires_at) || now()->lt($existingPayment->expires_at))
         ) {
+            $this->sendCustomerTrackingEmail(
+                $pesanan->fresh(['pelanggan', 'pengiriman', 'detailItems', 'pembayaranTerakhir']),
+                $paymentMethods->firstWhere('code', $selectedMethod)['label'] ?? 'Pembayaran Online',
+                true
+            );
+
             return redirect()->away($existingPayment->checkout_url);
         }
 
@@ -79,6 +90,11 @@ class DokuPaymentController extends Controller
         ]);
 
         $payment->save();
+        $this->sendCustomerTrackingEmail(
+            $pesanan->fresh(['pelanggan', 'pengiriman', 'detailItems', 'pembayaranTerakhir']),
+            $paymentMethods->firstWhere('code', $selectedMethod)['label'] ?? 'Pembayaran Online',
+            true
+        );
 
         return redirect()->away($checkout['checkout_url']);
     }
@@ -176,6 +192,15 @@ class DokuPaymentController extends Controller
             if (! $wasPaid && $pesanan->kodePromo && ! $pesanan->kodePromo->isQuotaExceeded()) {
                 $pesanan->kodePromo->increment('dipakai');
             }
+
+            if (! $wasPaid) {
+                $this->sendCustomerTrackingEmail(
+                    $pesanan->fresh(['pelanggan', 'pengiriman', 'detailItems', 'pembayaranTerakhir']),
+                    $payment->resolvedMetodeLabel() ?? 'Pembayaran Online',
+                    true,
+                    'invoice_lunas_customer'
+                );
+            }
         }
 
         return response()->json([
@@ -213,6 +238,45 @@ class DokuPaymentController extends Controller
     private function resolveDokuMethod(array $payload, ?string $fallback = null): string
     {
         return Pembayaran::extractDokuMethodCode($payload, null, $fallback);
+    }
+
+    private function sendCustomerTrackingEmail(
+        Pesanan $pesanan,
+        string $paymentMethodLabel,
+        bool $includeInvoicePdf = false,
+        string $jenis = 'tracking_link_customer'
+    ): void
+    {
+        $customerEmail = $pesanan->pelanggan?->email;
+
+        if (blank($customerEmail)) {
+            return;
+        }
+
+        try {
+            Mail::to($customerEmail)->send(new CustomerTrackingLinkMail($pesanan, $paymentMethodLabel, $includeInvoicePdf));
+
+            EmailLog::create([
+                'pesanan_id' => $pesanan->id,
+                'email_tujuan' => $customerEmail,
+                'jenis' => $jenis,
+                'status' => 'sent',
+            ]);
+        } catch (Throwable $exception) {
+            Log::warning('Gagal mengirim email tracking customer', [
+                'order_id' => $pesanan->kode_pesanan,
+                'email' => $customerEmail,
+                'message' => $exception->getMessage(),
+            ]);
+
+            EmailLog::create([
+                'pesanan_id' => $pesanan->id,
+                'email_tujuan' => $customerEmail,
+                'jenis' => $jenis,
+                'status' => 'failed',
+                'catatan' => $exception->getMessage(),
+            ]);
+        }
     }
 
     private function syncPaymentStatus(
@@ -279,6 +343,14 @@ class DokuPaymentController extends Controller
                 $pesanan->kodePromo->increment('dipakai');
             }
 
+            if (! $previouslyPaid) {
+                $this->sendCustomerTrackingEmail(
+                    $pesanan->fresh(['pelanggan', 'pengiriman', 'detailItems', 'pembayaranTerakhir']),
+                    $payment->resolvedMetodeLabel() ?? 'Pembayaran Online',
+                    true,
+                    'invoice_lunas_customer'
+                );
+            }
             $redirect = redirect()
                 ->route('invoice.show', ['order_id' => $order_id])
                 ->with('success', 'Pembayaran DOKU berhasil terkonfirmasi.');

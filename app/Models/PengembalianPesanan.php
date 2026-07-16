@@ -12,6 +12,7 @@ class PengembalianPesanan extends Model
 
     protected $casts = [
         'tanggal_jemput' => 'date',
+        'tanggal_pengambilan' => 'date',
         'waktu_dijemput' => 'datetime',
     ];
 

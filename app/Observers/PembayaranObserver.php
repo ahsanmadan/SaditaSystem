@@ -4,7 +4,7 @@ namespace App\Observers;
 
 use App\Models\Pembayaran;
 use App\Support\DashboardCache;
-use App\Mail\OrderNotification;
+use App\Mail\PaymentConfirmedMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
@@ -35,7 +35,7 @@ class PembayaranObserver
         try {
             $adminEmail = config('mail.admin_address');
             if (filled($adminEmail)) {
-                Mail::to($adminEmail)->send(new OrderNotification($pembayaran));
+                Mail::to($adminEmail)->send(new PaymentConfirmedMail($pembayaran));
                 Log::info("[EmailNotification] Email notifikasi pembayaran #{$pembayaran->id} terkirim ke admin: {$adminEmail}");
             } else {
                 Log::warning("[EmailNotification] Gagal mengirim email: ADMIN_NOTIFICATION_EMAIL tidak diatur di .env.");

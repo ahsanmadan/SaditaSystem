@@ -2,11 +2,13 @@ import Alpine from 'alpinejs';
 import anchor from '@alpinejs/anchor';
 import collapse from '@alpinejs/collapse';
 import focus from '@alpinejs/focus';
+import { registerCharts } from './blatui-charts';
 
 window.Alpine = Alpine;
 Alpine.plugin(anchor);
 Alpine.plugin(collapse);
 Alpine.plugin(focus);
+registerCharts(Alpine);
 Alpine.start();
 
 const onReady = (callback) => {
@@ -82,6 +84,12 @@ const initNavbar = () => {
     const navbar = document.getElementById('main-navbar');
     const hamburgerButton = document.getElementById('hamburger-btn');
     const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuClose = document.getElementById('mobile-menu-close');
+    const sectionLinks = document.querySelectorAll('[data-section-link]');
+    const catalogMenuTrigger = document.querySelector('[data-nav-dropdown-trigger]');
+    const catalogMenuPanel = document.querySelector('[data-nav-dropdown]');
+    const mobileCatalogTrigger = document.querySelector('[data-mobile-catalog-trigger]');
+    const mobileCatalogPanel = document.querySelector('[data-mobile-catalog-panel]');
 
     if (!navbar || !hamburgerButton || !mobileMenu) {
         return;
@@ -89,12 +97,80 @@ const initNavbar = () => {
 
     const navbarAlwaysSolid = navbar.classList.contains('navbar-solid');
     let menuOpen = false;
+    let catalogMenuOpen = false;
+
+    const setActiveSectionLink = (sectionId) => {
+        if (!sectionLinks.length) {
+            return;
+        }
+
+        sectionLinks.forEach((link) => {
+            if (!(link instanceof HTMLElement)) {
+                return;
+            }
+
+            if (link.dataset.sectionLink === sectionId) {
+                link.setAttribute('aria-current', 'page');
+                return;
+            }
+
+            link.removeAttribute('aria-current');
+        });
+    };
 
     const updateNavbar = () => {
         navbar.classList.toggle(
             'navbar-scrolled',
-            navbarAlwaysSolid || window.scrollY > 50 || menuOpen
+            navbarAlwaysSolid || window.scrollY > 50 || menuOpen || catalogMenuOpen
         );
+    };
+
+    const sectionAliases = [
+        { id: 'beranda', nav: 'beranda' },
+        { id: 'kategori', nav: 'kategori' },
+        { id: 'kategori-papan-ucapan', nav: 'kategori' },
+        { id: 'kategori-papan-bunga', nav: 'kategori' },
+        { id: 'kategori-hantaran', nav: 'kategori' },
+        { id: 'kategori-dekorasi', nav: 'kategori' },
+        { id: 'kategori-alasan', nav: 'kategori' },
+        { id: 'galeri', nav: 'galeri' },
+        { id: 'cara-pesan', nav: 'cara-pesan' },
+        { id: 'lacak', nav: 'lacak' },
+        { id: 'tentang', nav: 'tentang' },
+    ];
+
+    const pageSections = sectionAliases
+        .map((item) => {
+            const element = document.getElementById(item.id);
+
+            if (!element) {
+                return null;
+            }
+
+            return {
+                element,
+                nav: item.nav,
+            };
+        })
+        .filter(Boolean);
+
+    const updateActiveSection = () => {
+        if (!pageSections.length) {
+            return;
+        }
+
+        const activationLine = window.innerHeight * 0.3;
+        let activeSectionId = pageSections[0].nav;
+
+        pageSections.forEach((section) => {
+            const rect = section.element.getBoundingClientRect();
+
+            if (rect.top <= activationLine && rect.bottom >= activationLine) {
+                activeSectionId = section.nav;
+            }
+        });
+
+        setActiveSectionLink(activeSectionId);
     };
 
     const openMenu = () => {
@@ -115,6 +191,38 @@ const initNavbar = () => {
         updateNavbar();
     };
 
+    const setCatalogMenuState = (nextState) => {
+        if (!catalogMenuTrigger || !catalogMenuPanel) {
+            return;
+        }
+
+        catalogMenuOpen = nextState;
+        catalogMenuTrigger.setAttribute('aria-expanded', String(nextState));
+        catalogMenuPanel.setAttribute('aria-hidden', String(!nextState));
+        catalogMenuPanel.classList.toggle('pointer-events-none', !nextState);
+        catalogMenuPanel.classList.toggle('opacity-0', !nextState);
+        catalogMenuPanel.classList.toggle('-translate-y-3', !nextState);
+        catalogMenuPanel.classList.toggle('is-open', nextState);
+        updateNavbar();
+    };
+
+    const closeCatalogMenu = () => setCatalogMenuState(false);
+
+    const toggleMobileCatalog = (forceOpen) => {
+        if (!mobileCatalogTrigger || !mobileCatalogPanel) {
+            return;
+        }
+
+        const nextState =
+            typeof forceOpen === 'boolean'
+                ? forceOpen
+                : mobileCatalogTrigger.getAttribute('aria-expanded') !== 'true';
+
+        mobileCatalogTrigger.setAttribute('aria-expanded', String(nextState));
+        mobileCatalogPanel.classList.toggle('is-open', nextState);
+        mobileCatalogPanel.hidden = !nextState;
+    };
+
     hamburgerButton.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -127,18 +235,74 @@ const initNavbar = () => {
         openMenu();
     });
 
+    catalogMenuTrigger?.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (window.innerWidth < 768) {
+            return;
+        }
+
+        setCatalogMenuState(!catalogMenuOpen);
+    });
+
+    mobileMenuClose?.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        closeMenu();
+    });
+
     mobileMenu.querySelectorAll('a').forEach((link) => {
         link.addEventListener('click', closeMenu);
     });
 
+    mobileCatalogTrigger?.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleMobileCatalog();
+    });
+
+    document.addEventListener('click', (event) => {
+        if (
+            catalogMenuOpen &&
+            catalogMenuTrigger &&
+            catalogMenuPanel &&
+            !catalogMenuTrigger.contains(event.target) &&
+            !catalogMenuPanel.contains(event.target)
+        ) {
+            closeCatalogMenu();
+        }
+    });
+
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && menuOpen) {
+        if (event.key !== 'Escape') {
+            return;
+        }
+
+        if (menuOpen) {
             closeMenu();
+        }
+
+        if (catalogMenuOpen) {
+            closeCatalogMenu();
         }
     });
 
     window.addEventListener('scroll', updateNavbar, { passive: true });
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', () => {
+        updateActiveSection();
+
+        if (window.innerWidth < 768) {
+            closeCatalogMenu();
+            return;
+        }
+
+        toggleMobileCatalog(false);
+    }, { passive: true });
+
     updateNavbar();
+    updateActiveSection();
 };
 
 const initRevealAnimations = () => {
@@ -172,10 +336,19 @@ const initRevealAnimations = () => {
 const initProductScroll = () => {
     document.querySelectorAll('.product-scroll-container').forEach((container) => {
         let isDragging = false;
+        let hasExceededDragThreshold = false;
         let startX = 0;
         let startScrollLeft = 0;
         let pendingScrollLeft = 0;
         let frameRequested = false;
+        let activePointerId = null;
+        const dragThreshold = 8;
+
+        const isInteractiveTarget = (target) =>
+            target instanceof Element &&
+            target.closest(
+                'button, a, input, select, textarea, label, [data-order-url], [data-external-url], [data-product-modal-close]'
+            );
 
         const flushScroll = () => {
             container.scrollLeft = pendingScrollLeft;
@@ -192,12 +365,16 @@ const initProductScroll = () => {
         };
 
         container.addEventListener('pointerdown', (event) => {
+            if (isInteractiveTarget(event.target)) {
+                return;
+            }
+
             isDragging = true;
+            hasExceededDragThreshold = false;
             startX = event.clientX;
             startScrollLeft = container.scrollLeft;
             pendingScrollLeft = container.scrollLeft;
-            container.classList.add('active-drag');
-            container.setPointerCapture(event.pointerId);
+            activePointerId = event.pointerId;
         });
 
         container.addEventListener('pointermove', (event) => {
@@ -205,8 +382,20 @@ const initProductScroll = () => {
                 return;
             }
 
+            const deltaX = event.clientX - startX;
+
+            if (!hasExceededDragThreshold) {
+                if (Math.abs(deltaX) < dragThreshold) {
+                    return;
+                }
+
+                hasExceededDragThreshold = true;
+                container.classList.add('active-drag');
+                container.setPointerCapture(event.pointerId);
+            }
+
             event.preventDefault();
-            const walk = (event.clientX - startX) * 1.5;
+            const walk = deltaX * 1.5;
             pendingScrollLeft = startScrollLeft - walk;
             queueScroll();
         });
@@ -217,16 +406,77 @@ const initProductScroll = () => {
             }
 
             isDragging = false;
+            hasExceededDragThreshold = false;
             container.classList.remove('active-drag');
 
             if (event?.pointerId !== undefined && container.hasPointerCapture(event.pointerId)) {
                 container.releasePointerCapture(event.pointerId);
             }
+
+            activePointerId = null;
         };
 
         container.addEventListener('pointerup', stopDragging);
         container.addEventListener('pointercancel', stopDragging);
-        container.addEventListener('pointerleave', stopDragging);
+        container.addEventListener('pointerleave', (event) => {
+            if (activePointerId === event.pointerId) {
+                stopDragging(event);
+            }
+        });
+    });
+};
+
+const initLandingProductButtons = () => {
+    const resolveAction = (target) => {
+        if (!(target instanceof Element)) {
+            return;
+        }
+
+        const externalLinkTrigger = target.closest('[data-external-url]');
+
+        if (externalLinkTrigger) {
+            const url = externalLinkTrigger.dataset.externalUrl;
+
+            if (url) {
+                window.open(url, '_blank');
+            }
+
+            return true;
+        }
+
+        const orderLinkTrigger = target.closest('[data-order-url]');
+
+        if (orderLinkTrigger) {
+            const url = orderLinkTrigger.dataset.orderUrl;
+
+            if (url) {
+                window.location.href = url;
+            }
+
+            return true;
+        }
+
+        return false;
+    };
+
+    document.querySelectorAll('[data-order-url], [data-external-url]').forEach((element) => {
+        element.addEventListener('touchend', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            resolveAction(event.currentTarget);
+        });
+
+        element.addEventListener('pointerup', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            resolveAction(event.currentTarget);
+        });
+
+        element.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            resolveAction(event.currentTarget);
+        });
     });
 };
 
@@ -320,6 +570,170 @@ const initGalleryFilter = () => {
         button.addEventListener('click', () => {
             setActiveButton(button);
             filterItems(button.getAttribute('data-filter') ?? 'all');
+        });
+    });
+};
+
+const initCatalogFilters = () => {
+    const root = document.querySelector('[data-catalog-root]');
+
+    if (!(root instanceof HTMLElement)) {
+        return;
+    }
+
+    const buttons = Array.from(root.querySelectorAll('[data-catalog-filter]'));
+    const sections = Array.from(document.querySelectorAll('[data-catalog-section]'));
+
+    if (!buttons.length || !sections.length) {
+        return;
+    }
+
+    const hoverClasses = ['hover:border-[#CBB39A]', 'hover:text-[#7A1F2B]'];
+    const transitionDuration = 160;
+    let activeKey = root.dataset.selectedCategory || 'all';
+    let isAnimating = false;
+
+    const syncButtons = (activeKey) => {
+        buttons.forEach((button) => {
+            if (!(button instanceof HTMLElement)) {
+                return;
+            }
+
+            const isActive = (button.dataset.categoryKey ?? 'all') === activeKey;
+
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            button.classList.toggle('border-[#7A1F2B]', isActive);
+            button.classList.toggle('bg-[#7A1F2B]', isActive);
+            button.classList.toggle('text-white', isActive);
+            button.classList.toggle('shadow-[0_12px_26px_rgba(122,31,43,0.18)]', isActive);
+
+            button.classList.toggle('border-[#DCCDBD]', !isActive);
+            button.classList.toggle('bg-white', !isActive);
+            button.classList.toggle('text-[#6F5D58]', !isActive);
+            hoverClasses.forEach((className) => button.classList.toggle(className, !isActive));
+        });
+    };
+
+    const syncSections = (activeKey) => {
+        document.querySelectorAll('[data-catalog-global]').forEach((section) => {
+            if (!(section instanceof HTMLElement)) {
+                return;
+            }
+
+            section.hidden = activeKey !== 'all';
+        });
+
+        sections.forEach((section) => {
+            if (!(section instanceof HTMLElement)) {
+                return;
+            }
+
+            const matches =
+                activeKey === 'all' || section.dataset.categoryKey === activeKey;
+
+            section.hidden = !matches;
+        });
+    };
+
+    const getVisibleBlocks = () =>
+        [
+            ...Array.from(document.querySelectorAll('[data-catalog-global]')),
+            ...sections,
+        ].filter(
+            (section) => section instanceof HTMLElement && !section.hidden
+        );
+
+    const syncUrl = (activeKey) => {
+        const nextUrl = new URL(window.location.href);
+
+        if (activeKey === 'all') {
+            nextUrl.searchParams.delete('category');
+        } else {
+            nextUrl.searchParams.set('category', activeKey);
+        }
+
+        const nextValue = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+        window.history.replaceState({}, '', nextValue);
+    };
+
+    const applyFilter = (activeKey) => {
+        syncButtons(activeKey);
+        syncSections(activeKey);
+        syncUrl(activeKey);
+    };
+
+    const animateFilter = (nextKey) => {
+        if (isAnimating || nextKey === activeKey) {
+            return;
+        }
+
+        isAnimating = true;
+        syncButtons(nextKey);
+
+        const visibleBlocks = getVisibleBlocks();
+        visibleBlocks.forEach((section) => section.classList.add('catalog-swap-exit'));
+
+        window.setTimeout(() => {
+            visibleBlocks.forEach((section) => section.classList.remove('catalog-swap-exit'));
+            syncSections(nextKey);
+            syncUrl(nextKey);
+
+            const incomingBlocks = getVisibleBlocks();
+            incomingBlocks.forEach((section) => {
+                section.classList.add('catalog-swap-enter');
+                section.querySelectorAll('.product-card').forEach((card) => {
+                    card.classList.add('catalog-card-enter');
+                });
+            });
+
+            window.requestAnimationFrame(() => {
+                window.setTimeout(() => {
+                    incomingBlocks.forEach((section) => {
+                        section.classList.remove('catalog-swap-enter');
+                        section.querySelectorAll('.product-card').forEach((card) => {
+                            card.classList.remove('catalog-card-enter');
+                        });
+                    });
+
+                    activeKey = nextKey;
+                    isAnimating = false;
+                }, 360);
+            });
+        }, transitionDuration);
+    };
+
+    applyFilter(activeKey);
+
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const nextKey = button.dataset.categoryKey || 'all';
+            animateFilter(nextKey);
+        });
+    });
+};
+
+const initCategoryScrollerButtons = () => {
+    const buttons = document.querySelectorAll('[data-scroll-products]');
+
+    if (!buttons.length) {
+        return;
+    }
+
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const section = button.closest('section');
+            const scroller = section?.querySelector('.product-scroll-container');
+
+            if (!scroller) {
+                return;
+            }
+
+            const step = Math.max(scroller.clientWidth * 0.8, 240);
+
+            scroller.scrollBy({
+                left: step,
+                behavior: 'smooth',
+            });
         });
     });
 };
@@ -436,16 +850,27 @@ const buildStatusBadge = (status) => {
 
     switch (status) {
         case 'UNPAID':
+        case 'Menunggu Pembayaran':
             badge.classList.add('text-yellow-600', 'bg-yellow-100');
             badge.textContent = 'Menunggu Pembayaran';
             break;
         case 'PAID':
+        case 'Sedang Diproses':
             badge.classList.add('text-blue-600', 'bg-blue-100');
             badge.textContent = 'Sedang Diproses';
             break;
         case 'DELIVERED':
+        case 'Siap Dikirim':
             badge.classList.add('text-green-600', 'bg-green-100');
-            badge.textContent = 'Terkirim';
+            badge.textContent = 'Siap Dikirim';
+            break;
+        case 'Selesai':
+            badge.classList.add('text-emerald-700', 'bg-emerald-100');
+            badge.textContent = 'Selesai';
+            break;
+        case 'Dibatalkan':
+            badge.classList.add('text-rose-700', 'bg-rose-100');
+            badge.textContent = 'Dibatalkan';
             break;
         default:
             badge.classList.add('text-gray-600', 'bg-gray-100');
@@ -477,7 +902,7 @@ const buildTrackingResult = (data) => {
     header.appendChild(titleWrap);
     fragment.appendChild(header);
 
-    const content = createElement('div', 'border-t border-gray-100 pt-4 space-y-2');
+    const content = createElement('div', 'border-t border-gray-100 pt-4 space-y-3');
 
     const productRow = createElement('div', 'flex justify-between items-center gap-4');
     productRow.appendChild(createElement('span', 'text-sm text-gray-500', 'Produk'));
@@ -491,7 +916,19 @@ const buildTrackingResult = (data) => {
 
     const statusRow = createElement('div', 'flex justify-between items-center gap-4');
     statusRow.appendChild(createElement('span', 'text-sm text-gray-500', 'Status'));
-    statusRow.appendChild(buildStatusBadge(data.status));
+    statusRow.appendChild(buildStatusBadge(data.status_label || data.status));
+
+    const paymentRow = createElement('div', 'flex justify-between items-center gap-4');
+    paymentRow.appendChild(createElement('span', 'text-sm text-gray-500', 'Pembayaran'));
+    paymentRow.appendChild(
+        createElement('span', 'text-sm font-semibold text-[#2D1E1E] text-right', data.payment_status)
+    );
+
+    const totalRow = createElement('div', 'flex justify-between items-center gap-4');
+    totalRow.appendChild(createElement('span', 'text-sm text-gray-500', 'Total'));
+    totalRow.appendChild(
+        createElement('span', 'text-sm font-semibold text-[#2D1E1E] text-right', data.total)
+    );
 
     const deliveryRow = createElement('div', 'flex justify-between items-center gap-4');
     deliveryRow.appendChild(createElement('span', 'text-sm text-gray-500', 'Jadwal Kirim'));
@@ -505,8 +942,81 @@ const buildTrackingResult = (data) => {
 
     content.appendChild(productRow);
     content.appendChild(statusRow);
+    content.appendChild(paymentRow);
+    content.appendChild(totalRow);
     content.appendChild(deliveryRow);
+
+    if (data.deadline) {
+        const deadlineRow = createElement('div', 'flex justify-between items-center gap-4');
+        deadlineRow.appendChild(createElement('span', 'text-sm text-gray-500', 'Batas bayar'));
+        deadlineRow.appendChild(
+            createElement('span', 'text-sm font-semibold text-[#2D1E1E] text-right', data.deadline)
+        );
+        content.appendChild(deadlineRow);
+    }
+
     fragment.appendChild(content);
+
+    if (Array.isArray(data.timeline) && data.timeline.length > 0) {
+        const timelineWrap = createElement('div', 'mt-5');
+        timelineWrap.appendChild(
+            createElement('p', 'text-xs font-semibold uppercase tracking-[0.18em] text-[#7A1F2B]', 'Progres')
+        );
+
+        const timelineList = createElement('div', 'mt-3 flex flex-wrap gap-2');
+
+        data.timeline.forEach((step) => {
+            const classes = step.done
+                ? 'border-[#d8ead2] bg-[#eef8e9] text-[#416936]'
+                : step.active
+                  ? 'border-[#ead1c9] bg-[#f9efea] text-[#7A1F2B]'
+                  : 'border-gray-200 bg-gray-50 text-gray-500';
+
+            timelineList.appendChild(
+                createElement(
+                    'span',
+                    `inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${classes}`,
+                    step.label
+                )
+            );
+        });
+
+        timelineWrap.appendChild(timelineList);
+        fragment.appendChild(timelineWrap);
+    }
+
+    if (data.invoice_url) {
+        const actionWrap = createElement('div', 'mt-5 flex flex-wrap gap-3');
+        const invoiceLink = document.createElement('a');
+        invoiceLink.href = data.invoice_url;
+        invoiceLink.className = data.can_continue_payment
+            ? 'inline-flex items-center justify-center rounded-full bg-[#7A1F2B] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#65202a]'
+            : 'inline-flex items-center justify-center rounded-full border border-[#ead1c9] bg-white px-5 py-3 text-sm font-semibold text-[#7A1F2B] transition hover:bg-[#fbf4ef]';
+        invoiceLink.textContent = data.can_continue_payment ? 'Lanjut bayar' : 'Buka invoice';
+        actionWrap.appendChild(invoiceLink);
+
+        if (data.payment_method && data.payment_method !== '-') {
+            actionWrap.appendChild(
+                createElement(
+                    'span',
+                    'inline-flex items-center rounded-full bg-[#f5efea] px-3 py-2 text-xs font-medium text-[#6b4d49]',
+                    `Metode: ${data.payment_method}`
+                )
+            );
+        }
+
+        fragment.appendChild(actionWrap);
+    }
+
+    if (data.track_url) {
+        const detailWrap = createElement('div', 'mt-3');
+        const detailLink = document.createElement('a');
+        detailLink.href = data.track_url;
+        detailLink.className = 'text-sm font-medium text-[#7A1F2B] underline-offset-4 hover:underline';
+        detailLink.textContent = 'Lihat detail tracking';
+        detailWrap.appendChild(detailLink);
+        fragment.appendChild(detailWrap);
+    }
 
     return fragment;
 };
@@ -650,7 +1160,7 @@ const initProductModal = () => {
 
         window.setTimeout(() => {
             modal.classList.add('hidden');
-        }, 300);
+        }, 180);
     };
 
     const openProductModal = (title, price, image, description, tag = '', isDecor = false) => {
@@ -687,7 +1197,13 @@ const initProductModal = () => {
                 jenis: tag,
             });
 
-            window.location.href = `${modal.dataset.orderUrl}?${query.toString()}`;
+            const baseOrderUrl = modal.dataset.modalOrderBaseUrl;
+
+            if (!baseOrderUrl) {
+                return;
+            }
+
+            window.location.href = `${baseOrderUrl}?${query.toString()}`;
         };
 
         modal.classList.remove('hidden');
@@ -698,40 +1214,24 @@ const initProductModal = () => {
         });
     };
 
-    modal.addEventListener('click', (event) => {
-        if (event.target === modal || event.target.matches('[data-product-modal-close]')) {
+    modal.querySelectorAll('[data-product-modal-close]').forEach((element) => {
+        element.addEventListener('pointerup', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
             closeProductModal();
-        }
+        });
+
+        element.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            closeProductModal();
+        });
     });
 
     document.addEventListener('click', (event) => {
         const stopModalTrigger = event.target.closest('[data-stop-modal]');
 
         if (stopModalTrigger) {
-            event.stopPropagation();
-        }
-
-        const externalLinkTrigger = event.target.closest('[data-external-url]');
-
-        if (externalLinkTrigger) {
-            const url = externalLinkTrigger.dataset.externalUrl;
-
-            if (url) {
-                window.open(url, '_blank');
-            }
-
-            return;
-        }
-
-        const orderLinkTrigger = event.target.closest('[data-order-url]');
-
-        if (orderLinkTrigger) {
-            const url = orderLinkTrigger.dataset.orderUrl;
-
-            if (url) {
-                window.location.href = url;
-            }
-
             return;
         }
 
@@ -1127,6 +1627,9 @@ onReady(() => {
     initProductScroll();
     initCounters();
     initGalleryFilter();
+    initCatalogFilters();
+    initCategoryScrollerButtons();
+    initLandingProductButtons();
     initAdminSearchForms();
     initAdminTableSearchForms();
     initTracking();
