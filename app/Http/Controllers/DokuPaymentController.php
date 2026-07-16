@@ -32,12 +32,6 @@ class DokuPaymentController extends Controller
             return back()->with('error', 'Metode pembayaran yang dipilih tidak valid.');
         }
 
-        $methodTypes = $selectedMethod !== 'ALL' ? [$selectedMethod] : [];
-
-        if (! $dokuCheckoutService->isConfigured()) {
-            return back()->with('error', 'Konfigurasi DOKU belum diisi. Hubungi admin untuk melengkapi credential sandbox/production.');
-        }
-
         $existingPayment = $pesanan->pembayaranTerakhir;
 
         if (
@@ -56,7 +50,12 @@ class DokuPaymentController extends Controller
             return redirect()->away($existingPayment->checkout_url);
         }
 
+        if (! $dokuCheckoutService->isConfigured()) {
+            return back()->with('error', 'Konfigurasi DOKU belum diisi. Hubungi admin untuk melengkapi credential sandbox/production.');
+        }
+
         try {
+            $methodTypes = $selectedMethod !== 'ALL' ? [$selectedMethod] : [];
             $checkout = $dokuCheckoutService->createCheckout($pesanan, $methodTypes);
         } catch (RuntimeException $exception) {
             Log::warning('DOKU checkout gagal dibuat', [
