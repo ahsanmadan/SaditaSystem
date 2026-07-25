@@ -1,86 +1,59 @@
-<!-- Product Detail Modal -->
 <div id="productModal" data-modal-order-base-url="{{ route('order') }}"
-    class="fixed inset-0 z-[100] hidden flex justify-center items-center p-4 sm:p-6 opacity-0 transition-opacity duration-200">
+    class="fixed inset-0 z-[100] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-150 sm:p-6">
 
-    <div data-product-modal-close class="absolute inset-0 bg-[#2D1E1E]/48"></div>
+    <button type="button" data-product-modal-close class="absolute inset-0 bg-[#2D1E1E]/55 backdrop-blur-sm" aria-label="Tutup detail produk"></button>
 
     <div data-product-modal-card
-        class="bg-white w-[95%] sm:w-full max-w-[360px] md:max-w-[750px] lg:max-w-[850px] rounded-[1.5rem] md:rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] transform scale-95 transition-transform duration-200 ease-out relative z-10 flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
+        class="relative z-10 flex max-h-[90vh] w-full max-w-[860px] scale-[0.985] flex-col overflow-hidden rounded-[1.6rem] border border-[#E8DCCE] bg-white shadow-[0_24px_60px_rgba(0,0,0,0.18)] transition-transform duration-150 md:flex-row">
 
         <button type="button" data-product-modal-close
-            class="absolute top-3 right-3 md:top-5 md:right-5 z-20 w-8 h-8 md:w-10 md:h-10 bg-white/80 md:bg-gray-100 rounded-full flex items-center justify-center text-[#2D1E1E] hover:bg-white hover:text-[#7A1F2B] hover:shadow-md transition-all group">
-            <svg class="w-4 h-4 md:w-5 md:h-5 transform group-hover:rotate-90 transition-transform duration-300"
-                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12">
-                </path>
+            class="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-[#2D1E1E] transition hover:bg-white hover:text-[#7A1F2B]">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
 
-        <div
-            class="w-full md:w-[45%] aspect-[4/3] md:aspect-auto md:h-auto relative flex items-center justify-center bg-[#F9F9F9] overflow-hidden group">
-            <img id="modalImg" alt=""
-                class="w-full h-full md:absolute md:inset-0 object-cover transition-transform duration-700 group-hover:scale-105">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent md:hidden"></div>
+        <div class="relative aspect-[4/3.2] w-full overflow-hidden bg-[#F6F0EA] md:h-auto md:w-[44%] md:aspect-auto">
+            <img id="modalImg" alt="" class="h-full w-full object-cover object-center">
+            <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/18 to-transparent md:hidden"></div>
         </div>
 
-        <div class="w-full md:w-[55%] p-6 md:p-10 flex flex-col justify-center relative bg-white">
-            <div
-                class="text-[#C9A84C] text-[10px] md:text-xs font-bold uppercase tracking-widest mb-3 md:mb-4 flex items-center gap-2">
-                <span class="w-4 md:w-6 h-[1px] bg-[#C9A84C]"></span> Sadita Collection
-            </div>
-            <h3 id="modalTitle" class="text-xl md:text-3xl font-bold text-[#2D1E1E] mb-3 md:mb-4 leading-tight"
-                style="font-family:'Playfair Display',serif"></h3>
-
-            <div class="flex-1 overflow-y-auto pr-2 scrollbar-hide mb-6 md:mb-8">
-                <p id="modalDesc"
-                    class="text-xs md:text-sm text-gray-500 leading-relaxed line-clamp-4 md:line-clamp-none mb-4 md:mb-6">
-                </p>
-
-                <ul class="hidden md:flex flex-col space-y-3 text-xs md:text-sm text-gray-500">
-                    <li class="flex items-center gap-3">
-                        <div class="w-6 h-6 rounded-full bg-[#FAF5F0] flex items-center justify-center text-[#C9A84C]">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </div>
-                        Kualitas Premium & Eksklusif
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <div class="w-6 h-6 rounded-full bg-[#FAF5F0] flex items-center justify-center text-[#C9A84C]">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </div>
-                        Desain Elegan dan Tahan Lama
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <div class="w-6 h-6 rounded-full bg-[#FAF5F0] flex items-center justify-center text-[#C9A84C]">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </div>
-                        Dapat Disesuaikan (Custom)
-                    </li>
-                </ul>
-            </div>
-
-            <div class="mt-auto pt-5 md:pt-6 border-t border-gray-100 flex items-center justify-between">
-                <div>
-                    <div class="text-[9px] md:text-[10px] text-gray-400 uppercase tracking-widest font-semibold mb-0.5 md:mb-1">
-                        Mulai Dari
-                    </div>
-                    <div id="modalPrice" class="text-lg md:text-2xl font-bold text-[#7A1F2B]"></div>
+        <div class="flex w-full flex-col justify-between p-6 md:w-[56%] md:p-9">
+            <div>
+                <div class="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#7A1F2B]/65">
+                    <span class="h-px w-6 bg-[#C9A84C]"></span>
+                    Detail Produk
                 </div>
-                <button id="modalOrderBtn"
-                    class="py-2.5 md:py-3 px-6 md:px-8 bg-[#7A1F2B] hover:bg-[#8A2432] text-white rounded-xl md:rounded-2xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2 group">
-                    <span id="modalBtnText">Pesan</span>
-                    <span id="modalBtnIcon">
-                        <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                        </svg>
-                    </span>
-                </button>
+                <h3 id="modalTitle" class="mt-3 text-[1.85rem] font-semibold leading-[1.02] text-[#2D1E1E] md:text-[2.45rem]"
+                    style="font-family:'Playfair Display',serif;"></h3>
+                <p id="modalDesc" class="mt-4 max-w-xl text-sm leading-7 text-[#6B5C57] md:text-[15px]"></p>
+
+                <div class="mt-5 grid gap-3 text-sm text-[#5E4D49] sm:grid-cols-2">
+                    <div class="rounded-2xl border border-[#EFE4DA] bg-[#FCFAF8] px-4 py-3">
+                        Dikerjakan rapi dan siap disesuaikan dengan kebutuhan acara.
+                    </div>
+                    <div class="rounded-2xl border border-[#EFE4DA] bg-[#FCFAF8] px-4 py-3">
+                        Cocok untuk pemesanan cepat maupun konsultasi lebih detail.
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-7 border-t border-[#EFE4DA] pt-5">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <div class="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9D8B83]">Mulai dari</div>
+                        <div id="modalPrice" class="mt-1 text-[1.9rem] font-bold leading-none text-[#7A1F2B]"></div>
+                    </div>
+                    <button id="modalOrderBtn"
+                        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#7A1F2B] px-6 text-sm font-semibold text-white transition hover:bg-[#651925]">
+                        <span id="modalBtnText">Pesan</span>
+                        <span id="modalBtnIcon">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

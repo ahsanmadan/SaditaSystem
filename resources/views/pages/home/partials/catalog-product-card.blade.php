@@ -8,20 +8,20 @@
     };
     $cardImgUrl = $produk->fotoUtamaUrl();
     $cardPriceStr = 'Rp ' . number_format($produk->harga_dasar, 0, ',', '.');
-    $cardDescStr = $produk->deskripsi ?? 'Detail produk ' . $produk->nama;
+    $cardDescStr = $produk->deskripsi ?? $produk->nama;
     $cardCategoryLabel = $produk->kategori?->nama ?? $kategori->nama ?? 'Produk';
 @endphp
 
 <article data-product-card data-modal-title="{{ e($produk->nama) }}" data-modal-price="{{ e($cardPriceStr) }}"
     data-modal-image="{{ e($cardImgUrl) }}" data-modal-desc="{{ e($cardDescStr) }}"
     data-modal-tag="{{ e($cardCategoryLabel) }}" data-modal-is-decor="{{ $cardIsDecor ? '1' : '0' }}"
-    class="group product-card flex h-full cursor-pointer flex-col overflow-hidden rounded-[1.15rem] sm:rounded-[1.65rem] border border-[#E8DCCE] bg-white transition-all duration-300 hover:shadow-[0_10px_24px_rgba(122,31,43,0.08)]">
-    <div class="relative aspect-[4/3.45] sm:aspect-[4/3.25] overflow-hidden bg-[#F7F1EB]">
+    class="group product-card flex h-full cursor-pointer flex-col overflow-hidden rounded-[1.15rem] sm:rounded-[1.45rem] border border-[#E8DCCE] bg-white transition-all duration-300">
+    <div class="relative aspect-[4/3.15] sm:aspect-[4/3.05] overflow-hidden bg-[#F7F1EB]">
         <img src="{{ $cardImgUrl }}" alt="{{ $produk->nama }}"
-            class="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
+            class="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.015]"
             loading="lazy">
         <div
-            class="absolute inset-0 bg-gradient-to-t from-black/18 via-black/0 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            class="absolute inset-0 bg-gradient-to-t from-black/14 via-black/0 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         </div>
         <div class="absolute left-3 top-3 flex flex-wrap gap-2">
             <span
@@ -32,18 +32,18 @@
     </div>
 
     <div class="flex flex-1 flex-col p-3 sm:p-3.5">
-        <h3 class="text-[0.95rem] sm:text-[1.08rem] font-semibold leading-snug text-[#2D1E1E] line-clamp-2">
+        <h3 class="text-[1rem] sm:text-[1.08rem] font-semibold leading-snug text-[#2D1E1E] line-clamp-2">
             {{ $produk->nama }}
         </h3>
 
-        <div class="mt-3 border-t border-[#EFE5D9] pt-2.5 sm:mt-3.5 sm:pt-3">
+        <div class="mt-3 border-t border-[#EFE5D9] pt-2.5 sm:mt-3 sm:pt-3">
             <div class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.16em] text-[#9D8B83]">
                 Mulai dari
             </div>
             <div class="mt-1 text-[1.05rem] sm:mt-1.5 sm:text-[1.55rem] font-bold text-[#7A1F2B] leading-none">{{ $cardPriceStr }}</div>
         </div>
 
-        <div class="mt-3 sm:mt-3.5">
+        <div class="mt-3 sm:mt-3">
             @if ($cardIsDecor)
                 @php
                     $waText = "Halo Sadita,\n\nSaya ingin konsultasi dekorasi.\n\nJenis Dekorasi: {$produk->nama}\n\nTanggal Acara:\nWaktu Acara:\n\nLokasi Acara:\n\nKonsep / Tema yang diinginkan:\n(Contoh: elegan, rustic, minimalis, dll)\n\nCatatan tambahan:\n(opsional)\n\nTerima kasih.";
@@ -51,7 +51,7 @@
                 <a href="https://wa.me/62812616155335?text={{ rawurlencode($waText) }}" target="_blank"
                     rel="noopener noreferrer" data-stop-modal
                     data-external-url="https://wa.me/62812616155335?text={{ rawurlencode($waText) }}"
-                    class="group inline-flex min-h-9 sm:min-h-11 w-full items-center justify-center gap-1.5 sm:gap-2 rounded-full bg-[#7A1F2B] px-3.5 sm:px-5 text-[11px] sm:text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#8A2432] hover:shadow-[0_8px_18px_rgba(122,31,43,0.16)]">
+                    class="product-card-button group inline-flex min-h-9 sm:min-h-10 w-full items-center justify-center gap-1.5 sm:gap-2 rounded-full bg-[#7A1F2B] px-3.5 sm:px-5 text-[11px] sm:text-sm font-semibold text-white transition-all duration-200">
                     <svg class="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300 group-hover:scale-105" fill="currentColor"
                         viewBox="0 0 24 24" aria-hidden="true">
                         <path
@@ -63,7 +63,7 @@
                 <a href="{{ route('order') }}?product={{ rawurlencode($produk->nama) }}&price={{ rawurlencode($cardPriceStr) }}&img={{ rawurlencode($cardImgUrl) }}&jenis={{ rawurlencode($cardCategoryLabel) }}"
                     data-stop-modal
                     data-order-url="{{ route('order') }}?product={{ rawurlencode($produk->nama) }}&price={{ rawurlencode($cardPriceStr) }}&img={{ rawurlencode($cardImgUrl) }}&jenis={{ rawurlencode($cardCategoryLabel) }}"
-                    class="group inline-flex min-h-9 sm:min-h-11 w-full items-center justify-center gap-1.5 sm:gap-2 rounded-full bg-[#7A1F2B] px-3.5 sm:px-5 text-[11px] sm:text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#8A2432] hover:shadow-[0_8px_18px_rgba(122,31,43,0.16)]">
+                    class="product-card-button group inline-flex min-h-9 sm:min-h-10 w-full items-center justify-center gap-1.5 sm:gap-2 rounded-full bg-[#7A1F2B] px-3.5 sm:px-5 text-[11px] sm:text-sm font-semibold text-white transition-all duration-200">
                     <span>Pesan</span>
                     <svg class="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300 group-hover:translate-x-0.5" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

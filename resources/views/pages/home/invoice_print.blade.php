@@ -10,43 +10,54 @@
     <style>
         :root {
             color-scheme: light;
-            --bg: #f4efe9;
+            --bg: #f5efe9;
             --paper: #ffffff;
+            --paper-soft: #fcf9f5;
             --ink: #2d1e1e;
-            --muted: #756a64;
-            --line: #e8ddd3;
-            --soft: #faf6f1;
+            --muted: #786b65;
+            --line: #e6dbd0;
+            --line-strong: #dccfc1;
             --brand: #7a1f2b;
-            --brand-soft: #f6ece6;
-            --gold: #d8b56b;
+            --brand-dark: #631924;
+            --gold: #d3b16a;
             --success-bg: #edf7ef;
             --success-text: #166534;
+            --pending-bg: #fdf3e5;
+            --pending-text: #92400e;
+            --shadow-lg: 0 28px 68px rgba(47, 27, 20, 0.10);
+            --shadow-md: 0 18px 40px rgba(47, 27, 20, 0.08);
         }
 
         * {
             box-sizing: border-box;
         }
 
+        html,
         body {
             margin: 0;
+            padding: 0;
+        }
+
+        body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top, #fbf7f2 0%, var(--bg) 48%, #efe8e0 100%);
             color: var(--ink);
+            background:
+                radial-gradient(circle at top, rgba(255, 255, 255, 0.72), transparent 42%),
+                linear-gradient(180deg, #f8f2ec 0%, var(--bg) 52%, #efe7df 100%);
             -webkit-font-smoothing: antialiased;
         }
 
         .screen-shell {
-            min-height: 100vh;
-            padding: 28px;
+            padding: 24px;
         }
 
         .screen-actions {
-            width: min(100%, 210mm);
+            width: min(100%, 1120px);
             margin: 0 auto 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 14px;
         }
 
         .btn {
@@ -54,14 +65,15 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            min-height: 48px;
             border-radius: 999px;
             padding: 12px 20px;
-            font-size: 13px;
+            border: 1px solid transparent;
+            font-size: 14px;
             font-weight: 700;
             text-decoration: none;
-            transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
             cursor: pointer;
-            border: 1px solid transparent;
+            transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
         }
 
         .btn:hover {
@@ -69,10 +81,15 @@
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, .86);
-            border-color: rgba(122, 31, 43, .16);
+            background: rgba(255, 255, 255, 0.92);
+            border-color: rgba(122, 31, 43, 0.12);
             color: var(--brand);
-            box-shadow: 0 12px 30px rgba(45, 30, 30, 0.06);
+            box-shadow: 0 14px 30px rgba(45, 30, 30, 0.05);
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(122, 31, 43, 0.22);
+            background: #fff;
         }
 
         .btn-primary {
@@ -81,105 +98,114 @@
             box-shadow: 0 18px 34px rgba(122, 31, 43, 0.18);
         }
 
+        .btn-primary:hover {
+            background: var(--brand-dark);
+        }
+
         .page {
-            width: min(100%, 210mm);
-            min-height: 297mm;
+            width: min(100%, 1120px);
             margin: 0 auto;
             background: var(--paper);
             border: 1px solid rgba(122, 31, 43, 0.08);
-            border-radius: 28px;
-            box-shadow: 0 32px 80px rgba(45, 30, 30, 0.10);
+            border-radius: 30px;
+            box-shadow: var(--shadow-lg);
             overflow: hidden;
         }
 
         .page-inner {
-            padding: 18mm 18mm 16mm;
+            padding: 42px;
         }
 
         .hero {
             display: grid;
-            grid-template-columns: minmax(0, 1.25fr) minmax(220px, 0.75fr);
+            grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.85fr);
             gap: 24px;
             align-items: start;
-            padding-bottom: 24px;
+            padding-bottom: 26px;
             border-bottom: 1px solid var(--line);
         }
 
-        .eyebrow {
-            margin: 0 0 10px;
-            font-size: 10px;
+        .eyebrow,
+        .section-kicker,
+        .mini-label {
+            margin: 0;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: .34em;
+            letter-spacing: 0.28em;
             text-transform: uppercase;
+        }
+
+        .eyebrow {
             color: var(--gold);
         }
 
         .title {
-            margin: 0;
+            margin: 12px 0 0;
             font-family: 'Playfair Display', serif;
-            font-size: 38px;
-            line-height: 1.04;
+            font-size: clamp(2.2rem, 4vw, 3.35rem);
+            line-height: 0.98;
             color: var(--ink);
         }
 
         .subtitle {
-            margin-top: 8px;
-            font-size: 14px;
+            margin-top: 12px;
+            max-width: 56ch;
+            font-size: 15px;
+            line-height: 1.7;
             color: var(--muted);
         }
 
         .status-card {
             border: 1px solid var(--line);
-            border-radius: 22px;
+            border-radius: 24px;
             background: linear-gradient(180deg, #fff 0%, #fbf7f2 100%);
-            padding: 18px;
+            padding: 22px;
+            box-shadow: var(--shadow-md);
         }
 
         .status-list {
             display: grid;
-            gap: 12px;
+            gap: 16px;
         }
 
-        .label {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: .18em;
-            text-transform: uppercase;
-            color: #9a8a81;
+        .mini-label {
+            margin-bottom: 6px;
+            color: #a08d83;
         }
 
-        .value {
-            font-size: 14px;
-            font-weight: 700;
+        .meta-value {
+            font-size: 1.02rem;
+            font-weight: 800;
+            line-height: 1.45;
             color: var(--ink);
+            word-break: break-word;
         }
 
         .status-pill {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
+            justify-content: center;
+            min-height: 36px;
+            padding: 8px 14px;
             border-radius: 999px;
-            background: var(--success-bg);
-            color: var(--success-text);
             font-size: 11px;
             font-weight: 800;
-            letter-spacing: .12em;
+            letter-spacing: 0.14em;
             text-transform: uppercase;
+            background: var(--success-bg);
+            color: var(--success-text);
         }
 
         .status-pill.pending {
-            background: #fdf4e6;
-            color: #92400e;
+            background: var(--pending-bg);
+            color: var(--pending-text);
         }
 
         .content-grid {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 270px;
-            gap: 22px;
-            padding-top: 24px;
+            grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
+            gap: 24px;
+            padding-top: 26px;
         }
 
         .stack {
@@ -195,169 +221,169 @@
 
         .card {
             border: 1px solid var(--line);
-            border-radius: 22px;
-            background: var(--soft);
-            padding: 18px;
+            border-radius: 24px;
+            background: var(--paper-soft);
+            padding: 22px;
         }
 
         .card.white {
             background: #fff;
         }
 
-        .card-title {
-            margin: 0 0 10px;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: .22em;
-            text-transform: uppercase;
+        .section-kicker {
             color: var(--brand);
         }
 
         .person-name {
-            margin: 0 0 8px;
-            font-size: 18px;
+            margin: 10px 0 8px;
+            font-size: clamp(1.35rem, 2vw, 1.65rem);
             font-weight: 800;
+            line-height: 1.08;
             color: var(--ink);
+            text-wrap: balance;
         }
 
         .meta-text {
             margin: 0;
-            font-size: 13px;
-            line-height: 1.75;
+            font-size: 14px;
+            line-height: 1.8;
             color: var(--muted);
             word-break: break-word;
         }
 
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
+        .item-card {
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            background: #fff;
+            padding: 18px 18px 16px;
         }
 
-        .items-table thead th {
-            padding: 0 0 12px;
-            border-bottom: 1px solid var(--line);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: .16em;
-            text-transform: uppercase;
-            color: #998b84;
-            text-align: left;
+        .item-card + .item-card {
+            margin-top: 12px;
         }
 
-        .items-table thead th:last-child,
-        .items-table tbody td:last-child {
-            text-align: right;
-        }
-
-        .items-table tbody td {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--line);
-            vertical-align: top;
-        }
-
-        .items-table tbody tr:last-child td {
-            border-bottom: none;
-            padding-bottom: 0;
+        .item-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
         }
 
         .item-name {
             margin: 0;
-            font-size: 17px;
+            font-size: 1.12rem;
             font-weight: 800;
+            line-height: 1.35;
             color: var(--ink);
+            text-wrap: balance;
         }
 
         .item-meta {
             margin-top: 6px;
             font-size: 13px;
-            line-height: 1.65;
+            line-height: 1.7;
             color: var(--muted);
         }
 
         .item-price {
-            font-size: 17px;
+            flex-shrink: 0;
+            font-size: 1.18rem;
             font-weight: 800;
+            line-height: 1.2;
             color: var(--brand);
+            text-align: right;
             white-space: nowrap;
         }
 
-        .totals-card {
+        .totals-card,
+        .payment-card {
             border: 1px solid var(--line);
             border-radius: 24px;
+            padding: 22px;
+        }
+
+        .totals-card {
             background: linear-gradient(180deg, #fff 0%, #fbf7f2 100%);
-            padding: 20px;
+        }
+
+        .payment-card {
+            background: #fff;
         }
 
         .total-row {
             display: flex;
-            align-items: center;
+            align-items: baseline;
             justify-content: space-between;
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 12px;
-            font-size: 13px;
+            font-size: 14px;
+            line-height: 1.6;
             color: var(--muted);
         }
 
         .total-row strong {
+            flex-shrink: 0;
             color: var(--ink);
-        }
-
-        .total-row.discount {
-            color: #166534;
-        }
-
-        .grand-total {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 12px;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
-        }
-
-        .grand-total .amount {
-            font-size: 34px;
-            font-weight: 800;
-            line-height: 1;
-            color: var(--brand);
+            text-align: right;
             white-space: nowrap;
         }
 
-        .payment-card {
-            border: 1px solid var(--line);
-            border-radius: 24px;
-            background: #fff;
-            padding: 20px;
+        .total-row.discount {
+            color: var(--success-text);
+        }
+
+        .grand-total {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 16px;
+            align-items: end;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+        }
+
+        .grand-total .grand-copy {
+            min-width: 0;
+        }
+
+        .grand-total .amount {
+            font-size: clamp(2rem, 3.4vw, 3rem);
+            font-weight: 800;
+            line-height: 0.96;
+            letter-spacing: -0.04em;
+            color: var(--brand);
+            white-space: nowrap;
+            text-align: right;
         }
 
         .payment-method {
-            margin: 0;
-            font-size: 18px;
+            margin: 10px 0 0;
+            font-size: 1.55rem;
             font-weight: 800;
+            line-height: 1.2;
             color: var(--ink);
             word-break: break-word;
         }
 
         .payment-note {
-            margin-top: 10px;
+            margin-top: 12px;
             font-size: 13px;
-            line-height: 1.75;
+            line-height: 1.78;
             color: var(--muted);
+            word-break: break-word;
         }
 
         .footer {
-            margin-top: 22px;
-            padding-top: 18px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.8fr);
+            gap: 18px;
+            margin-top: 24px;
+            padding-top: 20px;
             border-top: 1px solid var(--line);
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 20px;
         }
 
-        .footer-note {
-            max-width: 62%;
+        .footer-note,
+        .footer-brand {
             font-size: 12px;
             line-height: 1.8;
             color: var(--muted);
@@ -365,53 +391,83 @@
 
         .footer-brand {
             text-align: right;
-            font-size: 12px;
-            line-height: 1.8;
-            color: var(--muted);
         }
 
-        @page {
-            size: A4;
-            margin: 0;
+        .footer-brand strong {
+            color: var(--ink);
         }
 
-        @media (max-width: 960px) {
+        @media (max-width: 1024px) {
+            .page-inner {
+                padding: 30px;
+            }
+
+            .hero,
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                gap: 18px;
+            }
+
+            .status-card {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 720px) {
             .screen-shell {
-                padding: 16px;
+                padding: 14px;
             }
 
             .screen-actions {
                 width: 100%;
-                flex-direction: column;
+                flex-direction: column-reverse;
                 align-items: stretch;
             }
 
             .page {
                 width: 100%;
-                min-height: auto;
                 border-radius: 24px;
             }
 
             .page-inner {
-                padding: 22px;
+                padding: 22px 18px;
             }
 
-            .hero,
-            .content-grid,
             .info-grid,
-            .footer {
+            .footer,
+            .grand-total {
                 grid-template-columns: 1fr;
             }
 
-            .footer-note,
-            .footer-brand {
-                max-width: none;
+            .item-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .item-price,
+            .footer-brand,
+            .grand-total .amount {
                 text-align: left;
             }
 
-            .grand-total .amount {
-                font-size: 28px;
+            .btn {
+                width: 100%;
             }
+
+            .status-card,
+            .card,
+            .totals-card,
+            .payment-card {
+                padding: 18px;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
         }
 
         @media print {
@@ -440,6 +496,24 @@
                 padding: 18mm 18mm 16mm !important;
             }
 
+            .hero {
+                grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.8fr) !important;
+                gap: 20px !important;
+            }
+
+            .content-grid {
+                grid-template-columns: minmax(0, 1.1fr) minmax(265px, 0.9fr) !important;
+                gap: 20px !important;
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+
+            .footer {
+                grid-template-columns: minmax(0, 1.15fr) minmax(210px, 0.85fr) !important;
+            }
+
             * {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -462,7 +536,7 @@
             <a href="{{ route('invoice.show', ['order_id' => $order->kode_pesanan]) }}" class="btn btn-secondary">
                 &larr; Kembali ke invoice
             </a>
-            <button onclick="window.print()" class="btn btn-primary">
+            <button type="button" onclick="window.print()" class="btn btn-primary">
                 Cetak invoice
             </button>
         </div>
@@ -473,95 +547,91 @@
                     <div>
                         <p class="eyebrow">Sadita Decoration</p>
                         <h1 class="title">Invoice Pesanan</h1>
-                        <div class="subtitle">Dokumen ringkasan pesanan dan pembayaran pelanggan.</div>
+                        <p class="subtitle">Dokumen ringkas untuk detail pesanan, nominal pembayaran, dan referensi layanan pelanggan Sadita.</p>
                     </div>
 
-                    <div class="status-card">
+                    <section class="status-card">
                         <div class="status-list">
                             <div>
-                                <span class="label">Kode pesanan</span>
-                                <div class="value">{{ $order->kode_pesanan }}</div>
+                                <p class="mini-label">Kode pesanan</p>
+                                <div class="meta-value">{{ $order->kode_pesanan }}</div>
                             </div>
                             <div>
-                                <span class="label">Tanggal dibuat</span>
-                                <div class="value">{{ optional($order->created_at)->translatedFormat('d M Y, H:i') ?? '-' }}</div>
+                                <p class="mini-label">Tanggal dibuat</p>
+                                <div class="meta-value">{{ optional($order->created_at)->translatedFormat('d M Y, H:i') ?? '-' }}</div>
                             </div>
                             <div>
-                                <span class="label">Status pembayaran</span>
+                                <p class="mini-label">Status pembayaran</p>
                                 <div class="status-pill {{ $payment?->status === 'lunas' ? '' : 'pending' }}">
                                     {{ $paymentStatus }}
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
                 </header>
 
                 <div class="content-grid">
                     <section class="stack">
                         <div class="info-grid">
-                            <div class="card">
-                                <p class="card-title">Pemesan</p>
+                            <section class="card">
+                                <p class="section-kicker">Pemesan</p>
                                 <h2 class="person-name">{{ $order->pelanggan?->nama_lengkap ?? '-' }}</h2>
                                 <p class="meta-text">
                                     {{ $order->pelanggan?->no_hp ?? '-' }}<br>
                                     {{ $order->pelanggan?->email ?? '-' }}
                                 </p>
-                            </div>
+                            </section>
 
-                            <div class="card">
-                                <p class="card-title">Pengiriman</p>
+                            <section class="card">
+                                <p class="section-kicker">Pengiriman</p>
                                 <h2 class="person-name">{{ $order->pengiriman?->nama_penerima ?? '-' }}</h2>
                                 <p class="meta-text">
                                     {{ optional($order->pengiriman?->tanggal_pengiriman)->translatedFormat('d M Y') ?? '-' }}<br>
-                                    {{ $order->pengiriman?->alamat_lengkap ?? '-' }}<br>
-                                    {{ $order->pengiriman?->patokan_lokasi ?? '' }}
+                                    {{ $order->pengiriman?->alamat_lengkap ?? '-' }}
+                                    @if ($order->pengiriman?->patokan_lokasi)
+                                        <br>{{ $order->pengiriman->patokan_lokasi }}
+                                    @endif
                                 </p>
-                            </div>
+                            </section>
                         </div>
 
-                        <div class="card white">
-                            <p class="card-title">Rincian item</p>
-                            <table class="items-table">
-                                <thead>
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($order->detailItems as $item)
-                                        @php
-                                            $itemType = $item->produk?->is_sewa
-                                                ? 'Sewa'
-                                                : ($order->tipe_layanan === 'dekorasi'
-                                                    ? 'Jasa'
-                                                    : ($order->tipe_layanan === 'hantaran' ? 'Hantaran' : 'Layanan'));
-                                        @endphp
-                                        <tr>
-                                            <td>
-                                                <p class="item-name">{{ $item->nama_produk_snapshot }}</p>
+                        <section class="card white">
+                            <p class="section-kicker">Rincian item</p>
+                            <div>
+                                @forelse ($order->detailItems as $item)
+                                    @php
+                                        $itemType = $item->produk?->is_sewa
+                                            ? 'Sewa'
+                                            : ($order->tipe_layanan === 'dekorasi'
+                                                ? 'Jasa'
+                                                : ($order->tipe_layanan === 'hantaran' ? 'Hantaran' : 'Layanan'));
+                                    @endphp
+                                    <article class="item-card">
+                                        <div class="item-row">
+                                            <div>
+                                                <h3 class="item-name">{{ $item->nama_produk_snapshot }}</h3>
                                                 <div class="item-meta">
                                                     {{ $itemType }} · {{ $item->kuantitas }} item
                                                     @if ($item->teks_ucapan)
                                                         <br>Ucapan: {{ $item->teks_ucapan }}
                                                     @endif
                                                 </div>
-                                            </td>
-                                            <td class="item-price">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="2" class="meta-text">Belum ada detail item pada pesanan ini.</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+                                            </div>
+                                            <div class="item-price">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</div>
+                                        </div>
+                                    </article>
+                                @empty
+                                    <div class="item-card">
+                                        <div class="item-meta">Belum ada detail item pada pesanan ini.</div>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </section>
                     </section>
 
                     <aside class="stack">
-                        <div class="totals-card">
-                            <p class="card-title">Ringkasan pembayaran</p>
+                        <section class="totals-card">
+                            <p class="section-kicker">Ringkasan pembayaran</p>
                             <div class="total-row">
                                 <span>Subtotal</span>
                                 <strong>Rp {{ number_format($order->total_harga, 0, ',', '.') }}</strong>
@@ -576,7 +646,7 @@
 
                             @if (($order->diskon ?? 0) > 0)
                                 <div class="total-row discount">
-                                    <span>Diskon {{ $order->kode_promo_snapshot ? '('.$order->kode_promo_snapshot.')' : '' }}</span>
+                                    <span>Diskon {{ $order->kode_promo_snapshot ? '(' . $order->kode_promo_snapshot . ')' : '' }}</span>
                                     <strong>-Rp {{ number_format($order->diskon, 0, ',', '.') }}</strong>
                                 </div>
                             @endif
@@ -587,33 +657,33 @@
                             </div>
 
                             <div class="grand-total">
-                                <div>
-                                    <span class="label">Grand total</span>
-                                    <div class="value">Tagihan akhir pesanan</div>
+                                <div class="grand-copy">
+                                    <p class="mini-label">Grand total</p>
+                                    <div class="meta-value">Tagihan akhir pesanan</div>
                                 </div>
                                 <div class="amount">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</div>
                             </div>
-                        </div>
+                        </section>
 
-                        <div class="payment-card">
-                            <p class="card-title">Metode pembayaran</p>
+                        <section class="payment-card">
+                            <p class="section-kicker">Metode pembayaran</p>
                             <h3 class="payment-method">{{ $paymentLabel }}</h3>
                             <div class="payment-note">
                                 @if ($payment?->gateway_reference)
                                     Referensi pembayaran: {{ $payment->gateway_reference }}<br>
                                 @endif
-                                Invoice ini dapat digunakan sebagai ringkasan pesanan pelanggan dan bukti nominal tagihan yang telah diproses oleh Sadita.
+                                Invoice ini dapat digunakan sebagai ringkasan nominal tagihan dan konfirmasi pembayaran pelanggan Sadita.
                             </div>
-                        </div>
+                        </section>
                     </aside>
                 </div>
 
                 <footer class="footer">
                     <div class="footer-note">
-                        Simpan invoice ini untuk referensi pelacakan pesanan dan konfirmasi layanan. Jika ada revisi data pesanan, gunakan kode pesanan saat menghubungi admin Sadita.
+                        Simpan invoice ini untuk referensi pelacakan pesanan dan konfirmasi layanan. Jika ada perubahan data, gunakan kode pesanan saat menghubungi admin Sadita.
                     </div>
                     <div class="footer-brand">
-                        <strong style="color: var(--ink);">Sadita Decoration</strong><br>
+                        <strong>Sadita Decoration</strong><br>
                         Padang, Sumatera Barat<br>
                         {{ config('app.url') }}
                     </div>
@@ -621,11 +691,5 @@
             </div>
         </article>
     </div>
-
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => window.print(), 120);
-        });
-    </script>
 </body>
 </html>

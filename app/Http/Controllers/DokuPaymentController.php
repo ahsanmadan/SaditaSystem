@@ -49,7 +49,8 @@ class DokuPaymentController extends Controller
         ) {
             $this->sendCustomerTrackingEmail(
                 $pesanan->fresh(['pelanggan', 'pengiriman', 'detailItems', 'pembayaranTerakhir']),
-                $paymentMethods->firstWhere('code', $selectedMethod)['label'] ?? 'Pembayaran Online'
+                $paymentMethods->firstWhere('code', $selectedMethod)['label'] ?? 'Pembayaran Online',
+                true
             );
 
             return redirect()->away($existingPayment->checkout_url);
@@ -91,7 +92,8 @@ class DokuPaymentController extends Controller
         $payment->save();
         $this->sendCustomerTrackingEmail(
             $pesanan->fresh(['pelanggan', 'pengiriman', 'detailItems', 'pembayaranTerakhir']),
-            $paymentMethods->firstWhere('code', $selectedMethod)['label'] ?? 'Pembayaran Online'
+            $paymentMethods->firstWhere('code', $selectedMethod)['label'] ?? 'Pembayaran Online',
+            true
         );
 
         return redirect()->away($checkout['checkout_url']);

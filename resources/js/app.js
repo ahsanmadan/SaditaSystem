@@ -69,15 +69,8 @@ const initPreloader = () => {
         }, 500);
     };
 
-    window.addEventListener(
-        'load',
-        () => {
-            window.setTimeout(hidePreloader, 300);
-        },
-        { once: true }
-    );
-
-    window.setTimeout(hidePreloader, 3000);
+    window.addEventListener('load', hidePreloader, { once: true });
+    window.setTimeout(hidePreloader, 800);
 };
 
 const initNavbar = () => {
@@ -1156,11 +1149,8 @@ const initProductModal = () => {
 
     const closeProductModal = () => {
         modal.classList.add('opacity-0');
-        modalContent.classList.add('scale-95');
-
-        window.setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 180);
+        modalContent.classList.add('scale-[0.985]');
+        modal.classList.add('hidden');
     };
 
     const openProductModal = (title, price, image, description, tag = '', isDecor = false) => {
@@ -1210,7 +1200,7 @@ const initProductModal = () => {
 
         window.requestAnimationFrame(() => {
             modal.classList.remove('opacity-0');
-            modalContent.classList.remove('scale-95');
+            modalContent.classList.remove('scale-[0.985]');
         });
     };
 

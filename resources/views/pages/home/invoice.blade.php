@@ -23,12 +23,7 @@
                     </h1>
                 </div>
 
-                @if ($paymentPending)
-                    <a href="{{ route('order.edit', ['order_id' => $order->kode_pesanan]) }}"
-                        class="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#7A1F2B]/20 bg-white px-4 py-3 text-sm font-semibold text-[#7A1F2B] shadow-sm transition hover:border-[#7A1F2B]/40 hover:bg-[#FFF9F5]">
-                        Kembali ke pengisian data
-                    </a>
-                @else
+                @if ($paymentPaid)
                     <a href="{{ route('home') }}"
                         class="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#7A1F2B]/20 bg-white px-4 py-3 text-sm font-semibold text-[#7A1F2B] shadow-sm transition hover:border-[#7A1F2B]/40 hover:bg-[#FFF9F5]">
                         Kembali ke beranda
@@ -175,24 +170,6 @@
                         </div>
 
                         @if ($paymentPending)
-                            <form action="{{ route('order.apply-promo', ['order_id' => $order->kode_pesanan]) }}" method="POST"
-                                class="mt-5 rounded-2xl border border-[#7A1F2B]/10 bg-[#FCFAF8] p-4">
-                                @csrf
-                                <label class="block text-sm font-semibold text-[#2D1E1E]">Kode voucher / promo</label>
-                                <div class="mt-3 flex gap-3">
-                                    <input type="text" name="promo_code" value="{{ old('promo_code', $order->kode_promo_snapshot) }}"
-                                        class="min-w-0 flex-1 rounded-2xl border border-[#D9D3CE] bg-white px-4 py-3 text-sm uppercase tracking-[0.18em] text-[#2D1E1E] placeholder:text-[#A49A95] focus:border-[#7A1F2B] focus:outline-none focus:ring-4 focus:ring-[#7A1F2B]/10"
-                                        placeholder="SADITA10">
-                                    <button type="submit"
-                                        class="rounded-2xl bg-[#7A1F2B] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#5e1721]">
-                                        Pakai
-                                    </button>
-                                </div>
-                                @error('promo_code')
-                                    <div class="mt-2 text-sm font-semibold text-red-600">{{ $message }}</div>
-                                @enderror
-                            </form>
-
                             <form action="{{ route('doku.checkout', ['order_id' => $order->kode_pesanan]) }}" method="POST" class="mt-5 space-y-4">
                                 @csrf
                                 <input type="hidden" name="payment_method" value="ALL">
@@ -265,7 +242,7 @@
                                 </div>
 
                                 <div class="rounded-2xl bg-green-700 px-6 py-4 text-center text-sm font-bold tracking-wide text-white">
-                                    ✓ LUNAS
+                                    Status: Lunas
                                 </div>
 
                                 <a href="{{ route('invoice.download', ['order_id' => $order->kode_pesanan]) }}"
@@ -284,3 +261,4 @@
         </div>
     </div>
 @endsection
+

@@ -6,35 +6,35 @@
         [
             'label' => 'Semua Koleksi',
             'href' => route('catalog'),
-            'description' => 'Lihat seluruh pilihan Sadita dalam satu halaman.',
+            'description' => 'Semua produk publik Sadita dalam satu halaman.',
         ],
         [
             'label' => 'Papan Bunga',
             'href' => route('catalog', ['category' => 'papan-bunga']),
-            'description' => 'Standing board dan papan ucapan yang siap kirim.',
+            'description' => 'Standing board dan papan ucapan siap kirim.',
         ],
         [
             'label' => 'Hantaran',
             'href' => route('catalog', ['category' => 'hantaran']),
-            'description' => 'Box seserahan, gift set, dan paket hantaran premium.',
+            'description' => 'Gift set, seserahan, dan paket hantaran premium.',
         ],
         [
             'label' => 'Dekorasi',
             'href' => route('catalog', ['category' => 'dekorasi']),
-            'description' => 'Dekorasi acara yang bisa disesuaikan dengan kebutuhan.',
+            'description' => 'Dekorasi acara yang bisa disesuaikan cepat.',
         ],
     ];
     $catalogFeatureItems = [
         [
             'eyebrow' => 'Best Seller',
             'title' => 'Paling sering dipilih',
-            'copy' => 'Masuk ke halaman semua produk lalu lihat item yang paling sering selesai dipesan.',
+            'copy' => 'Lompat ke item yang paling sering selesai dipesan.',
             'href' => route('catalog') . '#catalog-best-sellers',
         ],
         [
             'eyebrow' => 'Custom Order',
             'title' => 'Mulai dari kebutuhan acara',
-            'copy' => 'Masuk ke kategori yang paling relevan lalu buka detail produknya sebelum pesan.',
+            'copy' => 'Pilih kategori yang paling relevan lalu lanjut ke detail.',
             'href' => route('catalog', ['category' => 'dekorasi']),
         ],
     ];
@@ -154,7 +154,7 @@
             <div class="mobile-catalog">
                 <button type="button" class="mobile-catalog-trigger" data-mobile-catalog-trigger
                     aria-expanded="{{ $isCatalogPage ? 'true' : 'false' }}" aria-controls="mobile-catalog-panel">
-                    <span class="uppercase">KATALOG</span>
+                    <span>Katalog</span>
                     <svg class="h-5 w-5 transition-transform duration-200" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 9l6 6 6-6" />

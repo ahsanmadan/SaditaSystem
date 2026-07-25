@@ -73,8 +73,14 @@
                                                 class="peer sr-only"
                                                 {{ (int) old('rating', 5) === $i ? 'checked' : '' }}
                                             >
-                                            <span class="flex min-h-[78px] flex-col items-center justify-center rounded-[1.1rem] border border-[#eadfd4] bg-[#fffdfa] px-3 py-4 text-center text-sm font-semibold text-[#6b4a43] shadow-[0_8px_20px_rgba(122,31,43,0.04)] transition duration-200 group-hover:-translate-y-0.5 group-hover:border-[#c89b70] group-hover:bg-[#fff7f0] group-hover:text-[#7A1F2B] peer-checked:border-[#7A1F2B] peer-checked:bg-[#7A1F2B] peer-checked:text-white peer-checked:shadow-[0_14px_28px_rgba(122,31,43,0.18)]">
-                                                <span class="text-lg leading-none tracking-[0.18em]">★</span>
+                                            <span class="flex min-h-[82px] flex-col items-center justify-center rounded-[1.1rem] border border-[#eadfd4] bg-[#fffdfa] px-3 py-4 text-center text-sm font-semibold text-[#6b4a43] shadow-[0_8px_20px_rgba(122,31,43,0.04)] transition duration-200 group-hover:-translate-y-0.5 group-hover:border-[#c89b70] group-hover:bg-[#fff7f0] group-hover:text-[#7A1F2B] peer-checked:border-[#7A1F2B] peer-checked:bg-[#7A1F2B] peer-checked:text-white peer-checked:shadow-[0_14px_28px_rgba(122,31,43,0.18)]">
+                                                <span class="flex items-center gap-1 text-[#D1A44F] transition-colors duration-200 peer-checked:text-white">
+                                                    @for ($star = 1; $star <= $i; $star++)
+                                                        <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                                                            <path d="M10 2.5l2.2 4.46 4.93.72-3.56 3.47.84 4.9L10 13.72 5.59 16.05l.84-4.9L2.87 7.68l4.93-.72L10 2.5Z" />
+                                                        </svg>
+                                                    @endfor
+                                                </span>
                                                 <span class="mt-2 text-xs uppercase tracking-[0.16em]">{{ $i }} bintang</span>
                                             </span>
                                         </label>

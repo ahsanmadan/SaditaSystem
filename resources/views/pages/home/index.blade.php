@@ -122,9 +122,7 @@
                 </div>
                 <div class="lg:pb-1">
                     <p class="max-w-2xl text-sm sm:text-base leading-relaxed text-[#6B5C57]">
-                        Layanan Sadita terbagi ke dalam tiga kategori utama: papan ucapan untuk kirim ucapan yang cepat
-                        dan tepat, hantaran untuk hadiah yang rapi dan berkesan, serta dekorasi untuk momen yang ingin
-                        dipersiapkan lebih personal.
+                        Tiga kategori inti Sadita: papan ucapan, hantaran, dan dekorasi.
                     </p>
                 </div>
             </div>

@@ -1938,6 +1938,134 @@ h3 {
     }
 }
 
+/* System cleanup: calmer surfaces, tighter rhythm, less template noise */
+:root {
+    --sadita-surface: #fffdfa;
+    --sadita-surface-soft: #faf5f0;
+    --sadita-border-soft: #eadfd4;
+    --sadita-text-main: #2d1e1e;
+    --sadita-text-muted: #6b5c57;
+    --sadita-shadow-soft: 0 14px 32px rgba(56, 35, 27, 0.06);
+    --sadita-shadow-card: 0 18px 42px rgba(56, 35, 27, 0.08);
+}
+
+.product-card {
+    box-shadow: 0 10px 28px rgba(56, 35, 27, 0.04);
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 34px rgba(56, 35, 27, 0.08);
+}
+
+.product-card-button {
+    box-shadow: none;
+}
+
+.product-card-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(122, 31, 43, 0.14);
+}
+
+.page-home .product-scroll-container .product-card img,
+.page-catalog .product-card img {
+    transition-duration: 0.45s;
+}
+
+.page-home .product-scroll-container .product-card:hover img,
+.page-catalog .product-card:hover img {
+    transform: scale(1.018);
+}
+
+.page-home .product-card-cta {
+    background: linear-gradient(180deg, #7a1f2b 0%, #691a25 100%);
+}
+
+.page-home .product-card-cta:hover {
+    transform: translateY(-4px);
+}
+
+.page-catalog [data-catalog-root] {
+    gap: 1rem;
+}
+
+.page-catalog #catalog-best-sellers h2,
+.page-catalog [data-catalog-section] h2,
+.page-home .product-card h4,
+.page-catalog .product-card h3 {
+    text-wrap: balance;
+}
+
+.page-order section,
+.page-invoice section,
+.page-review .rounded-\[2rem\] {
+    box-shadow: var(--sadita-shadow-soft);
+}
+
+.page-invoice .rounded-\[28px\],
+.page-invoice .rounded-\[30px\],
+.page-order .rounded-\[28px\],
+.page-order .rounded-\[30px\] {
+    border-radius: 1.6rem;
+}
+
+.page-catalog .chatbot-toggle-btn,
+.page-order .chatbot-toggle-btn,
+.page-review .chatbot-toggle-btn {
+    width: 3.35rem;
+    height: 3.35rem;
+    box-shadow: 0 14px 28px rgba(57, 10, 18, 0.24);
+}
+
+.admin-shell {
+    background:
+        radial-gradient(circle at top, rgba(232, 200, 122, 0.08), transparent 42%),
+        linear-gradient(180deg, #f6f1ec 0%, #f2ece7 100%);
+}
+
+.admin-shell .admin-module-stage {
+    gap: 1.25rem;
+}
+
+.admin-shell h1,
+.admin-shell h2,
+.admin-shell h3 {
+    letter-spacing: -0.035em;
+}
+
+.admin-shell .shadow-\[0_18px_42px_rgba\(56\,35\,27\,0\.06\)\],
+.admin-shell .shadow-\[0_14px_32px_rgba\(56\,35\,27\,0\.05\)\],
+.admin-shell .shadow-\[0_14px_28px_rgba\(56\,35\,27\,0\.05\)\],
+.admin-shell .shadow-\[0_12px_24px_rgba\(56\,35\,27\,0\.05\)\] {
+    box-shadow: 0 10px 24px rgba(56, 35, 27, 0.05);
+}
+
+.admin-shell .rounded-\[28px\],
+.admin-shell .rounded-\[26px\] {
+    border-radius: 1.35rem;
+}
+
+.admin-shell table tr {
+    transition: background-color 0.18s ease;
+}
+
+.admin-shell table tr:hover {
+    background: rgba(255, 255, 255, 0.56);
+}
+
+@media (max-width: 640px) {
+    .page-catalog .chatbot-toggle-btn,
+    .page-home .chatbot-toggle-btn {
+        right: 0.9rem;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 0.85rem);
+    }
+
+    .page-catalog #catalog-best-sellers h2,
+    .page-catalog [data-catalog-section] h2 {
+        max-width: 11ch;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .preloader-spinner {
         animation: none;

@@ -55,6 +55,8 @@ class PublicOrderFlowTest extends TestCase
             'product_name' => $produk->nama,
             'price' => 'Rp 250.000',
             'jenis' => 'Sewa',
+            'pickup_date' => '2026-07-02',
+            'pickup_time' => '13:00',
         ]);
 
         $pesanan = Pesanan::query()->with(['detailItems', 'pengiriman', 'pelanggan'])->first();
@@ -128,6 +130,8 @@ class PublicOrderFlowTest extends TestCase
             'product_name' => $produk->nama,
             'price' => 'Rp 250.000',
             'jenis' => 'Sewa',
+            'pickup_date' => '2026-07-02',
+            'pickup_time' => '13:00',
         ])->assertRedirect();
 
         $existingPelanggan->refresh();
@@ -196,6 +200,8 @@ class PublicOrderFlowTest extends TestCase
             'product_name' => $produk->nama,
             'price' => 'Rp 250.000',
             'jenis' => 'Sewa',
+            'pickup_date' => '2026-07-02',
+            'pickup_time' => '13:00',
         ])->assertRedirect(route('invoice.show', ['order_id' => $pesanan->kode_pesanan]));
 
         $pesanan->refresh();

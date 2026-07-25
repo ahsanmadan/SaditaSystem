@@ -6,14 +6,13 @@
             class="mx-auto flex max-w-7xl flex-col gap-5 px-4 sm:px-6 lg:px-8">
             <div class="grid gap-3 sm:gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-end">
                 <div class="max-w-3xl">
-                    <div class="hidden text-[11px] font-semibold uppercase tracking-[0.22em] text-[#7A1F2B] sm:block">Lihat Semua</div>
                     <h1 class="mt-1 sm:mt-3 text-[2rem] font-semibold leading-[1.02] text-[#2D1E1E] sm:text-5xl"
                         style="font-family:'Playfair Display',serif; text-wrap:balance;">
                         Semua koleksi Sadita.
                     </h1>
                 </div>
                 <p class="hidden max-w-md text-sm leading-relaxed text-[#6B5C57] sm:block sm:text-base">
-                    Pilih kategori, lalu lihat produk yang paling sesuai.
+                    Pilih kategori, lalu lihat produk yang sesuai.
                 </p>
             </div>
 
@@ -44,7 +43,7 @@
                                 Best Seller
                             </div>
                             <h2 class="mt-1.5 text-[1.7rem] font-bold leading-tight text-[#2D1E1E] sm:mt-2 sm:text-3xl">
-                                Produk paling sering selesai dipesan.
+                                Produk terlaris Sadita.
                             </h2>
                         </div>
                     </div>
@@ -71,7 +70,7 @@
                                 {{ $kategori->nama }}
                             </h2>
                             <p class="mt-2 text-sm leading-relaxed text-[#6B5C57] sm:mt-3 sm:text-base">
-                                {{ $kategori->deskripsi ?: 'Pilihan produk yang bisa langsung Anda cek sebelum memesan.' }}
+                                {{ $kategori->deskripsi ?: 'Pilihan produk siap pesan.' }}
                             </p>
                         </div>
                     </div>

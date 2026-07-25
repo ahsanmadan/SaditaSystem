@@ -452,6 +452,11 @@ class OrderController extends Controller
         $pengembalian = $order?->pengembalian;
 
         $productName = $request->query('product', $detailItem?->nama_produk_snapshot ?? 'Sadita Exclusive Product');
+
+        if (! $produk && $productName !== '') {
+            $produk = Produk::where('nama', $productName)->first();
+        }
+
         $priceNumeric = $detailItem?->harga_satuan_snapshot ?? (int) preg_replace('/[^0-9]/', '', (string) $request->query('price', '0'));
         $referenceMeta = $this->decodeReferenceMeta($detailItem?->referensi_desain);
         $serviceType = $this->normalizeServiceType(

@@ -33,18 +33,8 @@
     <link rel="dns-prefetch" href="https://api.groq.com">
 </head>
 
-<body class="w-full bg-[#FFFDFB] text-gray-900 overflow-x-hidden">
-    {{-- Preloader --}}
-    <div id="preloader"
-        class="fixed inset-0 z-[100] flex items-center justify-center bg-[#FFFDFB] transition-opacity duration-500">
-        <div class="preloader-orb"></div>
-        <div class="preloader-panel">
-            <div class="preloader-brand">Sadita</div>
-            <div class="preloader-spinner-wrap">
-                <div class="preloader-spinner"></div>
-            </div>
-        </div>
-    </div>
+<body
+    class="w-full overflow-x-hidden bg-[#FFFDFB] text-gray-900 {{ request()->routeIs('home') ? 'page-home' : '' }} {{ request()->routeIs('catalog') ? 'page-catalog' : '' }} {{ request()->routeIs('order') || request()->routeIs('order.edit') ? 'page-order' : '' }} {{ request()->routeIs('invoice.*') ? 'page-invoice' : '' }} {{ request()->routeIs('tracking.page') ? 'page-tracking' : '' }} {{ request()->routeIs('review.*') ? 'page-review' : '' }} {{ request()->is('admin*') ? 'page-admin' : '' }}">
 
     @include('components.navbar')
 
@@ -54,9 +44,6 @@
 
     @include('components.footer')
     @include('components.chatbot')
-<!-- impeccable-live-start -->
-<script src="http://localhost:8400/live.js"></script>
-<!-- impeccable-live-end -->
 </body>
 
 </html>
