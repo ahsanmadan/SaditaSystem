@@ -1,0 +1,53 @@
+*.log
+.DS_Store
+
+# Environment dan secret lokal
+.env
+.env.backup
+.env.production
+.env.*
+!.env.example
+.phpactor.json
+.phpunit.result.cache
+
+# Asset internal / lokal
+ERD_*.png
+/.cursor/
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/debugbar
+/storage/framework/views/*.php
+/storage/framework/views/*.tmp
+/storage/pail
+/tmp
+/vendor
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+Thumbs.db
+/public/robots.txt
+
+# Skill dan konfigurasi agent lokal
+/skills
+/skills-lock.json
+/skill-lock.json
+/scratch
+/.agents
+/.codex
+
+# Dokumen internal lokal
+/docs
+!/docs/
+/docs/*
+!/docs/pic/
+/docs/pic/*
+!/docs/pic/homepage-public.png

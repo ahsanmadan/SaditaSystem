@@ -1,271 +1,195 @@
-<div align="center">
+# SaditaSystem
 
-# 🌸 SaditaSystem
+SaditaSystem adalah sistem informasi manajemen bisnis untuk **Sadita Decoration** yang difokuskan pada layanan **papan ucapan**, **hantaran**, dan **dekorasi**. Project ini dibangun untuk mendukung alur bisnis:
 
-### Sistem Informasi E-Commerce & Manajemen Dekorasi Berbasis Web
+`request order -> review admin -> finalisasi harga -> pembayaran -> proses -> selesai`
 
-[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
-[![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
-[![Groq API](https://img.shields.io/badge/Groq_API-LLM_Chatbot-F55036?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![SDGs](https://img.shields.io/badge/SDGs-Poin_8-E5243B?style=for-the-badge)](https://sdgs.un.org/goals/goal8)
+Project ini menggunakan Laravel untuk backend, Filament untuk admin panel, serta Vite + Tailwind CSS untuk frontend publik.
 
-<br/>
+## Tim Pengembang
 
-> **Mitra UMKM:** Sadita Decoration — Padang, Sumatera Barat 🏝️  
-> Platform digital terpadu untuk mengelola pemesanan, inventaris, dan layanan ketiga unit bisnis Sadita dalam satu dashboard.
+- `Bagatio Putra Joandri` - `2411081005` - Project Manager & AI Specialist
+- `Ahsan Ramadan` - `2411081002` - Lead Programmer
+- `Jeli Mayora` - `2411081012` - System Analyst
+- `Aprilla Maulida` - `211083002` - Quality Assurance
 
-<br/>
+## Ruang Lingkup Project
 
-![-----](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+- public website untuk landing page dan form pemesanan tanpa login
+- admin panel untuk operasional internal
+- pengelolaan kategori, produk, pelanggan, pesanan, dan pembayaran
+- alur pembayaran yang saat ini terintegrasi dengan DOKU
+- tracking pesanan yang dikembangkan bertahap
 
-</div>
+Catatan penting:
 
-## 📌 Tentang Proyek
+- project ini **tidak** ditujukan untuk florist / buket bunga
+- pelanggan **tidak diwajibkan login**
+- database utama local development dan production adalah **MySQL / MariaDB**
 
-**SaditaSystem** adalah aplikasi web yang dikembangkan sebagai solusi digitalisasi bagi UMKM **Sadita Decoration**, sebuah usaha jasa sewa dekorasi dan pernikahan yang berlokasi di Kota Padang, Sumatera Barat. Proyek ini merupakan bagian dari mata kuliah **Pemrograman Web Framework** dan terintegrasi lintas 7 mata kuliah sebagai Proyek Berbasis Pembelajaran (PBL).
+## Stack Utama
 
-Saat ini Sadita Decoration masih mengelola pemesanan secara manual melalui WhatsApp dan Instagram, yang rawan terjadi *double booking*, kehilangan data pesanan, dan kesulitan memantau stok. SaditaSystem hadir untuk menjawab tantangan tersebut.
+- PHP `^8.3`
+- Laravel `^13.0`
+- Filament `^5.6`
+- MySQL / MariaDB
+- Vite `^8.0.0`
+- Tailwind CSS `^4.0.0`
 
-**Tema SDGs:** Poin 8 — *Decent Work and Economic Growth* (Target 8.3 & 8.10)
+## Fitur Inti
 
----
+### Public Website
 
-## 🏢 Unit Bisnis Mitra
+- landing page Sadita Decoration
+- katalog layanan berdasarkan kategori
+- form pemesanan tanpa login
+- halaman invoice pesanan
+- pelacakan pesanan berbasis kode order
 
-| Unit | Instagram | Layanan |
-|------|-----------|---------|
-| Sadita Decor | [@sadita.decor](https://instagram.com/sadita.decor) | Birthday · Engagement · Grand Opening · Aqiqah |
-| Sadita Hantaran | [@sadita.hantaran](https://instagram.com/sadita.hantaran) | Seserahan · Mahar · Ring Box · Hampers · Souvenir |
-| Sadita Florist | [@sadita.florist](https://instagram.com/sadita.florist) | Floral Arrangement · Bouquet · Event Floristry |
+### Admin Panel
 
----
+- login admin
+- dashboard operasional
+- kelola kategori
+- kelola produk
+- kelola pelanggan
+- kelola pesanan
+- kelola pembayaran
+- kelola ulasan
 
-## ✨ Fitur Utama
+## Struktur Folder Singkat
 
-### 🌐 Base Web (Lead Programmer)
-- **Autentikasi** — Registrasi & login pelanggan dan admin
-- **Katalog Produk** — Tampilan produk & paket dari ketiga unit bisnis
-- **Sistem Booking Online** — Form pemesanan dengan kalender ketersediaan real-time
-- **Dashboard Admin** — Manajemen pesanan, stok inventaris, dan data pelanggan
-- **Laporan Keuangan** — Rekap pemasukan, DP, pelunasan per bulan
-- **Notifikasi** — Status pesanan via WhatsApp API & Email
+```text
+SaditaSystem/
+|-- app/
+|   |-- Filament/
+|   |-- Http/Controllers/
+|   |-- Models/
+|   |-- Observers/
+|   `-- Services/
+|-- database/
+|   |-- migrations/
+|   `-- seeders/
+|-- docs/
+|   |-- md/
+|   `-- pic/
+|-- public/
+|-- resources/
+|-- routes/
+|-- tests/
+|-- .github/workflows/
+|-- composer.json
+|-- package.json
+`-- nixpacks.toml
+```
 
-### 🤖 Fitur AI (AI Specialist)
-- **Rekomendasi Paket** — Content-Based Filtering berdasarkan preferensi & budget pelanggan
-- **Chatbot LLM** — Chatbot berbasis Groq API (Llama/Mixtral) untuk FAQ & panduan booking
-- **Prediksi Jadwal Sibuk** — Analisis historis pemesanan untuk antisipasi stok
+## Cara Menjalankan Singkat
 
-### 🧪 Quality Assurance
-- Black Box Testing seluruh modul
-- Pengujian performa simulasi 50+ pengguna
-- User Acceptance Testing (UAT) bersama mitra Sadita
-- Dokumentasi bug setiap milestone
-
----
-
-## 🛠️ Tech Stack
-
-| Kategori | Teknologi |
-|----------|-----------|
-| Backend | Laravel 12 (PHP 8.2+) |
-| Frontend | Blade Templates + JavaScript |
-| Database | MySQL |
-| AI / LLM | Groq API (Llama 3 / Mixtral) |
-| Notifikasi | WhatsApp API (Fonnte) + SMTP Email |
-| Version Control | Git + GitHub |
-| Project Management | Trello (Kanban) |
-| Hosting | VPS / Shared Hosting |
-
----
-
-## 🚀 Cara Setup Lokal
-
-### Prasyarat
-- PHP >= 8.2
-- Composer
-- MySQL
-- Node.js & NPM
-- Git
-
-### Instalasi
+### Opsi cepat
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/[username]/saditasystem.git
-cd saditasystem
+composer run setup
+composer run dev
+```
 
-# 2. Install dependencies PHP
+### Opsi manual
+
+```bash
 composer install
-
-# 3. Install dependencies Node.js
 npm install
-
-# 4. Salin file environment
-cp .env.example .env
-
-# 5. Generate application key
+copy .env.example .env
 php artisan key:generate
-
-# 6. Konfigurasi .env (database, mail, Groq API key, dll)
-# Edit file .env sesuai konfigurasi lokal
-
-# 7. Jalankan migrasi database
-php artisan migrate --seed
-
-# 8. Build assets frontend
-npm run dev
-
-# 9. Jalankan server lokal
+php artisan migrate
 php artisan serve
+npm run dev
 ```
 
-Aplikasi akan berjalan di `http://localhost:8000`
+Untuk panduan instalasi yang lebih lengkap, lihat:
 
----
+- [installation doc](./docs/md/installation-doc.md)
 
-## ⚙️ Konfigurasi Environment
+## Verifikasi Lokal Cepat
 
-Salin `.env.example` ke `.env` dan isi variabel berikut:
+Untuk mengecek kesehatan admin panel custom, auth, cache, dan smoke test dengan satu command di Windows:
 
-```env
-APP_NAME=SaditaSystem
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=saditasystem
-DB_USERNAME=root
-DB_PASSWORD=
-
-# Groq API (AI Chatbot & Rekomendasi)
-GROQ_API_KEY=your_groq_api_key_here
-GROQ_MODEL=llama3-8b-8192
-
-# WhatsApp API (Fonnte)
-FONNTE_TOKEN=your_fonnte_token_here
-
-# Mail
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=your_email@gmail.com
-MAIL_PASSWORD=your_app_password
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\verify-local.ps1
 ```
 
-> ⚠️ **Jangan pernah commit file `.env` ke repository!** Pastikan sudah masuk di `.gitignore`.
+Kalau Anda hanya ingin cek PHP/Laravel tanpa E2E Playwright:
 
----
-
-## 🌿 Git Workflow
-
-Kami menggunakan **Git Flow** dengan struktur branch sebagai berikut:
-
-```
-main          ← Production (stabil, dipakai saat demo milestone)
-│
-└── develop   ← Staging (integrasi semua fitur)
-    │
-    ├── feature/[nama-fitur]   ← Fitur baru
-    ├── fix/[nama-bug]         ← Perbaikan bug
-    ├── test/[nama-pengujian]  ← Testing & QA
-    └── docs/[nama-dokumen]    ← Dokumentasi
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\verify-local.ps1 -SkipE2E
 ```
 
-### Alur Kontribusi
+Catatan:
 
-```bash
-# 1. Ambil update terbaru dari develop
-git checkout develop
-git pull origin develop
+- script akan membersihkan cache config/view lalu menjalankan test `AuthFlow`, `AdminRoleAccess`, `AdminUserManagementFlow`, dan `AdminPanelSmoke`
+- bila `node_modules` belum tersedia, bagian Playwright otomatis dilewati
+- untuk skenario hapus user owner-only, set env `E2E_DELETE_USER_ID` lebih dulu; jika tidak, test itu akan otomatis `skip`
 
-# 2. Buat branch baru sesuai fitur
-git checkout -b feature/nama-fitur
+## Akun Demo Admin
 
-# 3. Kerjakan fitur, lalu commit
-git add .
-git commit -m "feat: deskripsi singkat perubahan"
+Seeder default membuat akun admin demo:
 
-# 4. Push ke GitHub
-git push origin feature/nama-fitur
+- username / email: `admin`
+- password: `admin`
 
-# 5. Buat Pull Request → develop
-#    Assign ke Lead Programmer untuk review
-```
+## Dokumentasi Pendukung
 
-### Format Commit Message
+- [installation doc](./docs/md/installation-doc.md)
+- [feature doc](./docs/md/feature-doc.md)
+- [changelog](./docs/md/changelog.md)
+- [dependency doc](./docs/md/dependency-doc.md)
+- [refactoring doc](./docs/md/refactoring-doc.md)
+- [github action doc](./docs/md/github-action-doc.md)
+- [performance doc](./docs/md/performance-doc.md)
 
-```
-feat:     fitur baru
-fix:      perbaikan bug
-refactor: perubahan struktur kode
-test:     penambahan/perbaikan test
-docs:     perubahan dokumentasi
-style:    perubahan formatting (tanpa mengubah logika)
-chore:    update dependency, konfigurasi
-```
+## Tampilan Awal Web
 
-### Aturan Penting
-- ❌ **Dilarang** push langsung ke `main`
-- ✅ Semua perubahan harus melalui **Pull Request**
-- ✅ Minimal **1 reviewer** (Lead Programmer) sebelum merge ke `develop`
-- ✅ Minimal **2 commit per minggu** pada fase aktif pengembangan
-- ✅ Hapus branch fitur setelah berhasil di-merge
+![homepage public](./docs/pic/homepage-public.png)
 
----
 
-## 📋 Backlog & Manajemen Proyek
+## Technical Summary
 
-Semua tugas dan progres sprint dikelola di **Trello Board**:  
-🔗 [PBL2026B_SaditaSystem — Trello](https://trello.com)
+SaditaSystem telah melalui rangkaian finalisasi yang mencakup penguatan keamanan, optimasi performa, perapihan arsitektur admin, modernisasi quality assurance, dan penyempurnaan pengalaman pengguna pada panel admin custom `/admin-lite`.
 
-Konvensi penamaan card:
-```
-[KODE_MATKUL]-[NO] Nama Aktivitas
-Contoh: PWF-04: Sistem Booking Online & Kalender Ketersediaan
-```
+### 1. Penguatan Keamanan
 
----
+Pada tahap audit keamanan, isu F-01 dan F-03 difokuskan pada kontrol akses dan validasi autentikasi admin. Solusi yang diterapkan adalah pembuatan middleware `CheckRole` untuk memastikan hanya role yang berhak yang dapat mengakses grup route admin. Middleware ini kemudian dipasang pada route admin di `routes/web.php`, sehingga akses ke panel tidak lagi hanya bergantung pada login, tetapi juga pada otorisasi role yang eksplisit.
 
-## 📅 Milestone
+Di sisi autentikasi, `AuthController` diperketat agar login admin tidak hanya memeriksa kredensial, tetapi juga memvalidasi status `is_admin`. Dengan perubahan ini, user biasa yang valid di database tetap tidak dapat masuk ke area administrasi apabila tidak memiliki hak admin. Langkah ini menutup celah akses horizontal yang sebelumnya berpotensi muncul.
 
-| Milestone | Deadline | Target |
-|-----------|----------|--------|
-| M1 — Inisiasi | Minggu 4 | Project Charter, WBS, SRS, Wawancara Mitra |
-| M2 — UTS | Minggu 8 | Prototype AI, Wireframe UI, ERD, Demo Chatbot |
-| M3 — Beta | Minggu 13 | Beta live on hosting, UAT, Fitur AI terintegrasi |
-| M4 — UAS | Minggu 16 | Demo Day, Laporan Akhir, Source Code Final |
+### 2. Optimasi Performa Dashboard dan Modul Admin
 
----
+Audit performa mengidentifikasi beban berat pada proses penyusunan snapshot dashboard, terutama karena banyaknya query agregat yang dipanggil secara terpisah. Refactor pada `AdminController@buildAdminSnapshot` dilakukan dengan pendekatan agregasi yang lebih efisien dan caching per modul. Hasilnya, perhitungan statistik tidak lagi membebani setiap request secara penuh, dan proses rendering dashboard menjadi jauh lebih ringan serta lebih siap untuk skala data yang lebih besar.
 
-## 👥 Tim Pengembang
+Selain itu, payload analytics kini dipisahkan dari halaman manajemen data. Halaman `manage` tidak lagi membawa data grafik atau analitik yang sebenarnya hanya relevan untuk dashboard overview. Pemisahan ini menurunkan beban request, mengurangi kompleksitas view, dan membuat halaman tabel lebih fokus pada tugas operasional.
 
-**Kelompok 5 — PBL 2026B**
+Pada area form, `buildFormOptions` juga dioptimalkan agar tidak memuat seluruh data relasi sekaligus. Dropdown seperti kategori, produk, pelanggan, dan pesanan kini disiapkan dengan pendekatan limit atau lazy option set, sehingga halaman Tambah/Edit tetap responsif walaupun jumlah data master bertambah besar.
 
-| Nama | NIM | Peran |
-|------|-----|-------|
-| Bagastio Putra Joandri | 2411081005 | Project Manager |
-| Ahsan Ramadan | 2411081002 | System Analyst & Lead Programmer |
-| Jeli Mayora | 2411081012 | AI Specialist |
-| Aprila Maulida | 2411083002 | Quality Assurance |
+### 3. Konsistensi Cache dan Akurasi Data
 
-**Dosen Pengampu:**
-- Rayendra, S.T., M.Kom. — Pemrograman Web Framework
-- Eko Purnomo, S.Ds, M.Sn. — Komunikasi Bisnis
-- *(dan dosen mata kuliah lainnya)*
+Agar data dashboard tetap akurat setelah mutasi, mekanisme `flushAdminCaches()` telah dipastikan dipanggil pada operasi yang mengubah data seperti `store`, `update`, dan `delete`. Dengan pola ini, cache tetap memberi keuntungan performa tanpa menimbulkan risiko data snapshot yang stale atau tidak sinkron dengan kondisi database terbaru.
 
----
+### 4. Penyelarasan UI/UX Admin
 
-## 📄 Lisensi
+Dari sisi UX, tampilan admin difokuskan agar lebih mencerminkan karakter produk Sadita dan menghindari pola antarmuka yang terasa generik atau “AI-like”. Struktur nested card yang berlebihan dikurangi, hierarki visual diperjelas, dan halaman manage disusun agar metrik utama muncul di atas sementara tabel kerja berada tepat di bawahnya.
 
-Proyek ini dikembangkan untuk keperluan akademik.  
-© 2025 Sadita System — Kelompok 5, Universitas Bung Hatta / [nama universitas]
+Identitas visual “SaditaSystem” juga disesuaikan agar lebih simetris dan selaras dengan gaya tipografi Sadita. Navigasi antar modul dirapikan, link “Back” dan “Batal” diarahkan konsisten ke route custom `/admin-lite`, dan transisi halus ditambahkan agar perpindahan halaman terasa lebih premium dan app-like tanpa mengganggu performa.
 
----
+Pada tahap final, form Tambah/Edit juga ditingkatkan dari sisi interaksi. Tombol submit kini menampilkan state `Loading...` saat diproses untuk mencegah klik berulang. Selain itu, pesan validasi Laravel kini tampil konsisten di setiap field yang bermasalah, sehingga feedback error lebih jelas, lebih dekat ke sumber masalah, dan lebih mudah dipahami user admin.
 
-<div align="center">
+### 5. Modernisasi QA dan Test Alignment
 
-*"Digitalisasi UMKM, Satu Langkah untuk Pertumbuhan Ekonomi Lokal"* 🌱
+Lapisan QA diperbarui agar sesuai dengan arsitektur terbaru. Konfigurasi dasar Pest dan Playwright telah disiapkan untuk skenario inti seperti login admin dan penghapusan user yang hanya boleh dilakukan owner. Test legacy yang masih mereferensikan class Filament lama juga telah direfactor agar menguji route custom `/admin-lite`, bukan resource lama yang sudah tidak menjadi entry point utama.
 
-</div>
+Untuk mendukung verifikasi lokal yang praktis, sistem juga dilengkapi alur pengecekan yang lebih siap dipakai saat development offline, termasuk dokumentasi command verifikasi agar kesehatan aplikasi dapat dicek dengan alur yang konsisten.
+
+### 6. Hasil Akhir
+
+Secara keseluruhan, hasil refactor ini menyelesaikan rangkaian isu audit dari aspek keamanan, performa, QA, dan UX. Panel admin SaditaSystem kini memiliki kontrol akses yang lebih aman, beban request yang lebih ringan, cache yang lebih disiplin, form yang lebih nyaman digunakan, serta pengalaman visual yang lebih konsisten dengan identitas produk Sadita. Dengan kondisi ini, dashboard admin berada pada tahap yang jauh lebih siap untuk demonstrasi, evaluasi dosen, maupun pengembangan lanjutan berikutnya.
+
+## Lisensi
+
+Project ini menggunakan lisensi `MIT`.

@@ -1,0 +1,2444 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\ActivityLog;
+use App\Models\GambarProduk;
+use App\Models\Kategori;
+use App\Models\KodePromo;
+use App\Models\Pelanggan;
+use App\Models\PengembalianPesanan;
+use App\Models\Pembayaran;
+use App\Models\Pesanan;
+use App\Models\Produk;
+use App\Models\Ulasan;
+use App\Models\User;
+use App\Services\ActivityLogger;
+use App\Services\Analytics\DashboardPayloadService;
+use App\Support\DashboardCache;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Throwable;
+
+class AdminController extends Controller
+{
+    public function index(
+        Request $request,
+        DashboardPayloadService $dashboardPayloadService,
+        ?string $focus = null,
+        ?string $mode = null
+    ) {
+        return $this->renderPage($request, $dashboardPayloadService, $focus, $mode);
+    }
+
+    public function edit(
+        Request $request,
+        DashboardPayloadService $dashboardPayloadService,
+        string $focus,
+        int $record
+    ) {
+        return $this->renderPage(
+            $request,
+            $dashboardPayloadService,
+            $focus,
+            'edit',
+            $this->findRecord($focus, $record)
+        );
+    }
+
+    public function globalSearch(Request $request)
+    {
+        $validated = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $search = trim((string) ($validated['q'] ?? ''));
+        $payload = $this->buildGlobalSearchPayload($search);
+
+        return response()->json([
+            'query' => $payload['query'],
+            'groups' => $payload['groups']
+                ->filter(fn (array $group) => ! empty($group['items']))
+                ->map(fn (array $group) => [
+                    'key' => $group['key'],
+                    'label' => $group['label'],
+                    'items' => $group['items'],
+                ])
+                ->values()
+                ->all(),
+            'total' => $payload['total'],
+        ]);
+    }
+
+    public function advanceOrderStatus(Request $request, Pesanan $pesanan)
+    {
+        $validated = $request->validate([
+            'action' => ['required', Rule::in(['advance', 'pickup_ok', 'pickup_damaged', 'damage_paid'])],
+        ]);
+
+        $pesanan->loadMissing([
+            'detailItems.produk:id,is_sewa',
+            'pengembalian',
+        ]);
+
+        $this->syncRentalPickupWindow($pesanan);
+
+        $message = DB::transaction(function () use ($pesanan, $validated): string {
+            return $this->handleQuickOrderAction($pesanan, $validated['action']);
+        });
+
+        return back()->with('admin_status', $message);
+    }
+
+    public function showSearchResults(Request $request)
+    {
+        $validated = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $search = trim((string) ($validated['q'] ?? ''));
+        $payload = $this->buildGlobalSearchPayload($search, 8);
+        $user = $request->user();
+
+        return view('admin.search', [
+            'query' => $search,
+            'groups' => $payload['groups'],
+            'total' => $payload['total'],
+            'user' => $user,
+        ]);
+    }
+
+    private function canAccessAdminPanel(?User $user): bool
+    {
+        return $user?->isActive() && $user?->is_admin && in_array($user?->role, [User::ROLE_OWNER, User::ROLE_ADMIN, User::ROLE_STAFF], true);
+    }
+
+    private function canManageAdminData(?User $user): bool
+    {
+        return $user?->isOwner() || $user?->isAdmin();
+    }
+
+    private function allowedFocusesFor(?User $user): array
+    {
+        if ($user?->isStaff()) {
+            return ['dashboard', 'pesanan', 'pembayaran'];
+        }
+
+        return ['dashboard', 'kategori', 'produk', 'promo', 'pelanggan', 'ulasan', 'pesanan', 'pembayaran', 'aktivitas', 'users'];
+    }
+
+    private function assertFocusAccess(string $focus, ?User $user): void
+    {
+        abort_unless($this->canAccessAdminPanel($user), 403);
+        abort_unless(in_array($focus, $this->allowedFocusesFor($user), true), 403);
+    }
+
+    private function assertMutationAccess(Request $request, string $focus): void
+    {
+        abort_unless($this->canManageAdminData($request->user()), 403);
+
+        if ($focus === 'users') {
+            abort_unless($request->user()?->isOwner(), 403);
+        }
+    }
+
+    public function update(Request $request, string $focus, int $record)
+    {
+        $this->assertMutationAccess($request, $focus);
+
+        $user = $request->user();
+        $recordModel = $this->findRecord($focus, $record);
+        $beforeSnapshot = $this->snapshotRecordForLog($recordModel);
+
+        match ($focus) {
+            'kategori' => $recordModel->update($request->validate([
+                'nama' => ['required', 'string', 'max:100'],
+                'slug' => ['required', 'string', 'max:100', Rule::unique('kategori', 'slug')->ignore($recordModel->id)],
+                'deskripsi' => ['nullable', 'string'],
+                'is_aktif' => ['nullable', 'boolean'],
+            ]) + [
+                'is_aktif' => $request->boolean('is_aktif'),
+            ]),
+
+            'produk' => $this->updateProduct($request, $recordModel),
+
+            'promo' => $recordModel->update($request->validate([
+                'kode' => ['required', 'string', 'max:20', Rule::unique('kode_promo', 'kode')->ignore($recordModel->id)],
+                'tipe_diskon' => ['required', Rule::in(['persentase', 'nominal'])],
+                'nilai_diskon' => ['required', 'integer', 'min:0'],
+                'minimum_order' => ['nullable', 'integer', 'min:0'],
+                'kuota' => ['nullable', 'integer', 'min:1'],
+                'tanggal_mulai' => ['nullable', 'date'],
+                'tanggal_berakhir' => ['nullable', 'date', 'after_or_equal:tanggal_mulai'],
+                'deskripsi' => ['nullable', 'string'],
+                'is_aktif' => ['nullable', 'boolean'],
+            ]) + [
+                'minimum_order' => (int) $request->input('minimum_order', 0),
+                'is_aktif' => $request->boolean('is_aktif'),
+            ]),
+
+            'pelanggan' => $recordModel->update($request->validate([
+                'nama_lengkap' => ['required', 'string', 'max:150'],
+                'no_hp' => ['required', 'string', 'max:20', Rule::unique('pelanggan', 'no_hp')->ignore($recordModel->id)],
+                'email' => ['nullable', 'email', 'max:100'],
+            ])),
+
+            'ulasan' => $recordModel->update($request->validate([
+                'pesanan_id' => ['required', 'exists:pesanan,id'],
+                'produk_id' => [
+                    'required',
+                    'exists:produk,id',
+                    Rule::unique('ulasan')->ignore($recordModel->id)->where(fn ($query) => $query
+                        ->where('pesanan_id', $request->input('pesanan_id'))
+                        ->where('produk_id', $request->input('produk_id'))),
+                ],
+                'nama_pengulas' => ['required', 'string', 'max:255'],
+                'rating' => ['required', 'integer', 'min:1', 'max:5'],
+                'komentar' => ['nullable', 'string'],
+                'foto_ulasan' => ['nullable', 'string', 'max:255'],
+                'is_tampil' => ['nullable', 'boolean'],
+            ]) + [
+                'is_tampil' => $request->boolean('is_tampil'),
+            ]),
+
+            'pesanan' => $recordModel->update($request->validate([
+                'pelanggan_id' => ['required', 'exists:pelanggan,id'],
+                'kode_promo_id' => ['nullable', 'exists:kode_promo,id'],
+                'kode_pesanan' => ['required', 'string', 'max:50', Rule::unique('pesanan', 'kode_pesanan')->ignore($recordModel->id)],
+                'status' => ['required', Rule::in([
+                    Pesanan::STATUS_MENUNGGU,
+                    Pesanan::STATUS_DIPROSES,
+                    Pesanan::STATUS_SIAPKIRIM,
+                    Pesanan::STATUS_SELESAI,
+                    Pesanan::STATUS_PENJEMPUTAN,
+                    Pesanan::STATUS_MENUNGGU_DENDA,
+                    Pesanan::STATUS_DIBATALKAN,
+                ])],
+                'total_harga' => ['required', 'integer', 'min:0'],
+                'biaya_ongkir' => ['nullable', 'integer', 'min:0'],
+                'diskon' => ['nullable', 'integer', 'min:0'],
+                'grand_total' => ['required', 'integer', 'min:0'],
+                'batas_waktu_bayar' => ['nullable', 'date'],
+                'catatan_pembeli' => ['nullable', 'string'],
+            ]) + [
+                'biaya_ongkir' => (int) $request->input('biaya_ongkir', 0),
+                'diskon' => (int) $request->input('diskon', 0),
+                'kode_promo_snapshot' => optional(KodePromo::find($request->input('kode_promo_id')))->kode,
+            ]),
+
+            'pembayaran' => $recordModel->update($request->validate([
+                'pesanan_id' => ['required', 'exists:pesanan,id'],
+                'metode' => ['required', 'string', 'max:50'],
+                'jumlah_dibayar' => ['required', 'integer', 'min:0'],
+                'bukti_transfer' => ['required', 'string', 'max:255'],
+                'status' => ['required', Rule::in([
+                    Pembayaran::STATUS_MENUNGGU,
+                    Pembayaran::STATUS_LUNAS,
+                    Pembayaran::STATUS_DITOLAK,
+                ])],
+                'alasan_penolakan' => ['nullable', 'string'],
+                'waktu_dibayar' => ['nullable', 'date'],
+            ]) + [
+                'diverifikasi_oleh' => in_array($request->input('status'), [Pembayaran::STATUS_LUNAS, Pembayaran::STATUS_DITOLAK], true) ? $user?->id : null,
+                'waktu_diverifikasi' => in_array($request->input('status'), [Pembayaran::STATUS_LUNAS, Pembayaran::STATUS_DITOLAK], true) ? now() : null,
+            ]),
+
+            'users' => $this->updateUser($request, $recordModel),
+
+            default => abort(404),
+        };
+
+        $this->logAdminUpdate($focus, $recordModel, $beforeSnapshot);
+
+        $this->flushAdminCaches();
+
+        return redirect()
+            ->route('admin.index', ['focus' => $focus, 'mode' => 'manage'])
+            ->with('success', 'Data berhasil diperbarui.');
+    }
+
+    public function destroy(Request $request, string $focus, int $record)
+    {
+        $this->assertMutationAccess($request, $focus);
+
+        $recordModel = $this->findRecord($focus, $record);
+
+        abort_unless($this->canDeleteRecord($focus, $recordModel, $request->user()), 403);
+
+        try {
+            $recordLabel = $this->resolveRecordLabel($focus, $recordModel);
+            $this->logAdminDelete($focus, $recordModel, $recordLabel);
+            $recordModel->delete();
+            $this->flushAdminCaches();
+
+            return redirect()
+                ->route('admin.index', ['focus' => $focus, 'mode' => 'manage'])
+                ->with('success', $recordLabel.' berhasil dihapus.');
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('admin.index', ['focus' => $focus, 'mode' => 'manage'])
+                ->with('danger', 'Data ini belum bisa dihapus karena masih terhubung dengan data lain.');
+        }
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        abort_unless($request->user()?->isOwner(), 403);
+
+        $validated = $request->validate([
+            'focus' => ['required', Rule::in(['kategori', 'produk', 'promo', 'pelanggan', 'ulasan', 'pesanan', 'pembayaran', 'users'])],
+            'ids' => ['required', 'array', 'min:1', 'max:50'],
+            'ids.*' => ['integer', 'distinct'],
+        ]);
+
+        $deletedCount = DB::transaction(function () use ($validated, $request) {
+            $count = 0;
+
+            foreach ($validated['ids'] as $id) {
+                $record = $this->findRecord($validated['focus'], (int) $id);
+                abort_unless($this->canDeleteRecord($validated['focus'], $record, $request->user()), 403);
+
+                $this->logAdminDelete(
+                    $validated['focus'],
+                    $record,
+                    $this->resolveRecordLabel($validated['focus'], $record),
+                );
+
+                $record->delete();
+                $count++;
+            }
+
+            return $count;
+        });
+
+        $this->flushAdminCaches();
+
+        return redirect()
+            ->route('admin.index', ['focus' => $validated['focus'], 'mode' => 'manage'])
+            ->with('success', $deletedCount.' data berhasil dihapus.');
+    }
+
+    public function markNotificationsSeen(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        abort_unless($this->canAccessAdminPanel($user), 403);
+
+        $user->forceFill([
+            'notifications_seen_at' => now(),
+        ])->save();
+
+        return response()->json(['ok' => true]);
+    }
+
+    private function renderPage(
+        Request $request,
+        DashboardPayloadService $dashboardPayloadService,
+        ?string $focus = null,
+        ?string $mode = null,
+        mixed $currentRecord = null
+    ) {
+        $user = $request->user();
+        $focus = blank($focus) ? 'dashboard' : $focus;
+        $mode = blank($mode) ? ($focus === 'dashboard' ? 'overview' : 'manage') : $mode;
+
+        $this->assertFocusAccess($focus, $user);
+
+        if ($focus === 'aktivitas' && $mode === 'create') {
+            $mode = 'manage';
+        }
+
+        if ($focus === 'users' && ! $user?->isOwner()) {
+            abort(403);
+        }
+
+        if ($user?->isStaff() && in_array($mode, ['create', 'edit'], true)) {
+            abort(403);
+        }
+
+        $menu = $user?->isStaff() ? [
+            [
+                'group' => 'Ringkasan',
+                'items' => [
+                    ['key' => 'dashboard', 'label' => 'Dasbor', 'href' => route('admin.index'), 'icon' => 'dashboard'],
+                ],
+            ],
+            [
+                'group' => 'Operasional',
+                'items' => [
+                    ['key' => 'pesanan', 'label' => 'Pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'icon' => 'clipboard'],
+                    ['key' => 'pembayaran', 'label' => 'Verifikasi Pembayaran', 'href' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'manage']), 'icon' => 'banknotes'],
+                ],
+            ],
+        ] : [
+            [
+                'group' => 'Ringkasan',
+                'items' => [
+                    ['key' => 'dashboard', 'label' => 'Dasbor', 'href' => route('admin.index'), 'icon' => 'dashboard'],
+                ],
+            ],
+            [
+                'group' => 'Master Data',
+                'items' => [
+                    ['key' => 'kategori', 'label' => 'Kategori', 'href' => route('admin.index', ['focus' => 'kategori', 'mode' => 'manage']), 'icon' => 'tag'],
+                    ['key' => 'produk', 'label' => 'Produk', 'href' => route('admin.index', ['focus' => 'produk', 'mode' => 'manage']), 'icon' => 'bag'],
+                    ['key' => 'promo', 'label' => 'Kode Promo', 'href' => route('admin.index', ['focus' => 'promo', 'mode' => 'manage']), 'icon' => 'ticket'],
+                ],
+            ],
+            [
+                'group' => 'Data Pelanggan',
+                'items' => [
+                    ['key' => 'pelanggan', 'label' => 'Pelanggan', 'href' => route('admin.index', ['focus' => 'pelanggan', 'mode' => 'manage']), 'icon' => 'users'],
+                    ['key' => 'ulasan', 'label' => 'Ulasan & Moderasi', 'href' => route('admin.index', ['focus' => 'ulasan', 'mode' => 'manage']), 'icon' => 'star'],
+                ],
+            ],
+            [
+                'group' => 'Operasional',
+                'items' => [
+                    ['key' => 'pesanan', 'label' => 'Pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'icon' => 'clipboard'],
+                    ['key' => 'pembayaran', 'label' => 'Verifikasi Pembayaran', 'href' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'manage']), 'icon' => 'banknotes'],
+                ],
+            ],
+        ];
+
+        if ($user?->isOwner()) {
+            $menu[] = [
+                'group' => 'Manajemen Pengguna',
+                'items' => [
+                    ['key' => 'users', 'label' => 'Users', 'href' => route('admin.index', ['focus' => 'users', 'mode' => 'manage']), 'icon' => 'shield'],
+                ],
+            ];
+        }
+
+        $modules = [
+            'dashboard' => [
+                'title' => 'Dasbor Operasional',
+                'subtitle' => 'Ringkasan lintas modul dengan fokus pada antrian kerja hari ini.',
+                'eyebrow' => 'Ringkasan',
+                'accent' => 'from-[#4f6dff] via-[#6f6bff] to-[#9b6dff]',
+            ],
+            'kategori' => [
+                'title' => 'Kategori Produk',
+                'subtitle' => 'Atur struktur katalog inti yang dipakai tim untuk mengelompokkan layanan.',
+                'eyebrow' => 'Master Data',
+                'accent' => 'from-[#3d5af1] via-[#4f6dff] to-[#7b8cff]',
+            ],
+            'produk' => [
+                'title' => 'Manajemen Produk',
+                'subtitle' => 'Pantau produk aktif, item custom, dan performa stok display katalog.',
+                'eyebrow' => 'Master Data',
+                'accent' => 'from-[#3650d8] via-[#5674ff] to-[#8ba2ff]',
+            ],
+            'promo' => [
+                'title' => 'Strategi Kode Promo',
+                'subtitle' => 'Lihat promo aktif, batas kuota, dan kampanye yang perlu diperbarui.',
+                'eyebrow' => 'Master Data',
+                'accent' => 'from-[#5162f6] via-[#6e6dff] to-[#9c7cff]',
+            ],
+            'pelanggan' => [
+                'title' => 'Relasi Pelanggan',
+                'subtitle' => 'Monitor repeat customer, pelanggan pasif, dan antrian follow-up.',
+                'eyebrow' => 'Data Pelanggan',
+                'accent' => 'from-[#2f4bb6] via-[#4968ea] to-[#7f96ff]',
+            ],
+            'ulasan' => [
+                'title' => 'Ulasan & Moderasi',
+                'subtitle' => 'Kurasi testimoni yang tampil dan tangkap sinyal kualitas layanan.',
+                'eyebrow' => 'Data Pelanggan',
+                'accent' => 'from-[#3149b2] via-[#4d68dd] to-[#758efc]',
+            ],
+            'pesanan' => [
+                'title' => 'Orkestrasi Pesanan',
+                'subtitle' => 'Lihat beban kerja order dari menunggu hingga selesai kirim.',
+                'eyebrow' => 'Operasional',
+                'accent' => 'from-[#4d5df2] via-[#6d72ff] to-[#8e84ff]',
+            ],
+            'pembayaran' => [
+                'title' => 'Verifikasi Pembayaran',
+                'subtitle' => 'Sorot pembayaran pending supaya proses order tidak tertahan.',
+                'eyebrow' => 'Operasional',
+                'accent' => 'from-[#3651d1] via-[#5574ff] to-[#8d9dff]',
+            ],
+            'aktivitas' => [
+                'title' => 'Log Aktivitas Admin',
+                'subtitle' => 'Pantau jejak perubahan panel dan telusuri histori aksi admin dari database.',
+                'eyebrow' => 'Operasional',
+                'accent' => 'from-[#41506d] via-[#5f6f92] to-[#8693b4]',
+            ],
+            'users' => [
+                'title' => 'Kontrol Tim Admin',
+                'subtitle' => 'Akses pengguna, distribusi role, dan kapasitas operasional panel.',
+                'eyebrow' => 'Manajemen Pengguna',
+                'accent' => 'from-[#2e46aa] via-[#4f65df] to-[#7f95ff]',
+            ],
+        ];
+
+        $focusModule = $modules[$focus] ?? $modules['dashboard'];
+        $isOwner = $user?->isOwner() === true;
+        $canManage = $this->canManageAdminData($user);
+        $adminSnapshot = $this->buildAdminSnapshot($isOwner);
+        $statusBreakdown = $this->buildStatusBreakdown($adminSnapshot['pesanan']['by_status']);
+        $dashboardPayload = $this->shouldLoadDashboardAnalytics($focus, $mode)
+            ? $dashboardPayloadService->get()
+            : null;
+
+        $operationalQueues = [
+            [
+                'label' => 'Pesanan Menunggu',
+                'value' => $adminSnapshot['pesanan']['by_status'][Pesanan::STATUS_MENUNGGU] ?? 0,
+                'hint' => 'Perlu follow-up pembayaran',
+            ],
+            [
+                'label' => 'Pembayaran Pending',
+                'value' => $adminSnapshot['pembayaran']['by_status'][Pembayaran::STATUS_MENUNGGU] ?? 0,
+                'hint' => 'Butuh verifikasi admin',
+            ],
+            [
+                'label' => 'Promo Aktif',
+                'value' => $adminSnapshot['promo']['aktif'],
+                'hint' => 'Sedang dipakai kampanye',
+            ],
+            [
+                'label' => 'Ulasan Disembunyikan',
+                'value' => $adminSnapshot['ulasan']['hidden'],
+                'hint' => 'Perlu dipilih tampil/tidak',
+            ],
+        ];
+
+        $moduleSummaries = [
+            'kategori' => [
+                'count' => $adminSnapshot['kategori']['total'],
+                'detail' => $adminSnapshot['produk']['total'].' produk terikat',
+                'cta' => route('admin.index', ['focus' => 'kategori', 'mode' => 'manage']),
+            ],
+            'produk' => [
+                'count' => $adminSnapshot['produk']['total'],
+                'detail' => $adminSnapshot['produk']['aktif'].' aktif',
+                'cta' => route('admin.index', ['focus' => 'produk', 'mode' => 'manage']),
+            ],
+            'promo' => [
+                'count' => $adminSnapshot['promo']['total'],
+                'detail' => $adminSnapshot['promo']['aktif'].' aktif',
+                'cta' => route('admin.index', ['focus' => 'promo', 'mode' => 'manage']),
+            ],
+            'pelanggan' => [
+                'count' => $adminSnapshot['pelanggan']['total'],
+                'detail' => $adminSnapshot['pelanggan']['pernah_order'].' pernah order',
+                'cta' => route('admin.index', ['focus' => 'pelanggan', 'mode' => 'manage']),
+            ],
+            'ulasan' => [
+                'count' => $adminSnapshot['ulasan']['total'],
+                'detail' => $adminSnapshot['ulasan']['hidden'].' perlu moderasi',
+                'cta' => route('admin.index', ['focus' => 'ulasan', 'mode' => 'manage']),
+            ],
+            'pesanan' => [
+                'count' => $adminSnapshot['pesanan']['total'],
+                'detail' => ($adminSnapshot['pesanan']['by_status'][Pesanan::STATUS_MENUNGGU] ?? 0).' menunggu',
+                'cta' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']),
+            ],
+            'pembayaran' => [
+                'count' => $adminSnapshot['pembayaran']['total'],
+                'detail' => ($adminSnapshot['pembayaran']['by_status'][Pembayaran::STATUS_MENUNGGU] ?? 0).' pending',
+                'cta' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'manage']),
+            ],
+            'aktivitas' => [
+                'count' => $adminSnapshot['activity_logs']['total'],
+                'detail' => 'Riwayat tersimpan di database',
+                'cta' => route('admin.index', ['focus' => 'aktivitas', 'mode' => 'manage']),
+            ],
+            'users' => [
+                'count' => $adminSnapshot['users']['total'],
+                'detail' => $adminSnapshot['users']['admin'].' admin aktif',
+                'cta' => route('admin.index', ['focus' => 'users', 'mode' => 'manage']),
+            ],
+        ];
+
+        $focusMetrics = $this->buildFocusMetrics($focus, $adminSnapshot);
+        $focusPreview = $this->buildFocusPreview($focus, $request);
+        $quickActions = $this->buildQuickActions($focus, $isOwner, $canManage);
+        $activityFeed = $focus === 'dashboard' && $user ? $this->buildActivityFeed($user) : [];
+        $notificationUnreadCount = $user ? $this->buildNotificationUnreadCount($user) : 0;
+        $notificationScopeLabel = $user?->isStaff()
+            ? 'Pesanan baru masuk'
+            : 'Aktivitas admin dan pesanan baru';
+        $modeTabs = $this->buildModeTabs($focus, $isOwner, $canManage, $currentRecord !== null);
+        $createBlueprint = $this->buildCreateBlueprint($focus);
+        $formSections = $this->buildFormSections($focus);
+        $formOptionsPayload = $canManage && in_array($mode, ['create', 'edit'], true) && $focus !== 'dashboard'
+            ? $this->buildFormOptions($focus, $isOwner, $currentRecord)
+            : ['options' => [], 'meta' => []];
+        $searchTerm = trim((string) $request->query('search', ''));
+
+        return view('admin.index', [
+            'dashboardPayload' => $dashboardPayload,
+            'statusBreakdown' => $statusBreakdown,
+            'menu' => $menu,
+            'focus' => $focus,
+            'mode' => $mode,
+            'focusModule' => $focusModule,
+            'moduleSummaries' => $moduleSummaries,
+            'operationalQueues' => $operationalQueues,
+            'focusMetrics' => $focusMetrics,
+            'focusPreview' => $focusPreview,
+            'quickActions' => $quickActions,
+            'activityFeed' => $activityFeed,
+            'notificationUnreadCount' => $notificationUnreadCount,
+            'notificationScopeLabel' => $notificationScopeLabel,
+            'modeTabs' => $modeTabs,
+            'createBlueprint' => $createBlueprint,
+            'formSections' => $formSections,
+            'formOptions' => $formOptionsPayload['options'],
+            'formOptionMeta' => $formOptionsPayload['meta'],
+            'canManageData' => $canManage,
+            'currentRecord' => $currentRecord,
+            'user' => $user,
+            'searchTerm' => $searchTerm,
+            'searchPlaceholder' => $this->resolveSearchPlaceholder($focus),
+        ]);
+    }
+
+    private function buildAdminSnapshot(bool $isOwner): array
+    {
+        return Cache::remember(
+            $this->adminSnapshotCacheKey($isOwner),
+            now()->addMinutes(5),
+            function () use ($isOwner): array {
+                $pelangganCutoff = now()->subDays(30);
+
+                $kategori = DB::table('kategori')
+                    ->selectRaw('COUNT(*) as total')
+                    ->selectRaw('SUM(CASE WHEN is_aktif = 1 THEN 1 ELSE 0 END) as aktif')
+                    ->selectRaw('SUM(CASE WHEN is_aktif = 0 THEN 1 ELSE 0 END) as nonaktif')
+                    ->first();
+
+                $produk = DB::table('produk')
+                    ->selectRaw('COUNT(*) as total')
+                    ->selectRaw('SUM(CASE WHEN is_aktif = 1 THEN 1 ELSE 0 END) as aktif')
+                    ->selectRaw('SUM(CASE WHEN is_customizable = 1 THEN 1 ELSE 0 END) as customizable')
+                    ->selectRaw('SUM(CASE WHEN is_sewa = 1 THEN 1 ELSE 0 END) as sewa')
+                    ->first();
+
+                $promo = DB::table('kode_promo')
+                    ->selectRaw('COUNT(*) as total')
+                    ->selectRaw('SUM(CASE WHEN is_aktif = 1 THEN 1 ELSE 0 END) as aktif')
+                    ->selectRaw('SUM(CASE WHEN kuota IS NOT NULL AND dipakai >= kuota THEN 1 ELSE 0 END) as kuota_habis')
+                    ->selectRaw('SUM(CASE WHEN minimum_order >= 500000 THEN 1 ELSE 0 END) as minimum_order_tinggi')
+                    ->first();
+
+                $pelanggan = DB::table('pelanggan')
+                    ->selectRaw('COUNT(*) as total')
+                    ->selectRaw('SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as baru_30_hari', [$pelangganCutoff])
+                    ->selectRaw("SUM(CASE WHEN email IS NOT NULL AND email <> '' THEN 1 ELSE 0 END) as email_terisi")
+                    ->first();
+
+                $ulasan = DB::table('ulasan')
+                    ->selectRaw('COUNT(*) as total')
+                    ->selectRaw('SUM(CASE WHEN is_tampil = 0 THEN 1 ELSE 0 END) as hidden')
+                    ->selectRaw('SUM(CASE WHEN is_tampil = 1 THEN 1 ELSE 0 END) as tampil')
+                    ->selectRaw('SUM(CASE WHEN rating >= 4 THEN 1 ELSE 0 END) as rating_bagus')
+                    ->first();
+
+                $pesananByStatus = DB::table('pesanan')
+                    ->select('status')
+                    ->selectRaw('COUNT(*) as total')
+                    ->groupBy('status')
+                    ->pluck('total', 'status')
+                    ->map(fn ($total): int => (int) $total)
+                    ->all();
+
+                $pembayaranByStatus = DB::table('pembayaran')
+                    ->select('status')
+                    ->selectRaw('COUNT(*) as total')
+                    ->groupBy('status')
+                    ->pluck('total', 'status')
+                    ->map(fn ($total): int => (int) $total)
+                    ->all();
+
+                $repeatCustomers = (int) DB::query()
+                    ->fromSub(
+                        DB::table('pesanan')
+                            ->select('pelanggan_id')
+                            ->whereNotNull('pelanggan_id')
+                            ->groupBy('pelanggan_id')
+                            ->havingRaw('COUNT(id) > 1'),
+                        'repeat_customers'
+                    )
+                    ->count();
+
+                $users = $isOwner
+                    ? DB::table('users')
+                        ->selectRaw('COUNT(*) as total')
+                        ->selectRaw('SUM(CASE WHEN is_admin = 1 THEN 1 ELSE 0 END) as admin')
+                        ->selectRaw('SUM(CASE WHEN role = ? THEN 1 ELSE 0 END) as owner', [User::ROLE_OWNER])
+                        ->selectRaw('SUM(CASE WHEN role = ? THEN 1 ELSE 0 END) as role_admin', [User::ROLE_ADMIN])
+                        ->selectRaw('SUM(CASE WHEN role = ? THEN 1 ELSE 0 END) as staff', [User::ROLE_STAFF])
+                        ->first()
+                    : null;
+
+                return [
+                    'kategori' => [
+                        'total' => $this->intValue($kategori, 'total'),
+                        'aktif' => $this->intValue($kategori, 'aktif'),
+                        'nonaktif' => $this->intValue($kategori, 'nonaktif'),
+                    ],
+                    'produk' => [
+                        'total' => $this->intValue($produk, 'total'),
+                        'aktif' => $this->intValue($produk, 'aktif'),
+                        'customizable' => $this->intValue($produk, 'customizable'),
+                        'sewa' => $this->intValue($produk, 'sewa'),
+                    ],
+                    'promo' => [
+                        'total' => $this->intValue($promo, 'total'),
+                        'aktif' => $this->intValue($promo, 'aktif'),
+                        'kuota_habis' => $this->intValue($promo, 'kuota_habis'),
+                        'minimum_order_tinggi' => $this->intValue($promo, 'minimum_order_tinggi'),
+                    ],
+                    'pelanggan' => [
+                        'total' => $this->intValue($pelanggan, 'total'),
+                        'pernah_order' => (int) DB::table('pesanan')->distinct()->count('pelanggan_id'),
+                        'repeat' => $repeatCustomers,
+                        'baru_30_hari' => $this->intValue($pelanggan, 'baru_30_hari'),
+                        'email_terisi' => $this->intValue($pelanggan, 'email_terisi'),
+                    ],
+                    'ulasan' => [
+                        'total' => $this->intValue($ulasan, 'total'),
+                        'hidden' => $this->intValue($ulasan, 'hidden'),
+                        'tampil' => $this->intValue($ulasan, 'tampil'),
+                        'rating_bagus' => $this->intValue($ulasan, 'rating_bagus'),
+                    ],
+                    'pesanan' => [
+                        'total' => array_sum($pesananByStatus),
+                        'by_status' => $pesananByStatus,
+                    ],
+                    'pembayaran' => [
+                        'total' => array_sum($pembayaranByStatus),
+                        'by_status' => $pembayaranByStatus,
+                    ],
+                    'users' => [
+                        'total' => $this->intValue($users, 'total'),
+                        'admin' => $this->intValue($users, 'admin'),
+                        'owner' => $this->intValue($users, 'owner'),
+                        'role_admin' => $this->intValue($users, 'role_admin'),
+                        'staff' => $this->intValue($users, 'staff'),
+                    ],
+                    'activity_logs' => [
+                        'total' => $this->safeTableCount('activity_logs'),
+                    ],
+                    'email_logs' => [
+                        'total' => $this->safeTableCount('email_logs'),
+                    ],
+                ];
+            }
+        );
+    }
+
+    public function store(Request $request, string $focus)
+    {
+        $this->assertMutationAccess($request, $focus);
+
+        $user = $request->user();
+
+        $createdRecord = match ($focus) {
+            'kategori' => Kategori::query()->create($request->validate([
+                'nama' => ['required', 'string', 'max:100'],
+                'slug' => ['required', 'string', 'max:100', 'unique:kategori,slug'],
+                'deskripsi' => ['nullable', 'string'],
+                'is_aktif' => ['nullable', 'boolean'],
+            ]) + [
+                'is_aktif' => $request->boolean('is_aktif'),
+            ]),
+
+            'produk' => $this->storeProduct($request),
+
+            'promo' => KodePromo::query()->create($request->validate([
+                'kode' => ['required', 'string', 'max:20', 'unique:kode_promo,kode'],
+                'tipe_diskon' => ['required', Rule::in(['persentase', 'nominal'])],
+                'nilai_diskon' => ['required', 'integer', 'min:0'],
+                'minimum_order' => ['nullable', 'integer', 'min:0'],
+                'kuota' => ['nullable', 'integer', 'min:1'],
+                'tanggal_mulai' => ['nullable', 'date'],
+                'tanggal_berakhir' => ['nullable', 'date', 'after_or_equal:tanggal_mulai'],
+                'deskripsi' => ['nullable', 'string'],
+                'is_aktif' => ['nullable', 'boolean'],
+            ]) + [
+                'minimum_order' => (int) $request->input('minimum_order', 0),
+                'dipakai' => 0,
+                'is_aktif' => $request->boolean('is_aktif'),
+            ]),
+
+            'pelanggan' => Pelanggan::query()->create($request->validate([
+                'nama_lengkap' => ['required', 'string', 'max:150'],
+                'no_hp' => ['required', 'string', 'max:20', 'unique:pelanggan,no_hp'],
+                'email' => ['nullable', 'email', 'max:100'],
+            ])),
+
+            'ulasan' => Ulasan::query()->create($request->validate([
+                'pesanan_id' => ['required', 'exists:pesanan,id'],
+                'produk_id' => [
+                    'required',
+                    'exists:produk,id',
+                    Rule::unique('ulasan')->where(fn ($query) => $query
+                        ->where('pesanan_id', $request->input('pesanan_id'))
+                        ->where('produk_id', $request->input('produk_id'))),
+                ],
+                'nama_pengulas' => ['required', 'string', 'max:255'],
+                'rating' => ['required', 'integer', 'min:1', 'max:5'],
+                'komentar' => ['nullable', 'string'],
+                'foto_ulasan' => ['nullable', 'string', 'max:255'],
+                'is_tampil' => ['nullable', 'boolean'],
+            ]) + [
+                'token_ulasan' => Str::upper(Str::random(24)),
+                'is_tampil' => $request->boolean('is_tampil'),
+            ]),
+
+            'pesanan' => Pesanan::query()->create($request->validate([
+                'pelanggan_id' => ['required', 'exists:pelanggan,id'],
+                'kode_promo_id' => ['nullable', 'exists:kode_promo,id'],
+                'kode_pesanan' => ['required', 'string', 'max:50', 'unique:pesanan,kode_pesanan'],
+                'status' => ['required', Rule::in([
+                    Pesanan::STATUS_MENUNGGU,
+                    Pesanan::STATUS_DIPROSES,
+                    Pesanan::STATUS_SIAPKIRIM,
+                    Pesanan::STATUS_SELESAI,
+                    Pesanan::STATUS_PENJEMPUTAN,
+                    Pesanan::STATUS_MENUNGGU_DENDA,
+                    Pesanan::STATUS_DIBATALKAN,
+                ])],
+                'total_harga' => ['required', 'integer', 'min:0'],
+                'biaya_ongkir' => ['nullable', 'integer', 'min:0'],
+                'diskon' => ['nullable', 'integer', 'min:0'],
+                'grand_total' => ['required', 'integer', 'min:0'],
+                'batas_waktu_bayar' => ['nullable', 'date'],
+                'catatan_pembeli' => ['nullable', 'string'],
+            ]) + [
+                'biaya_ongkir' => (int) $request->input('biaya_ongkir', 0),
+                'diskon' => (int) $request->input('diskon', 0),
+                'kode_promo_snapshot' => optional(KodePromo::find($request->input('kode_promo_id')))->kode,
+            ]),
+
+            'pembayaran' => Pembayaran::query()->create($request->validate([
+                'pesanan_id' => ['required', 'exists:pesanan,id'],
+                'metode' => ['required', 'string', 'max:50'],
+                'jumlah_dibayar' => ['required', 'integer', 'min:0'],
+                'bukti_transfer' => ['required', 'string', 'max:255'],
+                'status' => ['required', Rule::in([
+                    Pembayaran::STATUS_MENUNGGU,
+                    Pembayaran::STATUS_LUNAS,
+                    Pembayaran::STATUS_DITOLAK,
+                ])],
+                'alasan_penolakan' => ['nullable', 'string'],
+                'waktu_dibayar' => ['nullable', 'date'],
+            ]) + [
+                'diverifikasi_oleh' => in_array($request->input('status'), [Pembayaran::STATUS_LUNAS, Pembayaran::STATUS_DITOLAK], true) ? $user?->id : null,
+                'waktu_diverifikasi' => in_array($request->input('status'), [Pembayaran::STATUS_LUNAS, Pembayaran::STATUS_DITOLAK], true) ? now() : null,
+            ]),
+
+            'users' => $this->storeUser($request),
+
+            default => abort(404),
+        };
+
+        $this->logAdminCreate($focus, $createdRecord);
+
+        $this->flushAdminCaches();
+
+        return redirect()
+            ->route('admin.index', ['focus' => $focus, 'mode' => 'manage'])
+            ->with('success', 'Data berhasil disimpan ke database.');
+    }
+
+    private function storeUser(Request $request): User
+    {
+        abort_unless($request->user()?->isOwner(), 403);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+            'role' => ['required', Rule::in([User::ROLE_OWNER, User::ROLE_ADMIN, User::ROLE_STAFF])],
+            'is_admin' => ['nullable', 'boolean'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        return User::query()->create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => $validated['role'],
+            'is_admin' => $request->boolean('is_admin'),
+            'is_active' => $request->boolean('is_active', true),
+        ]);
+    }
+
+    private function updateUser(Request $request, User $user): bool
+    {
+        abort_unless($request->user()?->isOwner(), 403);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
+            'password' => ['nullable', 'string', 'min:8'],
+            'role' => ['required', Rule::in([User::ROLE_OWNER, User::ROLE_ADMIN, User::ROLE_STAFF])],
+            'is_admin' => ['nullable', 'boolean'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $payload = [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'role' => $validated['role'],
+            'is_admin' => $request->boolean('is_admin'),
+            'is_active' => $request->boolean('is_active'),
+        ];
+
+        if (filled($validated['password'] ?? null)) {
+            $payload['password'] = Hash::make($validated['password']);
+        }
+
+        return $user->update($payload);
+    }
+
+    private function storeProduct(Request $request): Produk
+    {
+        $validated = $this->validateProductPayload($request);
+
+        $product = Produk::query()->create($validated);
+        $this->syncProductImages($product, $validated['foto_utama'] ?? null, $request->input('galeri_foto'));
+
+        return $product->fresh(['kategori', 'gambarItems']);
+    }
+
+    private function updateProduct(Request $request, Produk $product): bool
+    {
+        $validated = $this->validateProductPayload($request, $product);
+        $updated = $product->update($validated);
+
+        $this->syncProductImages($product->fresh(), $validated['foto_utama'] ?? null, $request->input('galeri_foto'));
+
+        return $updated;
+    }
+
+    private function validateProductPayload(Request $request, ?Produk $product = null): array
+    {
+        return $request->validate([
+            'kategori_id' => ['required', 'exists:kategori,id'],
+            'nama' => ['required', 'string', 'max:200'],
+            'slug' => ['required', 'string', 'max:200', Rule::unique('produk', 'slug')->ignore($product?->id)],
+            'deskripsi' => ['nullable', 'string'],
+            'harga_dasar' => ['required', 'integer', 'min:0'],
+            'foto_utama' => ['nullable', 'string', 'max:255'],
+            'galeri_foto' => ['nullable', 'string', 'max:5000'],
+            'is_customizable' => ['nullable', 'boolean'],
+            'is_sewa' => ['nullable', 'boolean'],
+            'is_aktif' => ['nullable', 'boolean'],
+        ]) + [
+            'is_customizable' => $request->boolean('is_customizable'),
+            'is_sewa' => $request->boolean('is_sewa'),
+            'is_aktif' => $request->boolean('is_aktif'),
+            'galeri_foto' => $this->parseGalleryInput($request->input('galeri_foto')),
+        ];
+    }
+
+    private function parseGalleryInput(?string $value): array
+    {
+        return collect(preg_split('/[\r\n,]+/', (string) $value))
+            ->map(fn ($path) => trim((string) $path))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function syncProductImages(Produk $product, ?string $primaryPath, mixed $galleryInput): void
+    {
+        $galleryPaths = is_array($galleryInput) ? $galleryInput : $this->parseGalleryInput($galleryInput);
+
+        $paths = collect(array_merge(
+            filled($primaryPath) ? [trim($primaryPath)] : [],
+            $galleryPaths,
+        ))
+            ->map(fn ($path) => trim((string) $path))
+            ->filter()
+            ->unique()
+            ->values();
+
+        $product->updateQuietly([
+            'galeri_foto' => $galleryPaths,
+        ]);
+
+        $product->gambarItems()->delete();
+
+        $paths->each(function (string $path, int $index) use ($product, $primaryPath) {
+            GambarProduk::query()->create([
+                'produk_id' => $product->id,
+                'path_gambar' => $path,
+                'is_utama' => filled($primaryPath)
+                    ? $path === trim((string) $primaryPath)
+                    : $index === 0,
+            ]);
+        });
+    }
+
+    private function canDeleteRecord(string $focus, mixed $recordModel, ?User $user): bool
+    {
+        if ($focus === 'users') {
+            return $user?->isOwner() === true && $user?->id !== $recordModel->id;
+        }
+
+        return true;
+    }
+
+    private function resolveRecordLabel(string $focus, mixed $recordModel): string
+    {
+        return match ($focus) {
+            'kategori' => 'Kategori "'.($recordModel->nama ?? 'data').'"',
+            'produk' => 'Produk "'.($recordModel->nama ?? 'data').'"',
+            'promo' => 'Promo "'.($recordModel->kode ?? 'data').'"',
+            'pelanggan' => 'Pelanggan "'.($recordModel->nama_lengkap ?? 'data').'"',
+            'ulasan' => 'Ulasan "'.($recordModel->nama_pengulas ?? 'data').'"',
+            'pesanan' => 'Pesanan "'.($recordModel->kode_pesanan ?? 'data').'"',
+            'pembayaran' => 'Pembayaran #'.($recordModel->id ?? 'data'),
+            'users' => 'User "'.($recordModel->name ?? 'data').'"',
+            default => 'Data',
+        };
+    }
+
+    private function findRecord(string $focus, int $record): mixed
+    {
+        return match ($focus) {
+            'kategori' => Kategori::query()->findOrFail($record),
+            'produk' => Produk::query()->with('kategori:id,nama,slug')->findOrFail($record),
+            'promo' => KodePromo::query()->findOrFail($record),
+            'pelanggan' => Pelanggan::query()->findOrFail($record),
+            'ulasan' => Ulasan::query()->findOrFail($record),
+            'pesanan' => Pesanan::query()->findOrFail($record),
+            'pembayaran' => Pembayaran::query()->findOrFail($record),
+            'users' => User::query()->findOrFail($record),
+            default => abort(404),
+        };
+    }
+
+    private function buildModeTabs(string $focus, bool $isOwner, bool $canManage, bool $hasEditingRecord = false): array
+    {
+        if ($focus === 'dashboard') {
+            return [
+                ['key' => 'overview', 'label' => 'Ringkasan', 'href' => route('admin.index')],
+            ];
+        }
+
+        if ($focus === 'aktivitas') {
+            return [
+                ['key' => 'manage', 'label' => 'Riwayat log', 'href' => route('admin.index', ['focus' => 'aktivitas', 'mode' => 'manage'])],
+            ];
+        }
+
+        $tabs = [
+            ['key' => 'overview', 'label' => 'Ringkasan', 'href' => route('admin.index', ['focus' => $focus, 'mode' => 'overview'])],
+            ['key' => 'manage', 'label' => 'Kelola', 'href' => route('admin.index', ['focus' => $focus, 'mode' => 'manage'])],
+        ];
+
+        if ($canManage && ($focus !== 'users' || $isOwner)) {
+            $tabs[] = ['key' => 'create', 'label' => 'Tambah', 'href' => route('admin.index', ['focus' => $focus, 'mode' => 'create'])];
+        }
+
+        return $tabs;
+    }
+
+    private function shouldLoadDashboardAnalytics(string $focus, string $mode): bool
+    {
+        return $focus === 'dashboard' && $mode === 'overview';
+    }
+
+    private function buildStatusBreakdown(array $pesananByStatus): array
+    {
+        $map = [
+            Pesanan::STATUS_MENUNGGU => ['Menunggu Bayar', 'warning'],
+            Pesanan::STATUS_DIPROSES => ['Diproses', 'info'],
+            Pesanan::STATUS_SIAPKIRIM => ['Siap Kirim', 'primary'],
+            Pesanan::STATUS_PENJEMPUTAN => ['Penjemputan', 'primary'],
+            Pesanan::STATUS_MENUNGGU_DENDA => ['Menunggu Denda', 'danger'],
+            Pesanan::STATUS_SELESAI => ['Selesai', 'success'],
+            Pesanan::STATUS_DIBATALKAN => ['Dibatalkan', 'danger'],
+        ];
+
+        $total = max(array_sum($pesananByStatus), 1);
+
+        return collect($map)
+            ->map(function (array $meta, string $status) use ($pesananByStatus, $total): array {
+                $count = (int) ($pesananByStatus[$status] ?? 0);
+
+                return [
+                    'label' => $meta[0],
+                    'count' => $count,
+                    'percentage' => round(($count / $total) * 100, 1),
+                    'tone' => $meta[1],
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    private function adminSnapshotCacheKey(bool $isOwner): string
+    {
+        return 'admin_snapshot:'.($isOwner ? 'owner' : 'admin');
+    }
+
+    private function flushAdminCaches(): void
+    {
+        Cache::forget($this->adminSnapshotCacheKey(true));
+        Cache::forget($this->adminSnapshotCacheKey(false));
+        DashboardCache::forgetAll();
+    }
+
+    private function intValue(mixed $row, string $key): int
+    {
+        return (int) data_get($row, $key, 0);
+    }
+
+    private function safeTableCount(string $table): int
+    {
+        if (! Schema::hasTable($table)) {
+            return 0;
+        }
+
+        return (int) DB::table($table)->count();
+    }
+
+    private function buildCreateBlueprint(string $focus): array
+    {
+        return match ($focus) {
+            'kategori' => [
+                'title' => 'Blueprint Form Kategori',
+                'subtitle' => 'Field inti untuk bikin kategori baru.',
+                'fields' => ['Nama kategori', 'Slug', 'Deskripsi', 'Status aktif'],
+            ],
+            'produk' => [
+                'title' => 'Blueprint Form Produk',
+                'subtitle' => 'Field dasar produk yang perlu disiapkan tim.',
+                'fields' => ['Kategori', 'Nama produk', 'Slug', 'Deskripsi', 'Harga dasar', 'Produk customizable', 'Mode sewa', 'Status aktif'],
+            ],
+            'promo' => [
+                'title' => 'Blueprint Form Kode Promo',
+                'subtitle' => 'Kontrol kampanye dan kuota promo.',
+                'fields' => ['Kode promo', 'Tipe diskon', 'Nilai diskon', 'Minimum order', 'Kuota', 'Tanggal mulai', 'Tanggal berakhir', 'Status aktif'],
+            ],
+            'pelanggan' => [
+                'title' => 'Blueprint Form Pelanggan',
+                'subtitle' => 'Input kontak dasar pelanggan.',
+                'fields' => ['Nama lengkap', 'Nomor HP', 'Email'],
+            ],
+            'ulasan' => [
+                'title' => 'Blueprint Moderasi Ulasan',
+                'subtitle' => 'Bukan create manual penuh, tapi alur moderasi dan publikasi.',
+                'fields' => ['Nama pengulas', 'Produk', 'Rating', 'Komentar', 'Foto ulasan', 'Status tampil'],
+            ],
+            'pesanan' => [
+                'title' => 'Blueprint Form Pesanan',
+                'subtitle' => 'Input order inti untuk admin operasional.',
+                'fields' => ['Pelanggan', 'Produk/item', 'Status pesanan', 'Grand total', 'Batas bayar', 'Catatan pembeli'],
+            ],
+            'pembayaran' => [
+                'title' => 'Blueprint Form Pembayaran',
+                'subtitle' => 'Input transaksi dan verifikasi pembayaran.',
+                'fields' => ['Pesanan', 'Metode bayar', 'Jumlah dibayar', 'Bukti transfer', 'Status', 'Waktu bayar'],
+            ],
+            'users' => [
+                'title' => 'Blueprint Form User',
+                'subtitle' => 'Kontrol akses admin panel.',
+                'fields' => ['Nama', 'Email', 'Password', 'Role', 'Akses admin'],
+            ],
+            default => [
+                'title' => 'Blueprint Dasbor',
+                'subtitle' => 'Dashboard tidak punya form create.',
+                'fields' => [],
+            ],
+        };
+    }
+
+    private function buildFormOptions(string $focus, bool $isOwner, mixed $currentRecord = null): array
+    {
+        $limit = 60;
+        $payload = [];
+
+        if ($focus === 'produk') {
+            $payload['kategori'] = $this->buildLimitedOptionSet(
+                Kategori::query()->orderBy('nama'),
+                ['id', 'nama'],
+                'nama',
+                $this->selectedOptionIds([old('kategori_id'), data_get($currentRecord, 'kategori_id')]),
+                $limit
+            );
+        }
+
+        if ($focus === 'ulasan') {
+            $payload['pesanan'] = $this->buildLimitedOptionSet(
+                Pesanan::query()->orderByDesc('id'),
+                ['id', 'kode_pesanan'],
+                'kode_pesanan',
+                $this->selectedOptionIds([old('pesanan_id'), data_get($currentRecord, 'pesanan_id')]),
+                $limit
+            );
+
+            $payload['produk'] = $this->buildLimitedOptionSet(
+                Produk::query()->orderBy('nama'),
+                ['id', 'nama'],
+                'nama',
+                $this->selectedOptionIds([old('produk_id'), data_get($currentRecord, 'produk_id')]),
+                $limit
+            );
+        }
+
+        if ($focus === 'pesanan') {
+            $payload['pelanggan'] = $this->buildLimitedOptionSet(
+                Pelanggan::query()->orderByDesc('id'),
+                ['id', 'nama_lengkap'],
+                'nama_lengkap',
+                $this->selectedOptionIds([old('pelanggan_id'), data_get($currentRecord, 'pelanggan_id')]),
+                $limit
+            );
+
+            $payload['promo'] = $this->buildLimitedOptionSet(
+                KodePromo::query()->where('is_aktif', true)->orderBy('kode'),
+                ['id', 'kode'],
+                'kode',
+                $this->selectedOptionIds([old('kode_promo_id'), data_get($currentRecord, 'kode_promo_id')]),
+                $limit
+            );
+        }
+
+        if ($focus === 'pembayaran') {
+            $payload['pesanan'] = $this->buildLimitedOptionSet(
+                Pesanan::query()->orderByDesc('id'),
+                ['id', 'kode_pesanan'],
+                'kode_pesanan',
+                $this->selectedOptionIds([old('pesanan_id'), data_get($currentRecord, 'pesanan_id')]),
+                $limit
+            );
+        }
+
+        if ($focus === 'users') {
+            $payload['roles'] = [
+                'options' => collect($isOwner ? [
+                    ['value' => User::ROLE_OWNER, 'label' => 'Owner'],
+                    ['value' => User::ROLE_ADMIN, 'label' => 'Admin'],
+                    ['value' => User::ROLE_STAFF, 'label' => 'Staff'],
+                ] : []),
+                'meta' => [
+                    'truncated' => false,
+                    'limit' => 0,
+                    'hint' => null,
+                ],
+            ];
+        }
+
+        return [
+            'options' => collect($payload)->map(fn (array $set) => $set['options'])->all(),
+            'meta' => collect($payload)->map(fn (array $set) => $set['meta'])->all(),
+        ];
+    }
+
+    private function buildLimitedOptionSet(
+        Builder $query,
+        array $columns,
+        string $labelColumn,
+        array $selectedIds = [],
+        int $limit = 60
+    ): array {
+        $items = (clone $query)
+            ->limit($limit + 1)
+            ->get($columns);
+
+        $truncated = $items->count() > $limit;
+
+        if ($truncated) {
+            $items = $items->take($limit)->values();
+        }
+
+        foreach ($selectedIds as $selectedId) {
+            if ($items->contains('id', $selectedId)) {
+                continue;
+            }
+
+            $selected = (clone $query)
+                ->whereKey($selectedId)
+                ->first($columns);
+
+            if ($selected) {
+                $items->prepend($selected);
+            }
+        }
+
+        return [
+            'options' => $items->unique('id')->values(),
+            'meta' => [
+                'truncated' => $truncated,
+                'limit' => $limit,
+                'hint' => $truncated
+                    ? 'Opsi dibatasi ke '.$limit.' data teratas agar form tetap ringan. Item yang sedang dipakai tetap dimunculkan.'
+                    : null,
+                'label_column' => $labelColumn,
+            ],
+        ];
+    }
+
+    private function selectedOptionIds(array $values): array
+    {
+        return collect($values)
+            ->filter(fn ($value) => filled($value) && is_numeric($value))
+            ->map(fn ($value) => (int) $value)
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function buildFocusMetrics(string $focus, array $snapshot): array
+    {
+        return match ($focus) {
+            'kategori' => [
+                ['label' => 'Kategori Aktif', 'value' => $snapshot['kategori']['aktif'], 'hint' => 'Siap tampil di katalog'],
+                ['label' => 'Kategori Nonaktif', 'value' => $snapshot['kategori']['nonaktif'], 'hint' => 'Perlu review'],
+                ['label' => 'Produk per Kategori', 'value' => round(max(1, $snapshot['produk']['total']) / max(1, $snapshot['kategori']['total']), 1), 'hint' => 'Rata-rata distribusi'],
+            ],
+            'produk' => [
+                ['label' => 'Produk Aktif', 'value' => $snapshot['produk']['aktif'], 'hint' => 'Tampil di etalase'],
+                ['label' => 'Customizable', 'value' => $snapshot['produk']['customizable'], 'hint' => 'Bisa disesuaikan'],
+                ['label' => 'Mode Sewa', 'value' => $snapshot['produk']['sewa'], 'hint' => 'Produk rental'],
+            ],
+            'promo' => [
+                ['label' => 'Promo Aktif', 'value' => $snapshot['promo']['aktif'], 'hint' => 'Sedang berjalan'],
+                ['label' => 'Kuota Hampir Habis', 'value' => $snapshot['promo']['kuota_habis'], 'hint' => 'Perlu ganti kampanye'],
+                ['label' => 'Minimum Order Tinggi', 'value' => $snapshot['promo']['minimum_order_tinggi'], 'hint' => 'Segmen high-value'],
+            ],
+            'pelanggan' => [
+                ['label' => 'Repeat Customer', 'value' => $snapshot['pelanggan']['repeat'], 'hint' => 'Pernah order >1x'],
+                ['label' => 'Pelanggan Baru 30 Hari', 'value' => $snapshot['pelanggan']['baru_30_hari'], 'hint' => 'Akuisisi terbaru'],
+                ['label' => 'Kontak Lengkap', 'value' => $snapshot['pelanggan']['email_terisi'], 'hint' => 'Punya email terisi'],
+            ],
+            'ulasan' => [
+                ['label' => 'Tampil', 'value' => $snapshot['ulasan']['tampil'], 'hint' => 'Live di publik'],
+                ['label' => 'Disembunyikan', 'value' => $snapshot['ulasan']['hidden'], 'hint' => 'Menunggu moderasi'],
+                ['label' => 'Rating >= 4', 'value' => $snapshot['ulasan']['rating_bagus'], 'hint' => 'Bahan social proof'],
+            ],
+            'pesanan' => [
+                ['label' => 'Menunggu', 'value' => $snapshot['pesanan']['by_status'][Pesanan::STATUS_MENUNGGU] ?? 0, 'hint' => 'Perlu pembayaran'],
+                ['label' => 'Diproses', 'value' => $snapshot['pesanan']['by_status'][Pesanan::STATUS_DIPROSES] ?? 0, 'hint' => 'Sedang dikerjakan'],
+                ['label' => 'Selesai', 'value' => $snapshot['pesanan']['by_status'][Pesanan::STATUS_SELESAI] ?? 0, 'hint' => 'Closed order'],
+            ],
+            'pembayaran' => [
+                ['label' => 'Pending', 'value' => $snapshot['pembayaran']['by_status'][Pembayaran::STATUS_MENUNGGU] ?? 0, 'hint' => 'Butuh verifikasi'],
+                ['label' => 'Lunas', 'value' => $snapshot['pembayaran']['by_status'][Pembayaran::STATUS_LUNAS] ?? 0, 'hint' => 'Siap lanjut proses'],
+                ['label' => 'Ditolak', 'value' => $snapshot['pembayaran']['by_status'][Pembayaran::STATUS_DITOLAK] ?? 0, 'hint' => 'Butuh follow-up'],
+            ],
+            'aktivitas' => [
+                ['label' => 'Total log', 'value' => $snapshot['activity_logs']['total'], 'hint' => 'Riwayat aksi admin'],
+                ['label' => 'Email log', 'value' => $snapshot['email_logs']['total'], 'hint' => 'Jejak notifikasi sistem'],
+                ['label' => 'Modul aktif', 'value' => 9, 'hint' => 'Area panel terpantau'],
+            ],
+            'users' => [
+                ['label' => 'Owner', 'value' => $snapshot['users']['owner'], 'hint' => 'Akses penuh'],
+                ['label' => 'Admin', 'value' => $snapshot['users']['role_admin'], 'hint' => 'Operasional inti'],
+                ['label' => 'Staff', 'value' => $snapshot['users']['staff'], 'hint' => 'Operator harian'],
+            ],
+            default => [
+                ['label' => 'Email Log', 'value' => $snapshot['email_logs']['total'], 'hint' => 'Jejak notifikasi'],
+                ['label' => 'Aktivitas Audit', 'value' => $snapshot['activity_logs']['total'], 'hint' => 'Perubahan tercatat'],
+                ['label' => 'Modul Aktif', 'value' => 8, 'hint' => 'Area kerja panel'],
+            ],
+        };
+    }
+
+    private function buildFocusPreview(string $focus, Request $request): array
+    {
+        $search = trim((string) $request->query('search', ''));
+        $sort = trim((string) $request->query('sort', 'created_at'));
+        $direction = $request->query('direction') === 'asc' ? 'asc' : 'desc';
+
+        return match ($focus) {
+            'kategori' => [
+                'title' => 'Preview Tabel Kategori',
+                'subtitle' => 'Data kategori dimuat bertahap per halaman agar panel tetap ringan.',
+                'columns' => ['Nama', 'Slug', 'Status', 'Dibuat'],
+                'rows' => $this->applyFocusSearch(Kategori::query(), 'kategori', $search)
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(fn (Kategori $kategori) => [
+                        'id' => $kategori->id,
+                        'cells' => [
+                            $kategori->nama,
+                            $kategori->slug,
+                            $kategori->is_aktif ? 'Aktif' : 'Nonaktif',
+                            optional($kategori->created_at)->format('d M Y'),
+                        ],
+                        'edit_href' => route('admin.edit', ['focus' => 'kategori', 'record' => $kategori->id]),
+                    ]),
+            ],
+            'produk' => [
+                'title' => 'Preview Tabel Produk',
+                'subtitle' => 'Produk dimuat per halaman supaya katalog admin tidak berat.',
+                'columns' => ['Produk', 'Kategori', 'Mode', 'Harga Dasar'],
+                'rows' => $this->applyFocusSearch(Produk::query(), 'produk', $search)
+                    ->with('kategori:id,nama')
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
+                    ->paginate(8)
+                    ->withQueryString()
+                    ->through(fn (Produk $produk) => [
+                        'id' => $produk->id,
+                        'thumbnail_url' => $produk->fotoUtamaUrl(),
+                        'cells' => [
+                            $produk->nama,
+                            $produk->kategori?->nama ?? '-',
+                            $produk->is_sewa ? 'Sewa' : 'Jual/Jasa',
+                            'Rp '.number_format((int) $produk->harga_dasar, 0, ',', '.'),
+                        ],
+                        'edit_href' => route('admin.edit', ['focus' => 'produk', 'record' => $produk->id]),
+                    ]),
+            ],
+            'promo' => [
+                'title' => 'Preview Kode Promo',
+                'subtitle' => 'Promo dimuat sedikit-sedikit per halaman supaya evaluasi kampanye tetap cepat.',
+                'columns' => ['Kode', 'Diskon', 'Dipakai', 'Status'],
+                'rows' => $this->applyFocusSearch(KodePromo::query(), 'promo', $search)
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(fn (KodePromo $promo) => [
+                        'id' => $promo->id,
+                        'cells' => [
+                            $promo->kode,
+                            $promo->tipe_diskon === 'persentase'
+                                ? $promo->nilai_diskon.'%'
+                                : 'Rp '.number_format((int) $promo->nilai_diskon, 0, ',', '.'),
+                            ($promo->dipakai ?? 0).($promo->kuota ? '/'.$promo->kuota : ''),
+                            $promo->is_aktif ? 'Aktif' : 'Nonaktif',
+                        ],
+                        'edit_href' => route('admin.edit', ['focus' => 'promo', 'record' => $promo->id]),
+                    ]),
+            ],
+            'pelanggan' => [
+                'title' => 'Preview Pelanggan',
+                'subtitle' => 'Daftar pelanggan dimuat per halaman untuk menjaga performa saat data membesar.',
+                'columns' => ['Nama', 'No. HP', 'Email', 'Terdaftar'],
+                'rows' => $this->applyFocusSearch(Pelanggan::query(), 'pelanggan', $search)
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(fn (Pelanggan $pelanggan) => [
+                        'id' => $pelanggan->id,
+                        'cells' => [
+                            $pelanggan->nama_lengkap,
+                            $pelanggan->no_hp,
+                            $pelanggan->email ?: '-',
+                            optional($pelanggan->created_at)->format('d M Y'),
+                        ],
+                        'edit_href' => route('admin.edit', ['focus' => 'pelanggan', 'record' => $pelanggan->id]),
+                    ]),
+            ],
+            'ulasan' => [
+                'title' => 'Preview Ulasan',
+                'subtitle' => 'Ulasan dimuat bertahap agar moderasi tetap responsif.',
+                'columns' => ['Pengulas', 'Rating', 'Komentar', 'Status'],
+                'rows' => $this->applyFocusSearch(Ulasan::query(), 'ulasan', $search)
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(fn (Ulasan $ulasan) => [
+                        'id' => $ulasan->id,
+                        'cells' => [
+                            $ulasan->nama_pengulas,
+                            $ulasan->rating.'/5',
+                            str($ulasan->komentar ?: '-')->limit(34)->toString(),
+                            $ulasan->is_tampil ? 'Tampil' : 'Sembunyi',
+                        ],
+                        'edit_href' => route('admin.edit', ['focus' => 'ulasan', 'record' => $ulasan->id]),
+                    ]),
+            ],
+            'pesanan' => [
+                'title' => 'Preview Tabel Pesanan',
+                'subtitle' => 'Pesanan diambil per halaman supaya beban query tidak meledak saat order bertambah.',
+                'columns' => ['Kode', 'Pelanggan', 'Status', 'Total'],
+                'rows' => $this->applyFocusSearch(Pesanan::query(), 'pesanan', $search)
+                    ->with([
+                        'pelanggan:id,nama_lengkap',
+                        'detailItems.produk:id,is_sewa',
+                        'pengembalian:id,pesanan_id,status_pengembalian,kondisi_barang,catatan_kerusakan,denda_kerusakan,status_denda,waktu_dijemput,tanggal_jemput',
+                    ])
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(function (Pesanan $pesanan): array {
+                        $pesanan = $this->syncRentalPickupWindow($pesanan);
+                        $quickAction = $this->buildQuickOrderAction($pesanan);
+
+                        return [
+                            'id' => $pesanan->id,
+                            'cells' => [
+                                $pesanan->kode_pesanan,
+                                $pesanan->pelanggan?->nama_lengkap ?? '-',
+                                $this->statusLabel($pesanan->status),
+                                'Rp '.number_format((int) $pesanan->grand_total, 0, ',', '.'),
+                            ],
+                            'status_note' => $this->buildOrderStatusNote($pesanan),
+                            'quick_action' => $quickAction,
+                            'is_rental' => $pesanan->isRentalOrder(),
+                            'edit_href' => route('admin.edit', ['focus' => 'pesanan', 'record' => $pesanan->id]),
+                        ];
+                    }),
+            ],
+            'pembayaran' => [
+                'title' => 'Preview Verifikasi Pembayaran',
+                'subtitle' => 'Pembayaran dimuat bertahap agar verifikasi lebih ringan.',
+                'columns' => ['Pesanan', 'Metode', 'Status', 'Nominal'],
+                'rows' => $this->applyFocusSearch(Pembayaran::query(), 'pembayaran', $search)
+                    ->with('pesanan:id,kode_pesanan')
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(fn (Pembayaran $pembayaran) => [
+                        'id' => $pembayaran->id,
+                        'cells' => [
+                            $pembayaran->pesanan?->kode_pesanan ?? '-',
+                            $pembayaran->resolvedMetodeLabel(),
+                            ucfirst($pembayaran->status),
+                            'Rp '.number_format((int) $pembayaran->jumlah_dibayar, 0, ',', '.'),
+                        ],
+                        'edit_href' => route('admin.edit', ['focus' => 'pembayaran', 'record' => $pembayaran->id]),
+                    ]),
+            ],
+            'users' => [
+                'title' => 'Preview Users',
+                'subtitle' => 'Data user dimuat per halaman untuk menjaga panel tetap stabil.',
+                'columns' => ['Nama', 'Email', 'Role', 'Status', 'Admin'],
+                'rows' => $this->applyFocusSearch(User::query(), 'users', $search)
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(fn (User $user) => [
+                        'id' => $user->id,
+                        'cells' => [
+                            $user->name,
+                            $user->email,
+                            ucfirst((string) $user->role),
+                            $user->is_active ? 'Aktif' : 'Nonaktif',
+                            $user->is_admin ? 'Ya' : 'Tidak',
+                        ],
+                        'edit_href' => route('admin.edit', ['focus' => 'users', 'record' => $user->id]),
+                    ]),
+            ],
+            'aktivitas' => [
+                'title' => 'Riwayat Aktivitas Admin',
+                'subtitle' => 'Dasbor hanya menampilkan 5 log terbaru. Di sini riwayat lengkap bisa dipantau dan dicari.',
+                'columns' => ['Aksi', 'Subjek', 'User', 'Waktu'],
+                'actions' => false,
+                'rows' => $this->applyFocusSearch(ActivityLog::query(), 'aktivitas', $search)
+                    ->with('user:id,name')
+                    ->tap(fn (Builder $query) => $this->applyFocusSort($query, $focus, $sort, $direction))
+                    ->paginate(15)
+                    ->withQueryString()
+                    ->through(fn (ActivityLog $log) => [
+                        'id' => $log->id,
+                        'cells' => [
+                            match ($log->action) {
+                                'verifikasi_pembayaran' => 'Pembayaran diverifikasi',
+                                'ubah_status_pesanan' => 'Status pesanan diubah',
+                                'moderasi_ulasan' => 'Moderasi ulasan',
+                                'edit_harga_produk' => 'Harga produk diubah',
+                                default => str($log->action)->replace('_', ' ')->title()->toString(),
+                            },
+                            $log->payload['label']
+                                ?? $log->payload['kode_pesanan']
+                                ?? $log->payload['nama']
+                                ?? (class_basename((string) $log->subject_type) ?: '-'),
+                            $log->user?->name ?? 'System',
+                            optional($log->created_at)?->timezone('Asia/Jakarta')->format('h:i A, j M Y') ?? '-',
+                        ],
+                        'edit_href' => null,
+                    ]),
+            ],
+            default => [
+                'title' => 'Preview Aktivitas Panel',
+                'subtitle' => 'Pusat pembanding sebelum masuk ke benchmark performa.',
+                'columns' => ['Aksi', 'Subjek', 'User', 'Waktu'],
+                'rows' => $this->applyFocusSearch(ActivityLog::query(), 'dashboard', $search)
+                    ->with('user:id,name')
+                    ->latest()
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(fn (ActivityLog $log) => [
+                        'id' => $log->id,
+                        'cells' => [
+                            str($log->action)->replace('_', ' ')->title()->toString(),
+                            $log->payload['label']
+                                ?? $log->payload['kode_pesanan']
+                                ?? $log->payload['nama']
+                                ?? (class_basename((string) $log->subject_type) ?: '-'),
+                            $log->user?->name ?? 'System',
+                            optional($log->created_at)?->timezone('Asia/Jakarta')->format('h:i A, j M Y') ?? '-',
+                        ],
+                        'edit_href' => null,
+                    ]),
+            ],
+        };
+    }
+
+    private function resolveSearchPlaceholder(string $focus): string
+    {
+        return match ($focus) {
+            'kategori' => 'Cari nama atau slug kategori',
+            'produk' => 'Cari produk, kategori, atau deskripsi',
+            'promo' => 'Cari kode promo atau tipe diskon',
+            'pelanggan' => 'Cari nama, WhatsApp, atau email pelanggan',
+            'ulasan' => 'Cari nama pengulas atau isi ulasan',
+            'pesanan' => 'Cari kode pesanan, pelanggan, atau status',
+            'pembayaran' => 'Cari kode pesanan, metode, atau status pembayaran',
+            'aktivitas' => 'Cari aksi, subjek, atau user pada log aktivitas',
+            'users' => 'Cari nama, email, atau role admin',
+            default => 'Cari kategori, produk, pelanggan, atau kode pesanan',
+        };
+    }
+
+    private function buildGlobalSearchPayload(string $search, int $groupLimit = 5): array
+    {
+        $search = trim($search);
+
+        $emptyGroups = collect([
+            ['key' => 'kategori', 'label' => 'Kategori', 'count' => 0, 'items' => []],
+            ['key' => 'produk', 'label' => 'Produk', 'count' => 0, 'items' => []],
+            ['key' => 'pelanggan', 'label' => 'Pelanggan', 'count' => 0, 'items' => []],
+            ['key' => 'pesanan', 'label' => 'Pesanan', 'count' => 0, 'items' => []],
+        ]);
+
+        if (mb_strlen($search) < 2) {
+            return [
+                'query' => $search,
+                'groups' => $emptyGroups,
+                'total' => 0,
+            ];
+        }
+
+        $like = '%'.$search.'%';
+        $hasProdukSku = Schema::hasColumn('produk', 'sku');
+
+        $kategoriQuery = Kategori::query()
+            ->select(['id', 'nama', 'slug', 'is_aktif'])
+            ->where(function (Builder $query) use ($like) {
+                $query->where('nama', 'like', $like)
+                    ->orWhere('slug', 'like', $like);
+            });
+
+        $kategoriCount = (clone $kategoriQuery)->count();
+        $kategoriItems = $kategoriQuery
+            ->orderBy('nama')
+            ->limit($groupLimit)
+            ->get()
+            ->map(fn (Kategori $kategori) => [
+                'id' => $kategori->id,
+                'title' => $kategori->nama,
+                'identifier' => $kategori->slug,
+                'description' => 'Kategori produk untuk pengelompokan katalog Sadita.',
+                'badge' => 'Kategori',
+                'status' => $kategori->is_aktif ? 'Aktif' : 'Nonaktif',
+                'url' => route('admin.edit', ['focus' => 'kategori', 'record' => $kategori->id]),
+                'action_label' => 'Edit kategori',
+            ])
+            ->values()
+            ->all();
+
+        $produkQuery = Produk::query()
+            ->select(['id', 'nama', 'slug', 'kategori_id', 'is_aktif'])
+            ->with('kategori:id,nama')
+            ->where(function (Builder $query) use ($like, $hasProdukSku) {
+                $query->where('nama', 'like', $like)
+                    ->orWhere('slug', 'like', $like);
+
+                if ($hasProdukSku) {
+                    $query->orWhere('sku', 'like', $like);
+                }
+            });
+
+        $produkCount = (clone $produkQuery)->count();
+        $produkItems = $produkQuery
+            ->orderBy('nama')
+            ->limit($groupLimit)
+            ->get()
+            ->map(fn (Produk $produk) => [
+                'id' => $produk->id,
+                'title' => $produk->nama,
+                'identifier' => $produk->slug,
+                'description' => $produk->kategori?->nama
+                    ? 'Kategori: '.$produk->kategori->nama
+                    : 'Produk Sadita tanpa kategori aktif.',
+                'badge' => 'Produk',
+                'status' => $produk->is_aktif ? 'Aktif' : 'Nonaktif',
+                'url' => route('admin.edit', ['focus' => 'produk', 'record' => $produk->id]),
+                'action_label' => 'Edit produk',
+            ])
+            ->values()
+            ->all();
+
+        $pelangganQuery = Pelanggan::query()
+            ->select(['id', 'nama_lengkap', 'email', 'no_hp'])
+            ->where(function (Builder $query) use ($like) {
+                $query->where('nama_lengkap', 'like', $like)
+                    ->orWhere('email', 'like', $like)
+                    ->orWhere('no_hp', 'like', $like);
+            });
+
+        $pelangganCount = (clone $pelangganQuery)->count();
+        $pelangganItems = $pelangganQuery
+            ->orderBy('nama_lengkap')
+            ->limit($groupLimit)
+            ->get()
+            ->map(fn (Pelanggan $pelanggan) => [
+                'id' => $pelanggan->id,
+                'title' => $pelanggan->nama_lengkap,
+                'identifier' => $pelanggan->no_hp,
+                'description' => $pelanggan->email ?: 'Kontak email belum diisi.',
+                'badge' => 'Pelanggan',
+                'status' => null,
+                'url' => route('admin.edit', ['focus' => 'pelanggan', 'record' => $pelanggan->id]),
+                'action_label' => 'Kelola pelanggan',
+            ])
+            ->values()
+            ->all();
+
+        $pesananQuery = Pesanan::query()
+            ->select(['id', 'kode_pesanan', 'status', 'pelanggan_id'])
+            ->with('pelanggan:id,nama_lengkap')
+            ->where('kode_pesanan', 'like', $like);
+
+        $pesananCount = (clone $pesananQuery)->count();
+        $pesananItems = $pesananQuery
+            ->latest('id')
+            ->limit($groupLimit)
+            ->get()
+            ->map(fn (Pesanan $pesanan) => [
+                'id' => $pesanan->id,
+                'title' => $pesanan->kode_pesanan,
+                'identifier' => $pesanan->pelanggan?->nama_lengkap ?? 'Tanpa pelanggan',
+                'description' => 'Status transaksi: '.Str::headline($pesanan->status),
+                'badge' => 'Pesanan',
+                'status' => Str::headline($pesanan->status),
+                'url' => route('admin.edit', ['focus' => 'pesanan', 'record' => $pesanan->id]),
+                'action_label' => 'Buka pesanan',
+            ])
+            ->values()
+            ->all();
+
+        $groups = collect([
+            ['key' => 'kategori', 'label' => 'Kategori', 'count' => $kategoriCount, 'items' => $kategoriItems],
+            ['key' => 'produk', 'label' => 'Produk', 'count' => $produkCount, 'items' => $produkItems],
+            ['key' => 'pelanggan', 'label' => 'Pelanggan', 'count' => $pelangganCount, 'items' => $pelangganItems],
+            ['key' => 'pesanan', 'label' => 'Pesanan', 'count' => $pesananCount, 'items' => $pesananItems],
+        ]);
+
+        return [
+            'query' => $search,
+            'groups' => $groups,
+            'total' => (int) $groups->sum('count'),
+        ];
+    }
+
+    private function applyFocusSearch(Builder $query, string $focus, string $search): Builder
+    {
+        if ($search === '') {
+            return $query;
+        }
+
+        $like = '%'.$search.'%';
+
+        return match ($focus) {
+            'kategori' => $query->where(function (Builder $inner) use ($like) {
+                $inner->where('nama', 'like', $like)
+                    ->orWhere('slug', 'like', $like)
+                    ->orWhere('deskripsi', 'like', $like);
+            }),
+            'produk' => $query->where(function (Builder $inner) use ($like) {
+                $inner->where('nama', 'like', $like)
+                    ->orWhere('slug', 'like', $like)
+                    ->orWhere('deskripsi', 'like', $like)
+                    ->orWhereHas('kategori', fn (Builder $kategori) => $kategori->where('nama', 'like', $like));
+            }),
+            'promo' => $query->where(function (Builder $inner) use ($like) {
+                $inner->where('kode', 'like', $like)
+                    ->orWhere('tipe_diskon', 'like', $like)
+                    ->orWhere('deskripsi', 'like', $like);
+            }),
+            'pelanggan' => $query->where(function (Builder $inner) use ($like) {
+                $inner->where('nama_lengkap', 'like', $like)
+                    ->orWhere('no_hp', 'like', $like)
+                    ->orWhere('email', 'like', $like);
+            }),
+            'ulasan' => $query->where(function (Builder $inner) use ($like) {
+                $inner->where('nama_pengulas', 'like', $like)
+                    ->orWhere('komentar', 'like', $like);
+            }),
+            'pesanan' => $query->where(function (Builder $inner) use ($like) {
+                $inner->where('kode_pesanan', 'like', $like)
+                    ->orWhere('status', 'like', $like)
+                    ->orWhereHas('pelanggan', fn (Builder $pelanggan) => $pelanggan->where('nama_lengkap', 'like', $like));
+            }),
+            'pembayaran' => $query->where(function (Builder $inner) use ($like) {
+                $inner->where('metode', 'like', $like)
+                    ->orWhere('status', 'like', $like)
+                    ->orWhere('bukti_transfer', 'like', $like)
+                    ->orWhereHas('pesanan', fn (Builder $pesanan) => $pesanan->where('kode_pesanan', 'like', $like));
+            }),
+            'users' => $query->where(function (Builder $inner) use ($like) {
+                $inner->where('name', 'like', $like)
+                    ->orWhere('email', 'like', $like)
+                    ->orWhere('role', 'like', $like);
+            }),
+            'aktivitas' => $query->where(function (Builder $inner) use ($like) {
+                $inner->where('action', 'like', $like)
+                    ->orWhere('subject_type', 'like', $like)
+                    ->orWhereHas('user', fn (Builder $user) => $user->where('name', 'like', $like));
+            }),
+            default => $query->where(function (Builder $inner) use ($like) {
+                $inner->where('action', 'like', $like)
+                    ->orWhere('subject_type', 'like', $like)
+                    ->orWhereHas('user', fn (Builder $user) => $user->where('name', 'like', $like));
+            }),
+        };
+    }
+
+    private function applyFocusSort(Builder $query, string $focus, string $sort, string $direction): Builder
+    {
+        $columns = match ($focus) {
+            'kategori' => ['name' => 'nama', 'slug' => 'slug', 'status' => 'is_aktif', 'created_at' => 'created_at'],
+            'produk' => ['name' => 'nama', 'status' => 'is_sewa', 'harga_dasar' => 'harga_dasar', 'created_at' => 'created_at'],
+            'promo' => ['kode' => 'kode', 'nilai_diskon' => 'nilai_diskon', 'status' => 'is_aktif', 'created_at' => 'created_at'],
+            'pelanggan' => ['name' => 'nama_lengkap', 'email' => 'email', 'created_at' => 'created_at'],
+            'ulasan' => ['name' => 'nama_pengulas', 'rating' => 'rating', 'status' => 'is_tampil', 'created_at' => 'created_at'],
+            'pesanan' => ['kode' => 'kode_pesanan', 'status' => 'status', 'grand_total' => 'grand_total', 'created_at' => 'created_at'],
+            'pembayaran' => ['metode' => 'metode', 'status' => 'status', 'jumlah_dibayar' => 'jumlah_dibayar', 'created_at' => 'created_at'],
+            'users' => ['name' => 'name', 'email' => 'email', 'role' => 'role', 'is_active' => 'is_active', 'is_admin' => 'is_admin', 'created_at' => 'created_at'],
+            default => ['created_at' => 'created_at'],
+        };
+
+        return $query->orderBy($columns[$sort] ?? 'created_at', $direction);
+    }
+
+    private function buildQuickActions(string $focus, bool $isOwner, bool $canManage): array
+    {
+        $base = [
+            ['label' => 'Kembali ke dasbor', 'href' => route('admin.index'), 'kind' => 'secondary'],
+            ['label' => 'Buka daftar pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'kind' => 'secondary'],
+        ];
+
+        if (! $canManage) {
+            return match ($focus) {
+                'pembayaran' => [
+                    ['label' => 'Lihat pembayaran', 'href' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'manage']), 'kind' => 'primary'],
+                    ['label' => 'Buka daftar pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'kind' => 'secondary'],
+                    ['label' => 'Kembali ke dasbor', 'href' => route('admin.index'), 'kind' => 'secondary'],
+                ],
+                default => [
+                    ['label' => 'Lihat pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'kind' => 'primary'],
+                    ['label' => 'Lihat pembayaran', 'href' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'manage']), 'kind' => 'secondary'],
+                    ['label' => 'Kembali ke dasbor', 'href' => route('admin.index'), 'kind' => 'secondary'],
+                ],
+            };
+        }
+
+        $focusActions = match ($focus) {
+            'kategori' => [
+                ['label' => 'Tambah kategori', 'href' => route('admin.index', ['focus' => 'kategori', 'mode' => 'create']), 'kind' => 'primary'],
+                ['label' => 'Kelola produk', 'href' => route('admin.index', ['focus' => 'produk', 'mode' => 'manage']), 'kind' => 'secondary'],
+            ],
+            'produk' => [
+                ['label' => 'Tambah produk', 'href' => route('admin.index', ['focus' => 'produk', 'mode' => 'create']), 'kind' => 'primary'],
+                ['label' => 'Kelola kategori', 'href' => route('admin.index', ['focus' => 'kategori', 'mode' => 'manage']), 'kind' => 'secondary'],
+            ],
+            'promo' => [
+                ['label' => 'Buat promo', 'href' => route('admin.index', ['focus' => 'promo', 'mode' => 'create']), 'kind' => 'primary'],
+                ['label' => 'Cek order terpengaruh promo', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'overview']), 'kind' => 'secondary'],
+            ],
+            'pelanggan' => [
+                ['label' => 'Tambah pelanggan', 'href' => route('admin.index', ['focus' => 'pelanggan', 'mode' => 'create']), 'kind' => 'primary'],
+                ['label' => 'Lihat pelanggan loyal', 'href' => route('admin.index', ['focus' => 'pelanggan', 'mode' => 'overview']), 'kind' => 'secondary'],
+            ],
+            'ulasan' => [
+                ['label' => 'Moderasi ulasan', 'href' => route('admin.index', ['focus' => 'ulasan', 'mode' => 'manage']), 'kind' => 'primary'],
+                ['label' => 'Lihat produk terkait', 'href' => route('admin.index', ['focus' => 'produk', 'mode' => 'manage']), 'kind' => 'secondary'],
+            ],
+            'pesanan' => [
+                ['label' => 'Buat pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'create']), 'kind' => 'primary'],
+                ['label' => 'Lihat pembayaran', 'href' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'manage']), 'kind' => 'secondary'],
+            ],
+            'pembayaran' => [
+                ['label' => 'Tambah pembayaran', 'href' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'create']), 'kind' => 'primary'],
+                ['label' => 'Lihat pesanan tertahan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'overview']), 'kind' => 'secondary'],
+            ],
+            'aktivitas' => [
+                ['label' => 'Kembali ke dasbor', 'href' => route('admin.index'), 'kind' => 'primary'],
+                ['label' => 'Buka pesanan', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'kind' => 'secondary'],
+            ],
+            'users' => $isOwner ? [
+                ['label' => 'Tambah user', 'href' => route('admin.index', ['focus' => 'users', 'mode' => 'create']), 'kind' => 'primary'],
+                ['label' => 'Audit role aktif', 'href' => route('admin.index', ['focus' => 'users', 'mode' => 'overview']), 'kind' => 'secondary'],
+            ] : [],
+            default => [
+                ['label' => 'Kelola pesanan hari ini', 'href' => route('admin.index', ['focus' => 'pesanan', 'mode' => 'manage']), 'kind' => 'primary'],
+                ['label' => 'Verifikasi pembayaran', 'href' => route('admin.index', ['focus' => 'pembayaran', 'mode' => 'manage']), 'kind' => 'secondary'],
+            ],
+        };
+
+        return [...$focusActions, ...$base];
+    }
+
+    private function buildFormSections(string $focus): array
+    {
+        return match ($focus) {
+            'kategori' => [
+                [
+                    'title' => 'Informasi kategori',
+                    'fields' => [
+                        ['label' => 'Nama kategori', 'type' => 'text', 'placeholder' => 'Contoh: Papan Ucapan Premium'],
+                        ['label' => 'Slug', 'type' => 'text', 'placeholder' => 'papan-ucapan-premium'],
+                    ],
+                ],
+                [
+                    'title' => 'Publikasi',
+                    'fields' => [
+                        ['label' => 'Deskripsi singkat', 'type' => 'textarea', 'placeholder' => 'Dipakai untuk kartu kategori dan navigasi katalog'],
+                        ['label' => 'Status tampil', 'type' => 'toggle', 'placeholder' => 'Aktif'],
+                    ],
+                ],
+            ],
+            'produk' => [
+                [
+                    'title' => 'Data utama produk',
+                    'fields' => [
+                        ['label' => 'Nama produk', 'type' => 'text', 'placeholder' => 'Papan Duka Cita Eksklusif'],
+                        ['label' => 'Kategori', 'type' => 'select', 'placeholder' => 'Pilih kategori'],
+                        ['label' => 'Harga dasar', 'type' => 'currency', 'placeholder' => 'Rp 1.200.000'],
+                    ],
+                ],
+                [
+                    'title' => 'Aturan layanan',
+                    'fields' => [
+                        ['label' => 'Mode layanan', 'type' => 'chips', 'placeholder' => 'Sewa / Jasa / Hybrid'],
+                        ['label' => 'Bisa custom', 'type' => 'toggle', 'placeholder' => 'Ya'],
+                        ['label' => 'Deskripsi katalog', 'type' => 'textarea', 'placeholder' => 'Ringkas, jelas, mudah dibaca admin dan pelanggan'],
+                    ],
+                ],
+            ],
+            'promo' => [
+                [
+                    'title' => 'Identitas promo',
+                    'fields' => [
+                        ['label' => 'Kode promo', 'type' => 'text', 'placeholder' => 'SADITA10'],
+                        ['label' => 'Tipe diskon', 'type' => 'select', 'placeholder' => 'Persentase / nominal'],
+                        ['label' => 'Nilai diskon', 'type' => 'currency', 'placeholder' => '10% atau Rp 50.000'],
+                    ],
+                ],
+                [
+                    'title' => 'Periode kampanye',
+                    'fields' => [
+                        ['label' => 'Tanggal mulai', 'type' => 'date', 'placeholder' => 'Pilih tanggal'],
+                        ['label' => 'Tanggal berakhir', 'type' => 'date', 'placeholder' => 'Pilih tanggal'],
+                        ['label' => 'Kuota', 'type' => 'number', 'placeholder' => '50'],
+                    ],
+                ],
+            ],
+            'pelanggan' => [
+                [
+                    'title' => 'Kontak pelanggan',
+                    'fields' => [
+                        ['label' => 'Nama lengkap', 'type' => 'text', 'placeholder' => 'Nama pelanggan'],
+                        ['label' => 'No. WhatsApp', 'type' => 'text', 'placeholder' => '08xxxxxxxxxx'],
+                        ['label' => 'Email', 'type' => 'text', 'placeholder' => 'opsional@email.com'],
+                    ],
+                ],
+            ],
+            'ulasan' => [
+                [
+                    'title' => 'Moderasi ulasan',
+                    'fields' => [
+                        ['label' => 'Nama pengulas', 'type' => 'text', 'placeholder' => 'Nama tampil publik'],
+                        ['label' => 'Komentar', 'type' => 'textarea', 'placeholder' => 'Isi testimoni pelanggan'],
+                        ['label' => 'Status tampil', 'type' => 'toggle', 'placeholder' => 'Tampil di website'],
+                    ],
+                ],
+            ],
+            'pesanan' => [
+                [
+                    'title' => 'Informasi pesanan',
+                    'fields' => [
+                        ['label' => 'Kode pesanan', 'type' => 'text', 'placeholder' => 'SDT-20260705-001'],
+                        ['label' => 'Pelanggan', 'type' => 'select', 'placeholder' => 'Cari pelanggan'],
+                        ['label' => 'Produk utama', 'type' => 'select', 'placeholder' => 'Pilih item'],
+                    ],
+                ],
+                [
+                    'title' => 'Kontrol operasional',
+                    'fields' => [
+                        ['label' => 'Status pesanan', 'type' => 'chips', 'placeholder' => 'Menunggu / Diproses / Selesai'],
+                        ['label' => 'Grand total', 'type' => 'currency', 'placeholder' => 'Rp 0'],
+                        ['label' => 'Catatan admin', 'type' => 'textarea', 'placeholder' => 'Arahan produksi, pengiriman, atau revisi pelanggan'],
+                    ],
+                ],
+            ],
+            'pembayaran' => [
+                [
+                    'title' => 'Verifikasi transaksi',
+                    'fields' => [
+                        ['label' => 'Pesanan terkait', 'type' => 'select', 'placeholder' => 'Pilih kode pesanan'],
+                        ['label' => 'Metode bayar', 'type' => 'select', 'placeholder' => 'Transfer / cash / QRIS'],
+                        ['label' => 'Jumlah dibayar', 'type' => 'currency', 'placeholder' => 'Rp 0'],
+                    ],
+                ],
+                [
+                    'title' => 'Validasi',
+                    'fields' => [
+                        ['label' => 'Bukti transfer', 'type' => 'upload', 'placeholder' => 'Upload gambar'],
+                        ['label' => 'Status', 'type' => 'chips', 'placeholder' => 'Pending / Lunas / Ditolak'],
+                    ],
+                ],
+            ],
+            'users' => [
+                [
+                    'title' => 'Akun admin',
+                    'fields' => [
+                        ['label' => 'Nama', 'type' => 'text', 'placeholder' => 'Nama lengkap tim'],
+                        ['label' => 'Email', 'type' => 'text', 'placeholder' => 'email@domain.com'],
+                        ['label' => 'Password awal', 'type' => 'password', 'placeholder' => 'Minimal 8 karakter'],
+                    ],
+                ],
+                [
+                    'title' => 'Hak akses',
+                    'fields' => [
+                        ['label' => 'Role', 'type' => 'select', 'placeholder' => 'Owner / Admin / Staff'],
+                        ['label' => 'Akses admin', 'type' => 'toggle', 'placeholder' => 'Aktif'],
+                    ],
+                ],
+            ],
+            default => [],
+        };
+    }
+
+    private function buildActivityFeed(User $user): array
+    {
+        return $this->notificationQuery($user)
+            ->with('user:id,name')
+            ->latest()
+            ->limit(20)
+            ->get()
+            ->map(fn (ActivityLog $log) => [
+                'category' => $log->action === 'pesanan_baru_masuk' ? 'order' : 'system',
+                'title' => match ($log->action) {
+                    'pesanan_baru_masuk' => 'Pesanan baru masuk',
+                    'verifikasi_pembayaran' => 'Pembayaran diverifikasi',
+                    'ubah_status_pesanan' => 'Status pesanan diubah',
+                    'moderasi_ulasan' => 'Moderasi ulasan',
+                    'edit_harga_produk' => 'Harga produk diubah',
+                    default => str($log->action)->replace('_', ' ')->title()->toString(),
+                },
+                'user' => $log->user?->name ?? 'System',
+                'subject' => $log->payload['label']
+                    ?? $log->payload['kode_pesanan']
+                    ?? $log->payload['nama']
+                    ?? (class_basename((string) $log->subject_type) ?: '-'),
+                'stamp' => optional($log->created_at)?->toISOString(),
+                'time' => $this->formatNotificationTime($log->created_at),
+            ])->all();
+    }
+
+    private function buildNotificationUnreadCount(User $user): int
+    {
+        return $this->notificationQuery($user)
+            ->when(
+                $user->notifications_seen_at,
+                fn (Builder $query) => $query->where('created_at', '>', $user->notifications_seen_at)
+            )
+            ->count();
+    }
+
+    private function notificationQuery(User $user): Builder
+    {
+        return ActivityLog::query()
+            ->when(
+                $user->isStaff(),
+                fn (Builder $query) => $query->where('action', 'pesanan_baru_masuk')
+            );
+    }
+
+    private function formatNotificationTime(mixed $timestamp): string
+    {
+        if (! $timestamp) {
+            return '-';
+        }
+
+        $time = Carbon::parse($timestamp)->timezone('Asia/Jakarta');
+        $now = now()->timezone('Asia/Jakarta');
+        $seconds = max(0, (int) floor((float) $time->diffInSeconds($now)));
+
+        if ($seconds < 60) {
+            return $seconds.' detik lalu';
+        }
+
+        $minutes = max(1, (int) floor((float) $time->diffInMinutes($now)));
+        if ($minutes < 60) {
+            return $minutes.' menit lalu';
+        }
+
+        $hours = max(1, (int) floor((float) $time->diffInHours($now)));
+        if ($hours < 24) {
+            return $hours.' jam lalu';
+        }
+
+        $days = max(1, (int) floor((float) $time->diffInDays($now)));
+        if ($days < 7) {
+            return $days.' hari lalu';
+        }
+
+        if ($days < 8) {
+            return '1 minggu lalu';
+        }
+
+        return $time->translatedFormat('d M Y');
+    }
+
+    private function logAdminCreate(string $focus, mixed $record): void
+    {
+        if (! $record instanceof Model) {
+            return;
+        }
+
+        ActivityLogger::log('buat_'.$focus, $record, [
+            'focus' => $focus,
+            'label' => $this->resolveRecordLabel($focus, $record),
+        ]);
+    }
+
+    private function logAdminUpdate(string $focus, Model $record, array $beforeSnapshot): void
+    {
+        $logged = false;
+
+        if (
+            $focus === 'produk' &&
+            array_key_exists('harga_dasar', $beforeSnapshot) &&
+            (int) $beforeSnapshot['harga_dasar'] !== (int) $record->getAttribute('harga_dasar')
+        ) {
+            ActivityLogger::editHargaProduk(
+                $record,
+                (int) $beforeSnapshot['harga_dasar'],
+                (int) $record->getAttribute('harga_dasar')
+            );
+            $logged = true;
+        }
+
+        if (
+            $focus === 'pesanan' &&
+            array_key_exists('status', $beforeSnapshot) &&
+            (string) $beforeSnapshot['status'] !== (string) $record->getAttribute('status')
+        ) {
+            ActivityLogger::ubahStatusPesanan(
+                $record,
+                (string) $beforeSnapshot['status'],
+                (string) $record->getAttribute('status')
+            );
+            $logged = true;
+        }
+
+        if (
+            $focus === 'pembayaran' &&
+            array_key_exists('status', $beforeSnapshot) &&
+            (string) $beforeSnapshot['status'] !== (string) $record->getAttribute('status')
+        ) {
+            ActivityLogger::verifikasiPembayaran(
+                $record,
+                (string) $record->getAttribute('status'),
+                $record->getAttribute('alasan_penolakan')
+            );
+            $logged = true;
+        }
+
+        if (
+            $focus === 'ulasan' &&
+            array_key_exists('is_tampil', $beforeSnapshot) &&
+            (bool) $beforeSnapshot['is_tampil'] !== (bool) $record->getAttribute('is_tampil')
+        ) {
+            ActivityLogger::moderasiUlasan($record, (bool) $record->getAttribute('is_tampil'));
+            $logged = true;
+        }
+
+        if ($logged) {
+            return;
+        }
+
+        ActivityLogger::log('update_'.$focus, $record, [
+            'focus' => $focus,
+            'label' => $this->resolveRecordLabel($focus, $record),
+        ]);
+    }
+
+    private function logAdminDelete(string $focus, Model $record, string $recordLabel): void
+    {
+        ActivityLogger::log('hapus_'.$focus, $record, [
+            'focus' => $focus,
+            'label' => $recordLabel,
+        ]);
+    }
+
+    private function snapshotRecordForLog(Model $record): array
+    {
+        return $record->attributesToArray();
+    }
+
+    private function handleQuickOrderAction(Pesanan $pesanan, string $action): string
+    {
+        $statusSebelum = (string) $pesanan->status;
+
+        $message = match ($action) {
+            'advance' => $this->advanceOrderLifecycle($pesanan),
+            'pickup_ok' => $this->markRentalPickupCompleted($pesanan, false),
+            'pickup_damaged' => $this->markRentalPickupCompleted($pesanan, true),
+            'damage_paid' => $this->markDamagePenaltyPaid($pesanan),
+        };
+
+        if ($statusSebelum !== (string) $pesanan->status) {
+            ActivityLogger::ubahStatusPesanan($pesanan, $statusSebelum, (string) $pesanan->status);
+        }
+
+        return $message;
+    }
+
+    private function advanceOrderLifecycle(Pesanan $pesanan): string
+    {
+        if ($pesanan->status === Pesanan::STATUS_DIPROSES) {
+            $pesanan->forceFill([
+                'status' => Pesanan::STATUS_SIAPKIRIM,
+            ])->save();
+
+            return 'Status pesanan dipindahkan ke Siap Kirim.';
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_SIAPKIRIM) {
+            $payload = [
+                'status' => Pesanan::STATUS_SELESAI,
+                'waktu_selesai' => $pesanan->waktu_selesai ?? now(),
+            ];
+
+            if ($pesanan->isRentalOrder()) {
+                $payload['pickup_deadline_at'] = now()->addDay();
+            }
+
+            $pesanan->forceFill($payload)->save();
+
+            if ($pesanan->isRentalOrder()) {
+                $pesanan->pengembalian()->updateOrCreate(
+                    ['pesanan_id' => $pesanan->id],
+                    [
+                        'status_pengembalian' => 'menunggu_dijemput',
+                        'tanggal_jemput' => optional($pesanan->pickup_deadline_at)->toDateString(),
+                        'kondisi_barang' => null,
+                        'catatan_kerusakan' => null,
+                        'denda_kerusakan' => 0,
+                        'status_denda' => 'tidak_ada',
+                        'waktu_dijemput' => null,
+                    ]
+                );
+
+                $pesanan->unsetRelation('pengembalian');
+                $pesanan->load('pengembalian');
+
+                return 'Pesanan sewa ditandai selesai dipakai. Hitung mundur penjemputan 1 hari sudah dimulai.';
+            }
+
+            return 'Status pesanan dipindahkan ke Selesai.';
+        }
+
+        return 'Status ini belum punya aksi cepat lanjutan.';
+    }
+
+    private function markRentalPickupCompleted(Pesanan $pesanan, bool $isDamaged): string
+    {
+        if (! $pesanan->isRentalOrder()) {
+            return 'Aksi penjemputan hanya tersedia untuk pesanan sewa.';
+        }
+
+        $pengembalian = $pesanan->pengembalian()->firstOrCreate(
+            ['pesanan_id' => $pesanan->id],
+            ['status_pengembalian' => 'menunggu_dijemput']
+        );
+
+        $pengembalian->fill([
+            'status_pengembalian' => 'sudah_dijemput',
+            'kondisi_barang' => $isDamaged ? 'rusak' : 'baik',
+            'status_denda' => $isDamaged ? 'menunggu_pembayaran' : 'tidak_ada',
+            'waktu_dijemput' => now(),
+            'tanggal_jemput' => optional($pengembalian->tanggal_jemput)->toDateString() ?? now()->toDateString(),
+        ]);
+
+        if ($isDamaged) {
+            $pengembalian->catatan_kerusakan = $pengembalian->catatan_kerusakan ?: 'Barang dikembalikan dalam kondisi rusak. Hubungi admin untuk konfirmasi denda.';
+            $pengembalian->denda_kerusakan = max((int) ($pengembalian->denda_kerusakan ?? 0), 0);
+        } else {
+            $pengembalian->catatan_kerusakan = null;
+            $pengembalian->denda_kerusakan = 0;
+        }
+
+        $pengembalian->save();
+
+        $pesanan->forceFill([
+            'status' => $isDamaged ? Pesanan::STATUS_MENUNGGU_DENDA : Pesanan::STATUS_SELESAI,
+            'pickup_deadline_at' => null,
+        ])->save();
+
+        $pesanan->setRelation('pengembalian', $pengembalian);
+
+        return $isDamaged
+            ? 'Barang ditandai rusak. Pesanan dipindahkan ke Menunggu Denda.'
+            : 'Penjemputan selesai. Pesanan ditutup tanpa denda.';
+    }
+
+    private function markDamagePenaltyPaid(Pesanan $pesanan): string
+    {
+        if ($pesanan->status !== Pesanan::STATUS_MENUNGGU_DENDA) {
+            return 'Pesanan ini belum berada di tahap denda.';
+        }
+
+        $pengembalian = $pesanan->pengembalian;
+
+        if (! $pengembalian) {
+            return 'Data pengembalian belum tersedia.';
+        }
+
+        $pengembalian->forceFill([
+            'status_denda' => 'lunas',
+        ])->save();
+
+        $pesanan->forceFill([
+            'status' => Pesanan::STATUS_SELESAI,
+            'pickup_deadline_at' => null,
+        ])->save();
+
+        $pesanan->setRelation('pengembalian', $pengembalian);
+
+        return 'Denda sudah ditandai lunas dan pesanan selesai sepenuhnya.';
+    }
+
+    private function syncRentalPickupWindow(Pesanan $pesanan): Pesanan
+    {
+        if (
+            ! $pesanan->isRentalOrder() ||
+            $pesanan->status !== Pesanan::STATUS_SELESAI ||
+            ! $pesanan->pickup_deadline_at
+        ) {
+            return $pesanan;
+        }
+
+        if ($pesanan->pickup_deadline_at->copy()->subMinutes(30)->lte(now())) {
+            $pesanan->forceFill([
+                'status' => Pesanan::STATUS_PENJEMPUTAN,
+            ])->saveQuietly();
+        }
+
+        return $pesanan;
+    }
+
+    private function buildQuickOrderAction(Pesanan $pesanan): ?array
+    {
+        if ($pesanan->status === Pesanan::STATUS_DIPROSES) {
+            return [
+                'buttons' => [
+                    $this->makeQuickOrderButton('Lanjut ke siap kirim', 'advance', 'primary'),
+                ],
+            ];
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_SIAPKIRIM) {
+            return [
+                'buttons' => [
+                    $this->makeQuickOrderButton('Tandai selesai', 'advance', 'primary'),
+                ],
+            ];
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_PENJEMPUTAN) {
+            return [
+                'buttons' => [
+                    $this->makeQuickOrderButton('Barang aman', 'pickup_ok', 'success'),
+                    $this->makeQuickOrderButton('Ada kerusakan', 'pickup_damaged', 'warning'),
+                ],
+            ];
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_MENUNGGU_DENDA) {
+            return [
+                'buttons' => [
+                    $this->makeQuickOrderButton('Sudah dibayar', 'damage_paid', 'danger'),
+                ],
+                'note' => 'Silakan hubungi '.$this->saditaContactPhone().' untuk konfirmasi denda kerusakan.',
+            ];
+        }
+
+        return null;
+    }
+
+    private function makeQuickOrderButton(string $label, string $action, string $variant): array
+    {
+        return [
+            'label' => $label,
+            'action' => $action,
+            'class' => match ($variant) {
+                'success' => 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
+                'warning' => 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100',
+                'danger' => 'border-[#d7b2b6] bg-[#fff4f5] text-[#8e2f3d] hover:bg-[#fdecef]',
+                default => 'border-[#d8c6b7] bg-[#fbf8f5] text-[#56353a] hover:bg-white',
+            },
+        ];
+    }
+
+    private function buildOrderStatusNote(Pesanan $pesanan): ?string
+    {
+        if (
+            $pesanan->isRentalOrder() &&
+            $pesanan->status === Pesanan::STATUS_SELESAI &&
+            $pesanan->pickup_deadline_at
+        ) {
+            return 'Penjemputan otomatis dibuka '.Carbon::parse($pesanan->pickup_deadline_at)->format('d M Y, H:i');
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_PENJEMPUTAN && $pesanan->pickup_deadline_at) {
+            return 'Batas jemput '.Carbon::parse($pesanan->pickup_deadline_at)->format('d M Y, H:i');
+        }
+
+        if ($pesanan->status === Pesanan::STATUS_MENUNGGU_DENDA) {
+            return 'Konfirmasi denda ke '.$this->saditaContactPhone().'.';
+        }
+
+        return null;
+    }
+
+    private function saditaContactPhone(): string
+    {
+        return (string) (env('SADITA_CONTACT_PHONE') ?: '08xxxxxxxxxx');
+    }
+
+    private function statusLabel(string $status): string
+    {
+        return match ($status) {
+            Pesanan::STATUS_MENUNGGU => 'Menunggu Bayar',
+            Pesanan::STATUS_DIPROSES => 'Diproses',
+            Pesanan::STATUS_SIAPKIRIM => 'Siap Kirim',
+            Pesanan::STATUS_PENJEMPUTAN => 'Penjemputan',
+            Pesanan::STATUS_MENUNGGU_DENDA => 'Menunggu Denda',
+            Pesanan::STATUS_SELESAI => 'Selesai',
+            Pesanan::STATUS_DIBATALKAN => 'Dibatalkan',
+            default => $status,
+        };
+    }
+}
