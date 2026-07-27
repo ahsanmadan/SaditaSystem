@@ -33,11 +33,6 @@ class DokuPaymentController extends Controller
         }
 
         $methodTypes = $selectedMethod !== 'ALL' ? [$selectedMethod] : [];
-
-        if (! $dokuCheckoutService->isConfigured()) {
-            return back()->with('error', 'Konfigurasi DOKU belum diisi. Hubungi admin untuk melengkapi credential sandbox/production.');
-        }
-
         $existingPayment = $pesanan->pembayaranTerakhir;
 
         if (
@@ -54,6 +49,10 @@ class DokuPaymentController extends Controller
             );
 
             return redirect()->away($existingPayment->checkout_url);
+        }
+
+        if (! $dokuCheckoutService->isConfigured()) {
+            return back()->with('error', 'Konfigurasi DOKU belum diisi. Hubungi admin untuk melengkapi credential sandbox/production.');
         }
 
         try {
